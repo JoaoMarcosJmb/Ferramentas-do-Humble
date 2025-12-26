@@ -240,9 +240,8 @@
 
 <script>
     /**
-     * PIXELLOG v16.3 - HYBRID ENGINE (Format Fix)
-     * - Fix: Lê logs de Servidor (3 blocos) E logs de Cliente (2 blocos).
-     * - Fix: Detecta [CHAT] mesmo quando não há módulo explícito.
+     * PIXELLOG v16.4 - HYBRID ENGINE (Reset Fix)
+     * - Fix: Função reset() agora limpa inputs de arquivo, fuzzy e scroll.
      */
 
     const TAG_DEFINITIONS = [
@@ -601,12 +600,25 @@
         },
 
         reset() {
+            // 1. Limpa inputs de texto e arquivo
             document.getElementById('searchInput').value = '';
+            document.getElementById('fileInput').value = '';
+
+            // 2. Reseta seletores e fuzzy
             document.getElementById('selMod').value = 'ALL';
+            document.getElementById('fuzzyToggle').checked = true;
+
+            // 3. Reseta filtros internos
             State.filters = { chat:false, error:false, cheat:false, lag:false };
+            
+            // 4. Limpa visual dos botões
             document.querySelectorAll('.btn-filter').forEach(b => {
-                b.classList.remove('active'); b.style.borderColor = 'transparent';
+                b.classList.remove('active'); 
+                b.style.borderColor = 'transparent';
             });
+
+            // 5. Reseta scroll e recarrega
+            UI.els.container.scrollTop = 0;
             this.runSearch();
         },
 
