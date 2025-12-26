@@ -80,7 +80,8 @@
             border-radius: 16px;
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            width: 90%; /* Responsividade básica */
+            width: 90%; 
+            flex: 1; /* Empurra o rodapé para baixo */
         }
         
         /* Título da ferramenta dentro do container */
@@ -241,6 +242,21 @@
             font-size: 18px;
             margin-bottom: 15px;
         }
+
+        /* --- RODAPÉ --- */
+        .footer-credits {
+            background: rgba(10, 15, 30, 0.95);
+            border-top: 1px solid #1e293b;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .credits-content p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -284,6 +300,12 @@
             <textarea id="discord-output" placeholder="O código formatado aparecerá aqui..."></textarea>
         </div>
     </div>
+
+    <footer class="footer-credits">
+        <div class="credits-content">
+            <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
+        </div>
+    </footer>
 
     <script>
         let workbook;
