@@ -15,7 +15,6 @@
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #e5e7eb;
-            /* Removemos o padding geral para a navbar encostar no topo */
             padding: 0; 
             min-height: 100vh;
             display: flex;
@@ -57,9 +56,9 @@
         }
 
         .nav-brand img {
-            height: 40px; /* Ajuste o tamanho do mascote aqui */
+            height: 40px;
             width: auto;
-            border-radius: 50%; /* Opcional: Deixa o mascote redondo */
+            border-radius: 50%;
         }
 
         .nav-links {
@@ -85,7 +84,7 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 40px;
-            flex: 1; /* Empurra o rodapé para baixo se houver pouco conteúdo */
+            flex: 1;
             width: 100%;
         }
 
@@ -115,7 +114,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(6px);
-            height: 100%; /* Garante que todos os cards tenham mesma altura */
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -140,25 +139,20 @@
             line-height: 1.4;
         }
 
-        /* --- SEÇÃO DE CRÉDITOS (RODAPÉ) --- */
+        /* --- RODAPÉ SIMPLES --- */
         .footer-credits {
             background: rgba(10, 15, 30, 0.95);
             border-top: 1px solid #1e293b;
-            padding: 40px;
+            padding: 20px; /* Reduzi um pouco o padding pois tem menos texto */
             text-align: center;
             margin-top: 50px;
-        }
-
-        .credits-content h3 {
-            color: #8B1D1D;
-            margin-top: 0;
         }
 
         .credits-content p {
             color: #94a3b8;
             font-size: 14px;
+            margin: 0;
         }
-
     </style>
 </head>
 <body>
@@ -170,7 +164,7 @@
         </div>
         <div class="nav-links">
             <a href="#">Início</a>
-            <a href="#creditos">Créditos</a>
+            <a href="CREDITOS.html">Créditos</a>
         </div>
     </nav>
 
@@ -194,15 +188,11 @@
                 </div>
             </a>
 
-            </div>
+        </div>
     </main>
 
-    <footer id="creditos" class="footer-credits">
+    <footer class="footer-credits">
         <div class="credits-content">
-            <h3>Créditos & Desenvolvimento</h3>
-            <p>Desenvolvido por <strong>[Seu Nome/Nick]</strong></p>
-            <p>Design e Interface para administração de servidores.</p>
-            <br>
             <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
         </div>
     </footer>
