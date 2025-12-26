@@ -9,20 +9,19 @@
         /* --- RESET E GERAL --- */
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: #e5e7eb;
+            padding: 0; 
             min-height: 100vh;
             display: flex;
             flex-direction: column;
 
-            /* Fundo escuro com a imagem */
             background:
-                linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.7)),
+                linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
                 url("IMAGENS/Fundo.png");
             background-size: cover;
             background-position: center;
@@ -40,9 +39,9 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: rgba(10, 15, 30, 0.6); /* Mais transparente */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -52,17 +51,14 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            font-weight: 700;
+            font-weight: bold;
             font-size: 20px;
-            letter-spacing: 0.5px;
-            color: #fff;
         }
 
         .nav-brand img {
             height: 40px;
             width: auto;
             border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .nav-links {
@@ -71,143 +67,81 @@
         }
 
         .nav-links a {
-            color: #cbd5e1;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            color: #94a3b8;
+            font-weight: 500;
+            transition: 0.2s;
+            padding: 5px 10px;
+            border-radius: 6px;
         }
 
         .nav-links a:hover {
             color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* --- CONTEÚDO PRINCIPAL --- */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 40px;
             flex: 1;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Centraliza tudo horizontalmente */
-        }
-
-        .header-section {
-            text-align: center;
-            margin-bottom: 60px;
-            animation: fadeIn 1s ease-out;
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-
-        p.subtitle {
-            color: #94a3b8;
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto;
         }
 
         /* --- GRID DE CARDS --- */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            width: 100%;
-            max-width: 1100px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px; /* Adicionei um pequeno espaço superior já que não tem título */
         }
 
         .card {
-            background: rgba(30, 41, 59, 0.4); /* Fundo semi-transparente */
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 35px 25px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 25px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
             height: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Centraliza conteúdo do card */
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Efeito de brilho no topo do card */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
-            pointer-events: none;
+            justify-content: center;
         }
 
         .card:hover {
-            transform: translateY(-10px);
-            background: rgba(30, 41, 59, 0.7);
-            border-color: #8B1D1D; /* Cor vermelha do tema */
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 
-                        0 0 20px rgba(139, 29, 29, 0.4); /* Glow vermelho */
-        }
-
-        .icon-box {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            transition: transform 0.4s ease;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
-        }
-
-        .card:hover .icon-box {
-            transform: scale(1.2) rotate(5deg);
+            transform: translateY(-6px);
+            border-color: #8B1D1D;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(15, 23, 42, 0.9);
         }
 
         .card h2 {
-            margin: 0 0 15px;
-            font-size: 1.5rem;
+            margin: 0 0 10px;
+            font-size: 20px;
             color: #fff;
-            font-weight: 700;
         }
 
         .card span {
-            font-size: 0.95rem;
-            color: #cbd5e1;
-            line-height: 1.6;
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.4;
         }
 
-        /* --- RODAPÉ --- */
+        /* --- RODAPÉ SIMPLES --- */
         .footer-credits {
-            background: rgba(10, 15, 30, 0.8);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 25px;
+            background: rgba(10, 15, 30, 0.95);
+            border-top: 1px solid #1e293b;
+            padding: 20px;
             text-align: center;
-            margin-top: auto; /* Empurra para o final */
-            backdrop-filter: blur(10px);
+            margin-top: 50px;
         }
 
         .credits-content p {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        /* Animação de entrada */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            color: #94a3b8;
+            font-size: 14px;
+            margin: 0;
         }
     </style>
 </head>
@@ -224,33 +158,24 @@
     </nav>
 
     <main class="container">
-        
-        <div class="header-section">
-            <h1>🛠 Utilitários</h1>
-            <p class="subtitle">Selecione uma ferramenta abaixo para acessar o painel de controle.</p>
-        </div>
-
         <div class="grid">
             
             <a href="FERRAMENTAS/EXCEL.html">
                 <div class="card">
-                    <div class="icon-box">📊</div>
-                    <h2>Leitor de Excel</h2>
-                    <span>Ler, editar e gerenciar planilhas .xlsx / .xls de forma otimizada.</span>
+                    <h2>📊 Leitor de Excel</h2>
+                    <span>Ler e editar planilhas .xlsx / .xls de forma rápida.</span>
                 </div>
             </a>
 
             <a href="FERRAMENTAS/LogReader.html">
                 <div class="card">
-                    <div class="icon-box">📝</div>
-                    <h2>Leitor de Logs</h2>
-                    <span>Analise logs detalhados de jogadores com filtros avançados.</span>
+                    <h2>📝 Leitor de Logs</h2>
+                    <span>Analise logs de jogadores utilizando filtros avançados.</span>
                 </div>
             </a>
-
             <a href="FERRAMENTAS/Embed.html">
                 <div class="card">
-                    <div class="icon-box">🎨</div> <h2>Editor de Embed</h2>
+                    <h2>📝 Editor de Embed</h2>
                     <span>Construa layouts profissionais com visualização em tempo real.</span>
                 </div>
             </a>
