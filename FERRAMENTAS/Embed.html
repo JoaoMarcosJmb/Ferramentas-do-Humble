@@ -119,9 +119,9 @@
             transition: 0.2s;
         }
         .action-btn:hover { background: #334155; }
-        .action-btn.primary { background: #2d7d46; border-color: #2d7d46; color: #fff; } /* Verde */
+        .action-btn.primary { background: #2d7d46; border-color: #2d7d46; color: #fff; }
         .action-btn.primary:hover { background: #1e5c32; }
-        .action-btn.share { background: #00b0f4; border-color: #00b0f4; color: #fff; } /* Azul */
+        .action-btn.share { background: #00b0f4; border-color: #00b0f4; color: #fff; }
         .action-btn.share:hover { background: #0088bd; }
         .action-btn.danger:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; }
 
@@ -130,7 +130,7 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
             z-index: 2000;
-            display: none; /* Escondido por padrão */
+            display: none;
             justify-content: center; align-items: center;
             backdrop-filter: blur(5px);
         }
@@ -210,13 +210,24 @@
             pointer-events: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* Form Elements */
+        /* Form Elements - CORRIGIDO O ESPAÇAMENTO AQUI */
         details { background: #1e293b; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #334155; }
         summary { padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         summary::after { content: "+"; font-size: 16px; }
         details[open] summary::after { content: "-"; }
+        
         .control-group { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; margin-bottom: -5px;}
+        
+        /* CORRIGIDO: Removida a margem negativa que estava causando sobreposição */
+        label { 
+            font-size: 11px; 
+            color: #94a3b8; 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            margin-bottom: 2px; /* Margem positiva para separar */
+            display: block; 
+        }
+
         input, textarea, select { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 4px; width: 100%; font-family: inherit; font-size: 13px; }
         textarea { resize: vertical; min-height: 80px; }
 
@@ -424,13 +435,11 @@
         
         // --- INICIALIZAÇÃO E URL PARAMS ---
         window.addEventListener('load', () => {
-            // Verifica se tem dados na URL para carregar
             const params = new URLSearchParams(window.location.search);
             const state = params.get('data');
             
             if(state) {
                 try {
-                    // Decodifica Base64 + URI Component
                     const jsonString = decodeURIComponent(atob(state));
                     applyJSONToInputs(jsonString);
                     console.log("Embed carregado via Link!");
@@ -447,11 +456,7 @@
         function copyShareLink() {
             const data = getDataFromInputs();
             const jsonString = JSON.stringify({ embeds: [data] });
-            
-            // Comprime para URL: JSON -> EncodeURI -> Base64
             const compressed = btoa(encodeURIComponent(jsonString));
-            
-            // Monta a URL atual + parametro
             const url = window.location.origin + window.location.pathname + '?data=' + compressed;
             
             navigator.clipboard.writeText(url).then(() => {
@@ -490,7 +495,6 @@
             }
 
             list.innerHTML = '';
-            // Ordem: Mais recente primeiro
             savedItems.reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'saved-item';
@@ -517,7 +521,6 @@
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             const item = savedItems.find(x => x.id === id);
             if(item) {
-                // Envelopa em embeds[] para ser compatível com applyJSON
                 const jsonWrapper = JSON.stringify({ embeds: [item.data] });
                 applyJSONToInputs(jsonWrapper);
                 closeSavedModal();
@@ -529,7 +532,7 @@
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             savedItems = savedItems.filter(x => x.id !== id);
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-            openSavedModal(); // Recarrega a lista
+            openSavedModal();
         }
 
         function shareSavedItem(id) {
@@ -544,7 +547,6 @@
                 });
             }
         }
-
 
         // --- FUNÇÕES VISUAIS ---
         function updateColorPreview(color) {
@@ -588,7 +590,7 @@
                 </div>
                 <label>Título do Campo</label>
                 <input type="text" class="field-name-input" value="${name}" oninput="updatePreview()">
-                <label style="margin-top: 8px; display:block;">Conteúdo</label>
+                <label style="margin-top: 10px; display:block; margin-bottom: 2px;">Conteúdo</label>
                 <textarea class="field-value-input" oninput="updatePreview()">${value}</textarea>
                 <label class="inline-checkbox">
                     <input type="checkbox" class="field-inline-input" ${inline ? 'checked' : ''} onchange="updatePreview()">
@@ -612,7 +614,6 @@
             updateColorPreview('#00b0f4');
             fieldsContainer.innerHTML = '';
             jsonTextarea.value = '';
-            // Remove parametro da URL sem recarregar para ficar limpo
             window.history.pushState({}, document.title, window.location.pathname);
             updatePreview();
         }
@@ -644,7 +645,6 @@
                 thumbnail: { url: document.getElementById('input-thumb').value }
             };
             
-            // Clean empty
             if(!data.title) delete data.title;
             if(!data.description) delete data.description;
             if(data.fields.length === 0) delete data.fields;
