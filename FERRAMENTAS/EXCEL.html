@@ -7,9 +7,10 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
+        /* --- GERAL --- */
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: #e5e7eb;
             background:
                 linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
@@ -17,49 +18,84 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* NAVBAR */
+        /* --- NAVBAR (Igual ao Index) --- */
         .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 12px 24px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(6px);
-            border-bottom: 1px solid #1f2933;
+            font-weight: bold;
+            font-size: 20px;
         }
 
-        .navbar img {
+        .nav-brand img {
             height: 40px;
+            width: auto;
+            border-radius: 50%;
         }
 
-        .navbar h1 {
-            font-size: 18px;
-            margin: 0;
-            font-weight: normal;
+        .nav-links {
+            display: flex;
+            gap: 20px;
         }
 
-        .navbar a {
-            color: #e5e7eb;
+        .nav-links a {
+            color: #94a3b8;
+            font-weight: 500;
+            transition: 0.2s;
+            padding: 5px 10px;
+            border-radius: 6px;
             text-decoration: none;
-            margin-left: auto;
-            font-size: 14px;
+            font-size: 16px;
         }
 
-        /* CONTEÚDO */
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- CONTEÚDO --- */
         .container {
             max-width: 1200px;
             margin: 40px auto;
             background: rgba(22,26,35,0.95);
             border: 1px solid #1f2933;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 90%; /* Responsividade básica */
+        }
+        
+        /* Título da ferramenta dentro do container */
+        .page-title {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            color: #fff;
         }
 
         /* BOTÕES E INPUTS */
         input[type="file"] {
-            margin-bottom: 15px;
+            margin-bottom: 0;
             color: #ccc;
         }
 
@@ -91,9 +127,12 @@
         .actions-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 20px;
             align-items: center;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 15px;
+            border-radius: 8px;
         }
 
         /* TABELA */
@@ -102,6 +141,8 @@
             margin-top: 10px;
             max-height: 500px;
             overflow-y: auto;
+            border: 1px solid #334155;
+            border-radius: 8px;
         }
 
         table {
@@ -112,25 +153,26 @@
 
         th, td {
             border: 1px solid #334155;
-            padding: 8px;
-            text-align: center; /* Centraliza tudo por padrão */
+            padding: 10px;
+            text-align: center;
         }
 
-        /* Coluna 1: NICK (Alinhado à esquerda) */
+        /* Coluna 1: NICK */
         td:nth-child(1), th:nth-child(1) {
             text-align: left;
             min-width: 150px;
             font-weight: bold;
             color: #e5e7eb;
+            background: #131c2e; /* Destaque leve */
         }
 
-        /* Coluna 2: ESPAÇO VAZIO (Estreita) */
+        /* Coluna 2: ESPAÇO VAZIO */
         td:nth-child(2), th:nth-child(2) {
             width: 50px;
-            background-color: #0d1321; /* Um pouco mais escuro para diferenciar */
+            background-color: #0d1321;
         }
 
-        /* Coluna 7: TOTAL (Dourado e Negrito) */
+        /* Coluna 7: TOTAL */
         td:nth-child(7), th:nth-child(7) {
             font-weight: bold;
             color: #fbbf24;
@@ -143,6 +185,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            font-weight: 600;
         }
 
         td {
@@ -151,7 +194,8 @@
 
         td[contenteditable="true"]:focus {
             background: #1e293b;
-            outline: 1px solid #8B1D1D;
+            outline: 2px solid #8B1D1D;
+            outline-offset: -2px;
         }
 
         /* AREA DO DISCORD */
@@ -172,41 +216,49 @@
             background: #0f172a;
             border: 1px solid #334155;
             color: white;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px;
+            border-radius: 6px;
             flex: 1;
         }
 
         textarea {
             width: 100%;
-            height: 200px;
+            height: 150px;
             background: #0f172a;
             border: 1px solid #334155;
             color: #e5e7eb;
-            padding: 10px;
+            padding: 15px;
             border-radius: 6px;
-            margin-top: 10px;
-            font-family: monospace;
+            margin-top: 15px;
+            font-family: 'Consolas', monospace;
             resize: vertical;
+            box-sizing: border-box;
         }
 
         h3 {
             margin-top: 0;
             color: #8B1D1D;
-            font-size: 16px;
+            font-size: 18px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="navbar">
-        <img src="../IMAGENS/Mascote.png" alt="Mascote">
-        <h1>Leitor / Editor de Excel</h1>
-        <a href="../index.html">⬅ Voltar</a>
-    </div>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
+            <span>Central de Ferramentas</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">⬅ Voltar ao Início</a>
+        </div>
+    </nav>
 
     <div class="container">
         
+        <h1 class="page-title">📊 Leitor / Editor de Excel</h1>
+
         <div class="actions-bar">
             <input type="file" id="input-excel" accept=".xlsx,.xls">
             <button class="btn btn-secondary" onclick="criarTabelaPadrao()">📝 Criar Tabela Padrão</button>
@@ -214,7 +266,10 @@
         </div>
 
         <div class="table-container" id="output">
-            <p style="color: #666; font-style: italic;">Carregue um arquivo ou crie uma nova tabela para começar.</p>
+            <div style="padding: 40px; text-align: center; color: #64748b;">
+                <p>Nenhuma planilha carregada.</p>
+                <p style="font-size: 14px;">Carregue um arquivo .xlsx acima ou clique em "Criar Tabela Padrão".</p>
+            </div>
         </div>
 
         <div class="discord-section">
@@ -276,7 +331,9 @@
                         <tr><td contenteditable="true">Player5</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
                     </tbody>
                 </table>
-                <button class="btn btn-secondary" onclick="adicionarLinha()" style="margin-top:10px; font-size:12px;">+ Adicionar Linha</button>
+                <div style="padding: 10px;">
+                    <button class="btn btn-secondary" onclick="adicionarLinha()" style="font-size:13px;">+ Adicionar Linha</button>
+                </div>
             `;
             document.getElementById('output').innerHTML = html;
             sheetName = "Pontuacao";
@@ -333,7 +390,7 @@
             XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
         }
 
-        // --- 5. GERAR DISCORD (AJUSTADO PARA O PADRÃO) ---
+        // --- 5. GERAR DISCORD ---
         function gerarDiscord() {
             const table = document.querySelector("table");
             if (!table) return alert("Crie ou carregue uma tabela primeiro!");
@@ -356,17 +413,12 @@
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 
-                // Validação Rígida: Precisa ter as 7 colunas do padrão
                 if (cells.length >= 7) {
                     const nick = cells[0].innerText.trim();
-                    
-                    // SEGURANÇA: Recalcula a soma para garantir que o Ranking esteja certo
-                    // mesmo que a célula 'TOTAL' esteja desatualizada no visual.
                     const p1 = parseInt(cells[2].innerText) || 0;
                     const p2 = parseInt(cells[3].innerText) || 0;
                     const p3 = parseInt(cells[4].innerText) || 0;
                     const p4 = parseInt(cells[5].innerText) || 0;
-                    
                     const totalReal = p1 + p2 + p3 + p4;
 
                     if (nick) { 
