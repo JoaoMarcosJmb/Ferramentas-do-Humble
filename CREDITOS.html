@@ -67,10 +67,10 @@
 
         /* CONTAINER CENTRALIZADO */
         .container {
-            max-width: 800px; /* Mais estreito para texto */
+            max-width: 800px;
             margin: 60px auto;
             padding: 40px;
-            background: rgba(15, 23, 42, 0.8); /* Fundo escuro atrás do texto */
+            background: rgba(15, 23, 42, 0.8);
             border: 1px solid #1e293b;
             border-radius: 16px;
             backdrop-filter: blur(6px);
@@ -89,10 +89,24 @@
             margin-bottom: 10px;
         }
 
+        /* FLEXBOX PARA ALINHAR ICONE E NOME */
         .name {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px; /* Espaço entre imagem e texto */
             font-size: 1.2rem;
             color: #e5e7eb;
             margin-bottom: 5px;
+        }
+
+        /* ESTILO DO ÍCONE DO DEV */
+        .dev-icon {
+            height: 32px; /* Ajustei para ficar um pouco maior e visível */
+            width: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #8B1D1D; /* Borda opcional para destacar */
         }
 
         .desc {
@@ -127,11 +141,17 @@
         <h1>Créditos & Desenvolvimento</h1>
 
         <div class="role">Desenvolvimento Web</div>
-        <div class="name">[Seu Nome/Nick]</div>
+        <div class="name">
+            <img src="IMAGENS/230582303.png" alt="Icone JoaoMarcosJmb" class="dev-icon">
+            JoaoMarcosJmb
+        </div>
         <div class="desc">Programação front-end e lógica das ferramentas.</div>
 
         <div class="role">Design & Interface</div>
-        <div class="name">[Seu Nome/Nick]</div>
+        <div class="name">
+            <img src="IMAGENS/230582303.png" alt="Icone JoaoMarcosJmb" class="dev-icon">
+            JoaoMarcosJmb
+        </div>
         <div class="desc">Criação visual e experiência do usuário (UX).</div>
 
         <div class="role">Agradecimentos Especiais</div>
