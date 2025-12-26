@@ -73,7 +73,7 @@
             margin: 0 auto;
             flex: 1;
             width: 100%;
-            height: calc(100vh - 50px); /* Ocupa a tela toda menos a navbar */
+            height: calc(100vh - 50px);
         }
 
         /* --- COLUNA ESQUERDA: EDITOR --- */
@@ -88,7 +88,7 @@
 
         .editor-panel h2 { margin-top: 0; color: #fff; font-size: 1.2rem; margin-bottom: 20px;}
 
-        /* Estilo dos Menus "Sanfona" (Details/Summary) */
+        /* Estilo dos Menus "Sanfona" */
         details {
             background: #1e293b;
             margin-bottom: 10px;
@@ -102,7 +102,7 @@
             cursor: pointer;
             font-weight: bold;
             background: #252f42;
-            list-style: none; /* Remove seta padrão */
+            list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -147,9 +147,9 @@
             width: 40px; height: 40px; padding: 0; border: none; cursor: pointer;
         }
 
-        /* --- COLUNA DIREITA: PREVIEW (DISCORD STYLE) --- */
+        /* --- COLUNA DIREITA: PREVIEW --- */
         .preview-panel {
-            background: #36393f; /* Cor padrão do Discord */
+            background: #36393f;
             border-radius: 8px;
             padding: 20px;
             display: flex;
@@ -159,7 +159,6 @@
             height: 100%;
         }
 
-        /* O CONTAINER DA MENSAGEM */
         .discord-msg {
             display: flex;
             gap: 12px;
@@ -169,7 +168,7 @@
         .bot-avatar {
             width: 40px; height: 40px;
             border-radius: 50%;
-            background-image: url('../IMAGENS/Mascote.png'); /* Padrão */
+            background-image: url('../IMAGENS/Mascote.png');
             background-size: cover;
             flex-shrink: 0;
         }
@@ -195,11 +194,11 @@
 
         .timestamp { font-size: 12px; color: #72767d; margin-left: 5px; font-weight: 400;}
 
-        /* O EMBED EM SI */
+        /* O EMBED */
         .discord-embed {
             margin-top: 8px;
             background: #2f3136;
-            border-left: 4px solid #00b0f4; /* Cor dinâmica */
+            border-left: 4px solid #00b0f4;
             border-radius: 4px;
             padding: 10px;
             max-width: 500px;
@@ -234,7 +233,7 @@
         }
         .embed-footer img { width: 20px; height: 20px; border-radius: 50%; }
 
-        /* Botão de Ação */
+        /* Botões */
         .btn-action {
             background: #5865F2;
             color: white;
@@ -243,13 +242,17 @@
             border-radius: 5px;
             cursor: pointer;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 10px;
             font-weight: bold;
             transition: 0.2s;
         }
         .btn-action:hover { background: #4752c4; }
 
-        /* Mobile */
+        .btn-import {
+            background: #2d7d46;
+        }
+        .btn-import:hover { background: #1e5c32; }
+
         @media (max-width: 800px) {
             .main-grid { grid-template-columns: 1fr; height: auto; }
             .preview-panel { min-height: 400px; }
@@ -272,6 +275,16 @@
         
         <div class="editor-panel">
             <h2>Configuração</h2>
+
+            <details>
+                <summary>📥 Importar JSON</summary>
+                <div class="control-group">
+                    <label>Cole o código JSON aqui:</label>
+                    <textarea id="input-json-import" placeholder='{"title": "Exemplo", "description": "..."}' style="height: 100px; font-family: monospace; font-size: 12px;"></textarea>
+                    <button class="btn-action btn-import" onclick="importJSON()">Carregar JSON</button>
+                </div>
+            </details>
+            <br>
 
             <div class="color-picker-wrapper">
                 <input type="color" id="input-color" value="#00b0f4">
@@ -360,7 +373,6 @@
     </div>
 
     <script>
-        // Mapeamento de Inputs para Elementos do Preview
         const inputs = {
             color: document.getElementById('input-color'),
             title: document.getElementById('input-title'),
@@ -387,84 +399,111 @@
             footerIcon: document.getElementById('preview-footer-icon')
         };
 
-        // Função principal de atualização
         function updatePreview() {
-            // 1. Cor da Borda
             preview.embed.style.borderLeftColor = inputs.color.value;
 
-            // 2. Título
-            if (inputs.title.value) {
-                preview.title.innerText = inputs.title.value;
-                preview.title.style.display = 'block';
-            } else {
-                preview.title.style.display = 'none';
-            }
+            // Título e Descrição
+            toggleDisplay(preview.title, inputs.title.value);
+            toggleDisplay(preview.desc, inputs.desc.value);
 
-            // 3. Descrição
-            if (inputs.desc.value) {
-                preview.desc.innerText = inputs.desc.value;
-                preview.desc.style.display = 'block';
-            } else {
-                preview.desc.style.display = 'none';
-            }
-
-            // 4. Autor
+            // Autor
             if (inputs.authorName.value) {
                 preview.author.style.display = 'flex';
                 preview.authorName.innerText = inputs.authorName.value;
-                
-                if (inputs.authorIcon.value) {
-                    preview.authorIcon.src = inputs.authorIcon.value;
-                    preview.authorIcon.style.display = 'block';
-                } else {
-                    preview.authorIcon.style.display = 'none';
-                }
+                toggleImage(preview.authorIcon, inputs.authorIcon.value);
             } else {
                 preview.author.style.display = 'none';
             }
 
-            // 5. Imagem Grande
-            if (inputs.image.value) {
-                preview.image.src = inputs.image.value;
-                preview.image.style.display = 'block';
-            } else {
-                preview.image.style.display = 'none';
-            }
+            // Imagens
+            toggleImage(preview.image, inputs.image.value);
+            toggleImage(preview.thumb, inputs.thumb.value);
 
-            // 6. Thumbnail (Miniatura)
-            if (inputs.thumb.value) {
-                preview.thumb.src = inputs.thumb.value;
-                preview.thumb.style.display = 'block';
-            } else {
-                preview.thumb.style.display = 'none';
-            }
-
-            // 7. Rodapé
+            // Rodapé
             if (inputs.footerText.value) {
                 preview.footer.style.display = 'flex';
                 preview.footerText.innerText = inputs.footerText.value;
-
-                if (inputs.footerIcon.value) {
-                    preview.footerIcon.src = inputs.footerIcon.value;
-                    preview.footerIcon.style.display = 'block';
-                } else {
-                    preview.footerIcon.style.display = 'none';
-                }
+                toggleImage(preview.footerIcon, inputs.footerIcon.value);
             } else {
                 preview.footer.style.display = 'none';
             }
         }
 
-        // Adiciona listeners para todos os inputs
+        // Helpers Visuais
+        function toggleDisplay(element, value) {
+            element.innerText = value || "";
+            element.style.display = value ? 'block' : 'none';
+        }
+
+        function toggleImage(imgElement, url) {
+            if (url) {
+                imgElement.src = url;
+                imgElement.style.display = 'block';
+            } else {
+                imgElement.style.display = 'none';
+            }
+        }
+
+        // Listeners
         Object.values(inputs).forEach(input => {
             input.addEventListener('input', updatePreview);
         });
 
-        // Copiar JSON
+        // --- FUNÇÃO DE IMPORTAR JSON ---
+        function importJSON() {
+            try {
+                const raw = document.getElementById('input-json-import').value;
+                if (!raw.trim()) return alert("Cole um JSON primeiro!");
+                
+                const data = JSON.parse(raw);
+
+                // Preencher campos (verifica se existem no JSON)
+                inputs.title.value = data.title || "";
+                inputs.desc.value = data.description || "";
+                
+                // Conversão de Cor (Decimal para Hex)
+                if (data.color) {
+                    // Discord usa Inteiro (ex: 16711680), HTML usa Hex (#FF0000)
+                    const hexColor = '#' + data.color.toString(16).padStart(6, '0');
+                    inputs.color.value = hexColor;
+                }
+
+                if (data.author) {
+                    inputs.authorName.value = data.author.name || "";
+                    inputs.authorIcon.value = data.author.icon_url || "";
+                } else {
+                    inputs.authorName.value = "";
+                    inputs.authorIcon.value = "";
+                }
+
+                if (data.footer) {
+                    inputs.footerText.value = data.footer.text || "";
+                    inputs.footerIcon.value = data.footer.icon_url || "";
+                } else {
+                    inputs.footerText.value = "";
+                    inputs.footerIcon.value = "";
+                }
+
+                if (data.image) inputs.image.value = data.image.url || "";
+                else inputs.image.value = "";
+
+                if (data.thumbnail) inputs.thumb.value = data.thumbnail.url || "";
+                else inputs.thumb.value = "";
+
+                updatePreview();
+                alert("JSON carregado com sucesso!");
+
+            } catch (e) {
+                alert("Erro ao ler JSON. Verifique se a formatação está correta.\n\n" + e.message);
+            }
+        }
+
+        // --- FUNÇÃO DE COPIAR JSON ---
         function copyJSON() {
             const jsonObject = {
                 title: inputs.title.value,
                 description: inputs.desc.value,
+                // Converte Hex para Decimal (Padrão Discord)
                 color: parseInt(inputs.color.value.replace('#', ''), 16),
                 footer: {
                     text: inputs.footerText.value,
@@ -482,7 +521,7 @@
                 }
             };
 
-            // Remove campos vazios para limpar o JSON
+            // Limpeza de campos vazios
             if(!jsonObject.title) delete jsonObject.title;
             if(!jsonObject.description) delete jsonObject.description;
             if(!jsonObject.footer.text) delete jsonObject.footer;
@@ -496,9 +535,7 @@
             });
         }
 
-        // Inicializa
         updatePreview();
-
     </script>
 </body>
 </html>
