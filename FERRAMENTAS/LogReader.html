@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelLog v16 - Final Cut</title>
+    <title>PixelLog v16.2 - Chat Fix</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -240,8 +240,9 @@
 
 <script>
     /**
-     * PIXELLOG v16.1 - FINAL CUT (Chat Fix)
-     * - Fix: [CHAT] agora é exibido na mensagem.
+     * PIXELLOG v16.2 - FINAL CUT
+     * - Fix Crítico: Detecção de Chat quando o módulo é [CHAT].
+     * - Fix: Força a exibição de "[CHAT]" no texto da mensagem.
      */
 
     const TAG_DEFINITIONS = [
@@ -284,7 +285,7 @@
                 const el = document.createElement('div');
                 
                 let badges = '';
-                // Mod Badge com Ação de Selecionar no Dropdown
+                // Mod Badge
                 if(l.mod && !l.isChat && l.mod !== 'TIME') {
                     let cls = 'bdg-mod';
                     if(l.mod === 'LuckPerms') cls = 'bdg-lp';
@@ -373,7 +374,6 @@
             UI.showLoader(true, "Lendo arquivos...");
             let content = "";
             for (const file of State.lastFiles) {
-                // FORCE WINDOWS-1252
                 content += await App.readFile(file) + "\n";
             }
             App.processLogs(content);
@@ -383,7 +383,6 @@
             return new Promise(resolve => {
                 const reader = new FileReader();
                 reader.onload = e => resolve(e.target.result);
-                // CODIFICAÇÃO FORÇADA
                 reader.readAsText(file, "windows-1252");
             });
         },
@@ -407,8 +406,6 @@
 
                     for(let i=0; i < total; i++) {
                         const line = lines[i];
-                        
-                        // IGNORA LINHAS VAZIAS
                         if(!line.trim()) continue;
 
                         let entry = null;
@@ -419,16 +416,25 @@
                             if(m[2].includes('WARN')) lvl = 'WARN';
                             else if(m[2].includes('ERROR') || m[2].includes('FATAL')) lvl = 'ERROR';
 
-                            const msg = m[4];
+                            // Captura o módulo e limpa barras
+                            const mod = m[3].replace(/\\/$/, '');
+                            let msg = m[4];
 
-                            // CHECAGEM DUPLA DE VAZIO NA MENSAGEM
                             if (!msg || !msg.trim() || msg.trim() === '\\n') continue;
 
                             let isChat = false;
                             let chatType = '';
 
-                            if(msg.includes('[CHAT]') || m[3].includes('NewChatGui')) {
+                            // CORREÇÃO CRÍTICA:
+                            // Verifica se o módulo é 'CHAT' ou 'chat' (comum em servidores), ou se está na mensagem.
+                            if(msg.includes('[CHAT]') || mod === 'CHAT' || mod === 'chat' || mod.includes('NewChatGui')) {
                                 lvl = 'CHAT'; isChat = true;
+                                
+                                // Se o sistema detectou como chat pelo módulo, mas o texto não tem '[CHAT]', adicionamos manualmente.
+                                if ((mod === 'CHAT' || mod === 'chat') && !msg.includes('[CHAT]')) {
+                                    msg = '[CHAT] ' + msg;
+                                }
+
                                 if(msg.includes('[!]')) chatType = 'ALERT';
                                 else if(msg.includes('?')) chatType = 'GLOBAL';
                                 else if(msg.includes('[+]')) chatType = 'JOIN';
@@ -437,7 +443,7 @@
 
                             entry = {
                                 id: i, time: m[1], timeShort: m[1].split(' ')[1] ? m[1].split(' ')[1].split('.')[0] : m[1],
-                                lvl: lvl, mod: m[3].replace(/\\/$/, ''), msg: msg,
+                                lvl: lvl, mod: mod, msg: msg, // Sem replace
                                 isChat: isChat, chatType: chatType, tags: []
                             };
                             lastTime = entry.timeShort;
@@ -460,9 +466,7 @@
                             };
 
                         } else {
-                            // Filtra linhas vazias soltas
                             if (!line || !line.trim()) continue;
-
                             entry = { id: i, time: '', timeShort: '', lvl: 'ERROR', mod: 'SYS', msg: line, isChat: false, tags: [] };
                             if(/exception|at /i.test(line)) entry.tags.push('t-ERROR');
                         }
@@ -511,7 +515,7 @@
             const tx = App.db.transaction(["logs"], "readonly");
             tx.objectStore("logs").getAll().onsuccess = e => {
                 State.logs = e.target.result;
-                App.populateMods(); // POPULA O DROPDOWN
+                App.populateMods();
                 App.initFuse();
             };
         },
@@ -522,7 +526,6 @@
                 if(l.mod && l.mod !== 'SYS' && l.mod !== 'TIME' && !l.isChat) mods.add(l.mod);
             });
             const sel = document.getElementById('selMod');
-            // Mantém a opção ALL e remove o resto
             sel.innerHTML = '<option value="ALL">Todos os Módulos</option>';
             [...mods].sort().forEach(m => {
                 const opt = document.createElement('option');
@@ -545,23 +548,23 @@
 
         runSearch() {
             const query = document.getElementById('searchInput').value;
-            const modFilter = document.getElementById('selMod').value; // PEGA O VALOR DO DROPDOWN
+            const modFilter = document.getElementById('selMod').value;
             const useFuzzy = document.getElementById('fuzzyToggle').checked;
             const f = State.filters;
             let res = State.logs;
 
-            // 1. Filtro de Texto (Fuzzy ou Normal)
+            // 1. Filtro Texto
             if(query) {
                 if(useFuzzy && State.fuse) res = State.fuse.search(query).map(r => r.item);
                 else res = res.filter(l => l.msg.toLowerCase().includes(query.toLowerCase()));
             }
 
-            // 2. Filtro de MOD (Estrito)
+            // 2. Filtro Mod
             if (modFilter !== 'ALL') {
                 res = res.filter(l => l.mod === modFilter);
             }
 
-            // 3. Filtros de Categoria
+            // 3. Filtros Categoria
             if(f.chat || f.error || f.cheat || f.lag) {
                 res = res.filter(l => {
                     if(f.chat && l.isChat) return true;
@@ -578,16 +581,10 @@
             UI.renderChunk(0);
         },
 
-        // Função chamada ao clicar na Badge, atualiza o Dropdown
         selectModFilter(m) {
             const sel = document.getElementById('selMod');
             sel.value = m;
             App.runSearch();
-        },
-
-        filterMod(m) {
-            // Mantido por compatibilidade, mas redireciona para o select
-            App.selectModFilter(m);
         },
 
         reset() {
