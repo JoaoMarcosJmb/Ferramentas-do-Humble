@@ -189,7 +189,7 @@
 
         .json-editor-textarea {
             width: 100%; height: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 6px;
-            color: #a5b3ce; padding: 15px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; resize: none; outline: none;
+            color: #a5b3ce; padding: 15px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; resize: none; outline: none; box-sizing: border-box;
         }
         .json-editor-textarea:focus { border-color: #4752c4; }
 
@@ -210,36 +210,112 @@
             pointer-events: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* Form Elements - CORRIGIDO O ESPAÇAMENTO AQUI */
+        /* --- FORM ELEMENTS (CORRIGIDO) --- */
         details { background: #1e293b; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #334155; }
         summary { padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         summary::after { content: "+"; font-size: 16px; }
         details[open] summary::after { content: "-"; }
         
-        .control-group { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+        }
         
-        /* CORRIGIDO: Removida a margem negativa que estava causando sobreposição */
+        /* Labels e Inputs Corrigidos */
         label { 
             font-size: 11px; 
             color: #94a3b8; 
             text-transform: uppercase; 
             font-weight: bold; 
-            margin-bottom: 2px; /* Margem positiva para separar */
+            margin-bottom: 5px; 
+            margin-top: 10px; 
             display: block; 
         }
+        .control-group > label:first-child { margin-top: 0; }
 
-        input, textarea, select { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 4px; width: 100%; font-family: inherit; font-size: 13px; }
+        input:not([type="checkbox"]), textarea, select { 
+            box-sizing: border-box; /* CRUCIAL: Corrige o tamanho estourado */
+            background: #0b1120;    /* Mais escuro que o container */
+            border: 1px solid #334155; 
+            color: #e2e8f0; 
+            padding: 10px 12px;     
+            border-radius: 4px; 
+            width: 100%; 
+            font-family: inherit; 
+            font-size: 13px; 
+            line-height: 1.5;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            display: block;
+        }
+
+        input:not([type="checkbox"]):focus, textarea:focus, select:focus {
+            border-color: #00b0f4;
+            background: #111827;
+            box-shadow: 0 0 0 1px rgba(0, 176, 244, 0.2);
+        }
+
         textarea { resize: vertical; min-height: 80px; }
 
-        /* Fields */
-        .field-item { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .field-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        /* Fields Items Corrigidos */
+        .field-item { 
+            background: #1e293b; 
+            border: 1px solid #334155; 
+            padding: 15px;       
+            border-radius: 6px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+        
+        .field-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+        
         .field-title { font-weight: bold; font-size: 12px; color: #fbbf24; }
-        .btn-remove-field { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
-        .btn-add-field { background: #2d3b52; color: #fff; border: 1px dashed #94a3b8; width: 100%; padding: 8px; cursor: pointer; border-radius: 5px; font-size: 12px;}
-        .btn-add-field:hover { background: #374151; border-color: #fff; }
-        .inline-checkbox { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; }
-        .inline-checkbox input { width: auto; }
+        
+        .btn-remove-field { 
+            background: #ef4444; 
+            color: white; 
+            border: none; 
+            padding: 4px 10px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 11px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-remove-field:hover { background: #dc2626; }
+
+        .btn-add-field { 
+            background: #2d3b52; 
+            color: #fff; 
+            border: 1px dashed #64748b; 
+            width: 100%; 
+            padding: 12px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            font-size: 13px;
+            transition: 0.2s;
+        }
+        .btn-add-field:hover { background: #374151; border-color: #94a3b8; }
+
+        .inline-checkbox { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin-top: 10px; 
+            font-size: 12px; 
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+        .inline-checkbox input { width: auto; margin: 0; cursor: pointer; }
 
         /* --- PREVIEW --- */
         .preview-panel {
