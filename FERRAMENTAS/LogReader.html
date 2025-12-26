@@ -240,10 +240,8 @@
 
 <script>
     /**
-     * PIXELLOG v16 - FINAL CUT
-     * - Fix: Codificação forçada para windows-1252.
-     * - Fix: Ignora logs vazios ou com apenas newlines.
-     * - Fix: Filtro de MOD estrito via Dropdown.
+     * PIXELLOG v16.1 - FINAL CUT (Chat Fix)
+     * - Fix: [CHAT] agora é exibido na mensagem.
      */
 
     const TAG_DEFINITIONS = [
@@ -439,7 +437,7 @@
 
                             entry = {
                                 id: i, time: m[1], timeShort: m[1].split(' ')[1] ? m[1].split(' ')[1].split('.')[0] : m[1],
-                                lvl: lvl, mod: m[3].replace(/\\/$/, ''), msg: msg.replace('[CHAT] ', ''),
+                                lvl: lvl, mod: m[3].replace(/\\/$/, ''), msg: msg,
                                 isChat: isChat, chatType: chatType, tags: []
                             };
                             lastTime = entry.timeShort;
