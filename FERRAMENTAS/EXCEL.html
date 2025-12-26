@@ -13,7 +13,7 @@
             color: #e5e7eb;
             background:
                 linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
-                url("../IMAGENS/Fundo.png"); /* Mantendo sua referência de imagem */
+                url("../IMAGENS/Fundo.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -57,7 +57,7 @@
             padding: 20px;
         }
 
-        /* BOTÕES E INPUTS GERAIS */
+        /* BOTÕES E INPUTS */
         input[type="file"] {
             margin-bottom: 15px;
             color: #ccc;
@@ -100,6 +100,8 @@
         .table-container {
             overflow-x: auto;
             margin-top: 10px;
+            max-height: 500px; /* Rolagem se a tabela for muito grande */
+            overflow-y: auto;
         }
 
         table {
@@ -117,6 +119,8 @@
         th {
             background: #1e293b;
             color: #94a3b8;
+            position: sticky;
+            top: 0;
         }
 
         td {
@@ -153,7 +157,7 @@
 
         textarea {
             width: 100%;
-            height: 150px;
+            height: 200px;
             background: #0f172a;
             border: 1px solid #334155;
             color: #e5e7eb;
@@ -174,7 +178,8 @@
 <body>
 
     <div class="navbar">
-        <img src="../IMAGENS/Mascote.png" alt="Mascote"> <h1>Leitor / Editor de Excel</h1>
+        <img src="../IMAGENS/Mascote.png" alt="Mascote">
+        <h1>Leitor / Editor de Excel</h1>
         <a href="../index.html">⬅ Voltar</a>
     </div>
 
@@ -191,13 +196,13 @@
         </div>
 
         <div class="discord-section">
-            <h3>Gerador de Embed Discord</h3>
+            <h3>Gerador de Embed Discord (Com Ordenação Automática)</h3>
             <div class="discord-inputs">
                 <input type="text" id="dc-title" value="Pontos Humble League" placeholder="Título do Evento">
                 <input type="text" id="dc-emoji" value="<:Rayquaza:1427676581727309865>" placeholder="Emoji Customizado">
                 <input type="text" id="dc-round" value="3/4" placeholder="Rodada (ex: 3/4)">
             </div>
-            <button class="btn" style="background-color: #5865F2;" onclick="gerarDiscord()">📑 Gerar Texto Discord</button>
+            <button class="btn" style="background-color: #5865F2;" onclick="gerarDiscord()">📑 Gerar Texto Discord (Ordenado)</button>
             
             <textarea id="discord-output" placeholder="O código formatado aparecerá aqui..."></textarea>
         </div>
@@ -230,12 +235,11 @@
 
         // --- 2. CRIAR TABELA DO ZERO ---
         function criarTabelaDoZero() {
-            // Cria uma estrutura HTML básica de tabela
             const html = `
                 <table id="data-table">
                     <thead>
                         <tr>
-                            <th>Posição (ex: 1°)</th>
+                            <th>Posição (Automático)</th>
                             <th>Nick</th>
                             <th>Pontos</th>
                         </tr>
@@ -251,14 +255,15 @@
                 <button class="btn btn-secondary" onclick="adicionarLinha()" style="margin-top:10px; font-size:12px;">+ Adicionar Linha</button>
             `;
             document.getElementById('output').innerHTML = html;
-            sheetName = "Ranking"; // Nome padrão
+            sheetName = "Ranking";
         }
 
         function adicionarLinha() {
             const table = document.querySelector("#data-table tbody");
             if(table) {
                 const row = table.insertRow();
-                row.innerHTML = `<td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>`;
+                // Cria linha vazia
+                row.innerHTML = `<td contenteditable="true">-</td><td contenteditable="true"></td><td contenteditable="true">0</td>`;
             }
         }
 
@@ -272,13 +277,11 @@
 
             const newSheet = XLSX.utils.table_to_sheet(table);
             const newWorkbook = XLSX.utils.book_new();
-
             XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
-
             XLSX.writeFile(newWorkbook, "ranking_editado.xlsx");
         }
 
-        // --- 4. GERAR FORMATO DISCORD ---
+        // --- 4. GERAR FORMATO DISCORD (COM ORDENAÇÃO) ---
         function gerarDiscord() {
             const table = document.querySelector("table");
             if (!table) {
@@ -286,47 +289,53 @@
                 return;
             }
 
-            // Pegar valores dos inputs
+            // Pegar Inputs
             const title = document.getElementById('dc-title').value;
             const emoji = document.getElementById('dc-emoji').value;
             const round = document.getElementById('dc-round').value;
 
-            // Cabeçalho Markdown
-            let result = `# ${title} - ${emoji}   (${round})\n\n`;
-
-            // Iterar pelas linhas da tabela (ignorando o cabeçalho)
-            const rows = table.querySelectorAll('tbody tr');
+            // Coletar dados da tabela HTML
+            let dados = [];
             
-            // Se não tiver tbody explícito (vindo do Excel SheetJS às vezes), tenta pegar todas as tr e pular a primeira
-            let rowsArray = Array.from(rows);
-            if (rowsArray.length === 0) {
+            // Lidar com linhas (ignorando cabeçalho)
+            let rows = table.querySelectorAll('tbody tr');
+            if (rows.length === 0) { // Fallback se não tiver tbody
                 const allRows = table.querySelectorAll('tr');
-                rowsArray = Array.from(allRows).slice(1); // Pula cabeçalho
+                rows = Array.from(allRows).slice(1); 
+            } else {
+                rows = Array.from(rows);
             }
 
-            rowsArray.forEach(row => {
+            rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
+                // Estrutura esperada: [0]=Posição(ignorar), [1]=Nick, [2]=Pontos
                 if (cells.length >= 3) {
-                    const pos = cells[0].innerText.trim();
                     const nick = cells[1].innerText.trim();
-                    const pts = cells[2].innerText.trim();
+                    let ptsTexto = cells[2].innerText.trim();
+                    
+                    // Converte texto para número inteiro para ordenar (ex: "22" vira 22)
+                    const pts = parseInt(ptsTexto) || 0; 
 
-                    // Formato: > **1°: Nome -> Pontos**
-                    if(pos && nick) {
-                        result += `> **${pos}: ${nick} -> ${pts}**\n`;
+                    if (nick) { 
+                        dados.push({ nick: nick, pontos: pts });
                     }
                 }
+            });
+
+            // LÓGICA DE ORDENAÇÃO: Maior pontuação primeiro
+            dados.sort((a, b) => b.pontos - a.pontos);
+
+            // Montar o texto Markdown
+            let result = `# ${title} - ${emoji}   (${round})\n\n`;
+
+            dados.forEach((jogador, index) => {
+                const posicaoReal = index + 1; // 1, 2, 3... baseado na ordem dos pontos
+                result += `> **${posicaoReal}°: ${jogador.nick} -> ${jogador.pontos}**\n`;
             });
 
             const outputBox = document.getElementById('discord-output');
             outputBox.value = result;
             outputBox.select();
-            
-            // Feedback visual rápido
-            const btn = document.querySelector("button[onclick='gerarDiscord()']");
-            const originalText = btn.innerText;
-            btn.innerText = "Copiado! (Ctrl+C)";
-            setTimeout(() => btn.innerText = originalText, 2000);
         }
     </script>
 
