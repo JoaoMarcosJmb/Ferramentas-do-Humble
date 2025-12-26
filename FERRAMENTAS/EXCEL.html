@@ -2,54 +2,130 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Leitor de Excel</title>
+    <title>Leitor / Editor de Excel</title>
 
+    <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #020617;
             color: #e5e7eb;
+
+            background:
+                linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
+                url("../IMAGEM/Fundo.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 24px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid #1f2933;
+        }
+
+        .navbar img {
+            height: 40px;
+        }
+
+        .navbar h1 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .navbar a {
+            color: #e5e7eb;
+            text-decoration: none;
+            margin-left: auto;
+            font-size: 14px;
+        }
+
+        /* CONTEÚDO */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: rgba(22,26,35,0.9);
+            border: 1px solid #1f2933;
+            border-radius: 12px;
             padding: 20px;
         }
 
-        a {
-            color: #38bdf8;
-            text-decoration: none;
+        input[type="file"] {
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: #8B1D1D;
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            opacity: 0.9;
         }
 
         table {
-            border-collapse: collapse;
             width: 100%;
-            margin-top: 20px;
-            background: #020617;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
 
         th, td {
             border: 1px solid #334155;
-            padding: 8px;
+            padding: 6px;
+            text-align: left;
         }
 
         th {
             background: #1e293b;
         }
+
+        td {
+            background: #0f172a;
+        }
+
+        td[contenteditable="true"] {
+            outline: none;
+        }
     </style>
 </head>
 <body>
 
-    <a href="../index.html">⬅ Voltar</a>
+    <!-- NAVBAR -->
+    <div class="navbar">
+        <img src="../IMAGEM/Mascote.png" alt="Mascote">
+        <h1>Leitor / Editor de Excel</h1>
+        <a href="../index.html">⬅ Voltar</a>
+    </div>
 
-    <h1>📊 Leitor de Excel</h1>
+    <!-- CONTEÚDO -->
+    <div class="container">
+        <input type="file" id="input-excel" accept=".xlsx,.xls">
+        <br>
+        <button onclick="exportar()">💾 Exportar Excel</button>
 
-    <input type="file" accept=".xlsx,.xls" id="input-excel" />
-    <div id="output"></div>
+        <div id="output"></div>
+    </div>
 
     <script>
-        const input = document.getElementById('input-excel');
-        const output = document.getElementById('output');
+        let workbook;
+        let sheetName;
 
-        input.addEventListener('change', function (e) {
+        document.getElementById('input-excel').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -57,16 +133,32 @@
 
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+                workbook = XLSX.read(data, { type: 'array' });
 
-                const sheetName = workbook.SheetNames[0];
+                sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
 
-                output.innerHTML = XLSX.utils.sheet_to_html(sheet);
+                document.getElementById('output').innerHTML =
+                    XLSX.utils.sheet_to_html(sheet, { editable: true });
             };
 
             reader.readAsArrayBuffer(file);
         });
+
+        function exportar() {
+            const table = document.querySelector("table");
+            if (!table) {
+                alert("Nenhuma planilha carregada");
+                return;
+            }
+
+            const newSheet = XLSX.utils.table_to_sheet(table);
+            const newWorkbook = XLSX.utils.book_new();
+
+            XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
+
+            XLSX.writeFile(newWorkbook, "planilha_editada.xlsx");
+        }
     </script>
 
 </body>
