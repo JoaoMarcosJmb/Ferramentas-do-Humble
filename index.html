@@ -2,92 +2,210 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Central de Ferramentas</title>
 
     <style>
+        /* --- RESET E GERAL --- */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             color: #e5e7eb;
-            padding: 40px;
+            /* Removemos o padding geral para a navbar encostar no topo */
+            padding: 0; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
 
             background:
                 linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
                 url("IMAGENS/Fundo.png");
-
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-        }
-
-        h1 {
-            margin-bottom: 5px;
-        }
-
-        p {
-            margin-bottom: 30px;
-            color: #94a3b8;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid #1e293b;
-            border-radius: 14px;
-            padding: 20px;
-            cursor: pointer;
-            transition: 0.25s;
-            backdrop-filter: blur(6px);
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: #8B1D1D;
-        }
-
-        .card h2 {
-            margin: 0 0 10px;
-            font-size: 18px;
-        }
-
-        .card span {
-            font-size: 14px;
-            color: #94a3b8;
         }
 
         a {
             text-decoration: none;
             color: inherit;
         }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .nav-brand img {
+            height: 40px; /* Ajuste o tamanho do mascote aqui */
+            width: auto;
+            border-radius: 50%; /* Opcional: Deixa o mascote redondo */
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            font-weight: 500;
+            transition: 0.2s;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- CONTEÚDO PRINCIPAL --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            flex: 1; /* Empurra o rodapé para baixo se houver pouco conteúdo */
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            font-size: 2rem;
+        }
+
+        p.subtitle {
+            margin-bottom: 40px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* --- GRID DE CARDS --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px);
+            height: 100%; /* Garante que todos os cards tenham mesma altura */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: #8B1D1D;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .card span {
+            font-size: 15px;
+            color: #94a3b8;
+            line-height: 1.4;
+        }
+
+        /* --- SEÇÃO DE CRÉDITOS (RODAPÉ) --- */
+        .footer-credits {
+            background: rgba(10, 15, 30, 0.95);
+            border-top: 1px solid #1e293b;
+            padding: 40px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .credits-content h3 {
+            color: #8B1D1D;
+            margin-top: 0;
+        }
+
+        .credits-content p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>🛠 Central de Ferramentas</h1>
-    <p>Utilitários online para uso rápido</p>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="IMAGENS/Mascote.png" alt="Logo Mascote">
+            <span>Central de Ferramentas</span>
+        </div>
+        <div class="nav-links">
+            <a href="#">Início</a>
+            <a href="#creditos">Créditos</a>
+        </div>
+    </nav>
 
-    <div class="grid">
-        <!-- EXCEL -->
-        <a href="FERRAMENTAS/EXCEL.html">
-            <div class="card">
-                <h2>📊 Leitor de Excel</h2>
-                <span>Ler e editar planilhas .xlsx / .xls</span>
-            </div>
-        </a>
-    </div>
+    <main class="container">
+        <h1>🛠 Utilitários</h1>
+        <p class="subtitle">Selecione uma ferramenta abaixo para começar</p>
+
         <div class="grid">
-        <a href="FERRAMENTAS/LogReader.html">
-            <div class="card">
-                <h2>📊 Leitor de logs</h2>
-                <span>Ler logs de jogadores com filtros</span>
+            
+            <a href="FERRAMENTAS/EXCEL.html">
+                <div class="card">
+                    <h2>📊 Leitor de Excel</h2>
+                    <span>Ler e editar planilhas .xlsx / .xls de forma rápida.</span>
+                </div>
+            </a>
+
+            <a href="FERRAMENTAS/LogReader.html">
+                <div class="card">
+                    <h2>📝 Leitor de Logs</h2>
+                    <span>Analise logs de jogadores utilizando filtros avançados.</span>
+                </div>
+            </a>
+
             </div>
-        </a>
-    </div>
+    </main>
+
+    <footer id="creditos" class="footer-credits">
+        <div class="credits-content">
+            <h3>Créditos & Desenvolvimento</h3>
+            <p>Desenvolvido por <strong>[Seu Nome/Nick]</strong></p>
+            <p>Design e Interface para administração de servidores.</p>
+            <br>
+            <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
+        </div>
+    </footer>
 
 </body>
 </html>
