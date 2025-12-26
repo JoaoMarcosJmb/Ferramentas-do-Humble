@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos - Central de Ferramentas</title>
+
+    <style>
+        /* --- ESTILOS PADRÃO (Igual ao Index) --- */
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #e5e7eb;
+            padding: 0; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background:
+                linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
+                url("IMAGENS/Fundo.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .nav-brand img {
+            height: 40px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a {
+            color: #94a3b8;
+            font-weight: 500;
+            transition: 0.2s;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        .nav-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+
+        /* CONTAINER CENTRALIZADO */
+        .container {
+            max-width: 800px; /* Mais estreito para texto */
+            margin: 60px auto;
+            padding: 40px;
+            background: rgba(15, 23, 42, 0.8); /* Fundo escuro atrás do texto */
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            backdrop-filter: blur(6px);
+            text-align: center;
+            flex: 1;
+        }
+
+        h1 { margin-bottom: 30px; color: #fff; font-size: 2.5rem; }
+        
+        .role {
+            color: #8B1D1D;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .name {
+            font-size: 1.2rem;
+            color: #e5e7eb;
+            margin-bottom: 5px;
+        }
+
+        .desc {
+            color: #94a3b8;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* RODAPÉ */
+        .footer-credits {
+            background: rgba(10, 15, 30, 0.95);
+            border-top: 1px solid #1e293b;
+            padding: 20px;
+            text-align: center;
+        }
+        .footer-credits p { color: #94a3b8; font-size: 14px; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="IMAGENS/Mascote.png" alt="Logo Mascote">
+            <span>Central de Ferramentas</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">⬅ Voltar ao Início</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Créditos & Desenvolvimento</h1>
+
+        <div class="role">Desenvolvimento Web</div>
+        <div class="name">[Seu Nome/Nick]</div>
+        <div class="desc">Programação front-end e lógica das ferramentas.</div>
+
+        <div class="role">Design & Interface</div>
+        <div class="name">[Seu Nome/Nick]</div>
+        <div class="desc">Criação visual e experiência do usuário (UX).</div>
+
+        <div class="role">Agradecimentos Especiais</div>
+        <div class="name">Equipe Humble Pixelmon</div>
+        <div class="desc">Pelo suporte e feedback contínuo.</div>
+
+    </div>
+
+    <footer class="footer-credits">
+        <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+</html>
