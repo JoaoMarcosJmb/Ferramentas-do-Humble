@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Leitor / Editor de Excel</title>
 
-    <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -12,11 +11,9 @@
             margin: 0;
             font-family: Arial, sans-serif;
             color: #e5e7eb;
-
             background:
-                linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
-                url("../IMAGENS/Fundo.png");
-
+                linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
+                url("../IMAGENS/Fundo.png"); /* Mantendo sua referência de imagem */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -28,7 +25,7 @@
             align-items: center;
             gap: 15px;
             padding: 12px 24px;
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(6px);
             border-bottom: 1px solid #1f2933;
         }
@@ -54,77 +51,163 @@
         .container {
             max-width: 1200px;
             margin: 40px auto;
-            background: rgba(22,26,35,0.9);
+            background: rgba(22,26,35,0.95);
             border: 1px solid #1f2933;
             border-radius: 12px;
             padding: 20px;
         }
 
+        /* BOTÕES E INPUTS GERAIS */
         input[type="file"] {
             margin-bottom: 15px;
+            color: #ccc;
         }
 
-        button {
+        .btn {
             background: #8B1D1D;
             color: #fff;
             border: none;
-            padding: 8px 14px;
+            padding: 10px 16px;
             border-radius: 6px;
             cursor: pointer;
-            margin-bottom: 15px;
+            margin-right: 10px;
+            font-weight: bold;
+            transition: background 0.2s;
         }
 
-        button:hover {
-            opacity: 0.9;
+        .btn:hover {
+            background: #a32424;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        .btn-secondary:hover {
+            background: #2d3b52;
+        }
+
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        /* TABELA */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 10px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            min-width: 600px;
         }
 
         th, td {
             border: 1px solid #334155;
-            padding: 6px;
+            padding: 8px;
             text-align: left;
         }
 
         th {
             background: #1e293b;
+            color: #94a3b8;
         }
 
         td {
             background: #0f172a;
         }
 
-        td[contenteditable="true"] {
-            outline: none;
+        td[contenteditable="true"]:focus {
+            background: #1e293b;
+            outline: 1px solid #8B1D1D;
+        }
+
+        /* AREA DO DISCORD */
+        .discord-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .discord-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .discord-inputs input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #e5e7eb;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #8B1D1D;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <div class="navbar">
-        <img src="../IMAGENS/Mascote.png" alt="Mascote">
-        <h1>Leitor / Editor de Excel</h1>
+        <img src="../IMAGENS/Mascote.png" alt="Mascote"> <h1>Leitor / Editor de Excel</h1>
         <a href="../index.html">⬅ Voltar</a>
     </div>
 
-    <!-- CONTEÚDO -->
     <div class="container">
-        <input type="file" id="input-excel" accept=".xlsx,.xls">
-        <br>
-        <button onclick="exportar()">💾 Exportar Excel</button>
+        
+        <div class="actions-bar">
+            <input type="file" id="input-excel" accept=".xlsx,.xls">
+            <button class="btn btn-secondary" onclick="criarTabelaDoZero()">📝 Criar Nova Tabela</button>
+            <button class="btn" onclick="exportarExcel()">💾 Salvar Excel</button>
+        </div>
 
-        <div id="output"></div>
+        <div class="table-container" id="output">
+            <p style="color: #666; font-style: italic;">Carregue um arquivo ou crie uma nova tabela para começar.</p>
+        </div>
+
+        <div class="discord-section">
+            <h3>Gerador de Embed Discord</h3>
+            <div class="discord-inputs">
+                <input type="text" id="dc-title" value="Pontos Humble League" placeholder="Título do Evento">
+                <input type="text" id="dc-emoji" value="<:Rayquaza:1427676581727309865>" placeholder="Emoji Customizado">
+                <input type="text" id="dc-round" value="3/4" placeholder="Rodada (ex: 3/4)">
+            </div>
+            <button class="btn" style="background-color: #5865F2;" onclick="gerarDiscord()">📑 Gerar Texto Discord</button>
+            
+            <textarea id="discord-output" placeholder="O código formatado aparecerá aqui..."></textarea>
+        </div>
     </div>
 
     <script>
         let workbook;
         let sheetName;
 
+        // --- 1. CARREGAR EXCEL ---
         document.getElementById('input-excel').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -139,13 +222,48 @@
                 const sheet = workbook.Sheets[sheetName];
 
                 document.getElementById('output').innerHTML =
-                    XLSX.utils.sheet_to_html(sheet, { editable: true });
+                    XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
             };
 
             reader.readAsArrayBuffer(file);
         });
 
-        function exportar() {
+        // --- 2. CRIAR TABELA DO ZERO ---
+        function criarTabelaDoZero() {
+            // Cria uma estrutura HTML básica de tabela
+            const html = `
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Posição (ex: 1°)</th>
+                            <th>Nick</th>
+                            <th>Pontos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td contenteditable="true">1°</td><td contenteditable="true">Player1</td><td contenteditable="true">0</td></tr>
+                        <tr><td contenteditable="true">2°</td><td contenteditable="true">Player2</td><td contenteditable="true">0</td></tr>
+                        <tr><td contenteditable="true">3°</td><td contenteditable="true">Player3</td><td contenteditable="true">0</td></tr>
+                        <tr><td contenteditable="true">4°</td><td contenteditable="true">Player4</td><td contenteditable="true">0</td></tr>
+                        <tr><td contenteditable="true">5°</td><td contenteditable="true">Player5</td><td contenteditable="true">0</td></tr>
+                    </tbody>
+                </table>
+                <button class="btn btn-secondary" onclick="adicionarLinha()" style="margin-top:10px; font-size:12px;">+ Adicionar Linha</button>
+            `;
+            document.getElementById('output').innerHTML = html;
+            sheetName = "Ranking"; // Nome padrão
+        }
+
+        function adicionarLinha() {
+            const table = document.querySelector("#data-table tbody");
+            if(table) {
+                const row = table.insertRow();
+                row.innerHTML = `<td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td>`;
+            }
+        }
+
+        // --- 3. EXPORTAR PARA EXCEL ---
+        function exportarExcel() {
             const table = document.querySelector("table");
             if (!table) {
                 alert("Nenhuma planilha carregada");
@@ -157,10 +275,60 @@
 
             XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
 
-            XLSX.writeFile(newWorkbook, "planilha_editada.xlsx");
+            XLSX.writeFile(newWorkbook, "ranking_editado.xlsx");
+        }
+
+        // --- 4. GERAR FORMATO DISCORD ---
+        function gerarDiscord() {
+            const table = document.querySelector("table");
+            if (!table) {
+                alert("Crie ou carregue uma tabela primeiro!");
+                return;
+            }
+
+            // Pegar valores dos inputs
+            const title = document.getElementById('dc-title').value;
+            const emoji = document.getElementById('dc-emoji').value;
+            const round = document.getElementById('dc-round').value;
+
+            // Cabeçalho Markdown
+            let result = `# ${title} - ${emoji}   (${round})\n\n`;
+
+            // Iterar pelas linhas da tabela (ignorando o cabeçalho)
+            const rows = table.querySelectorAll('tbody tr');
+            
+            // Se não tiver tbody explícito (vindo do Excel SheetJS às vezes), tenta pegar todas as tr e pular a primeira
+            let rowsArray = Array.from(rows);
+            if (rowsArray.length === 0) {
+                const allRows = table.querySelectorAll('tr');
+                rowsArray = Array.from(allRows).slice(1); // Pula cabeçalho
+            }
+
+            rowsArray.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 3) {
+                    const pos = cells[0].innerText.trim();
+                    const nick = cells[1].innerText.trim();
+                    const pts = cells[2].innerText.trim();
+
+                    // Formato: > **1°: Nome -> Pontos**
+                    if(pos && nick) {
+                        result += `> **${pos}: ${nick} -> ${pts}**\n`;
+                    }
+                }
+            });
+
+            const outputBox = document.getElementById('discord-output');
+            outputBox.value = result;
+            outputBox.select();
+            
+            // Feedback visual rápido
+            const btn = document.querySelector("button[onclick='gerarDiscord()']");
+            const originalText = btn.innerText;
+            btn.innerText = "Copiado! (Ctrl+C)";
+            setTimeout(() => btn.innerText = originalText, 2000);
         }
     </script>
 
 </body>
 </html>
-
