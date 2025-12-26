@@ -71,79 +71,115 @@
             height: 100%;
             overflow: hidden;
             backdrop-filter: blur(5px);
+            position: relative; /* Para o botão flutuante funcionar */
         }
 
-        /* --- ABAS (TABS) --- */
-        .tab-header {
+        /* --- CABEÇALHO DO EDITOR (ABAS + BOTÕES) --- */
+        .editor-header {
             display: flex;
-            padding: 15px 20px;
-            gap: 10px;
+            justify-content: space-between; /* Abas na esq, Botões na dir */
+            align-items: center;
+            padding: 10px 20px;
             border-bottom: 1px solid #334155;
             background: rgba(15, 23, 42, 0.5);
         }
+
+        .tabs-area { display: flex; gap: 10px; }
 
         .tab-btn {
             background: transparent;
             border: none;
             color: #94a3b8;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 4px;
             transition: 0.2s;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-
         .tab-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-        
-        .tab-btn.active {
-            background: #4752c4; /* Cor do Discord Blurple */
-            color: #fff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        .tab-btn.active { background: #4752c4; color: #fff; }
+
+        .actions-area { display: flex; gap: 8px; }
+
+        .action-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #334155;
+            color: #e5e7eb;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            transition: 0.2s;
         }
+        .action-btn:hover { background: #334155; }
+        .action-btn.danger:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; }
 
         /* --- ÁREAS DE CONTEÚDO --- */
         .editor-content, .json-content {
             padding: 20px;
             overflow-y: auto;
             flex: 1;
-            display: none; /* Escondido por padrão */
+            display: none;
         }
-        
-        .editor-content.active, .json-content.active {
-            display: block; /* Mostra se ativo */
-        }
+        .editor-content.active, .json-content.active { display: block; }
 
-        /* Input JSON (Area de Texto) */
+        /* JSON Editor */
         .json-editor-textarea {
-            width: 100%;
-            height: 100%;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 6px;
-            color: #a5b3ce;
-            padding: 15px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 13px;
-            resize: none;
-            outline: none;
+            width: 100%; height: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 6px;
+            color: #a5b3ce; padding: 15px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; resize: none; outline: none;
         }
         .json-editor-textarea:focus { border-color: #4752c4; }
 
-        /* --- ESTILOS DO FORMULÁRIO VISUAL --- */
-        details {
-            background: #1e293b;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            overflow: hidden;
-            border: 1px solid #334155;
+        /* --- BOTÃO FLUTUANTE DE COR --- */
+        .floating-color-widget {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
         }
 
-        summary {
-            padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px;
+        .color-circle-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            background: #00b0f4; /* Cor inicial */
+            transition: transform 0.2s;
         }
+        .color-circle-btn:hover { transform: scale(1.1); }
+
+        /* O input fica invisível mas clicável por cima do botão */
+        .color-circle-btn input[type="color"] {
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            padding: 0; margin: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .brush-icon {
+            pointer-events: none;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+        }
+
+        /* --- FORMULÁRIO --- */
+        details { background: #1e293b; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #334155; }
+        summary { padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         summary::after { content: "+"; font-size: 16px; }
         details[open] summary::after { content: "-"; }
 
@@ -155,30 +191,8 @@
         }
         textarea { resize: vertical; min-height: 80px; }
 
-        /* Nova linha para Título + Cor */
-        .title-row {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end; /* Alinha o input de cor com o texto */
-        }
-        
-        .color-input-container {
-            flex-shrink: 0;
-            width: 40px;
-        }
-        
-        input[type="color"] {
-            width: 100%; height: 36px; padding: 0; border: 1px solid #334155; cursor: pointer; background: #0f172a; border-radius: 4px;
-        }
-
         /* Fields */
-        .field-item {
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
+        .field-item { background: #0f172a; border: 1px solid #334155; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
         .field-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .field-title { font-weight: bold; font-size: 12px; color: #fbbf24; }
         .btn-remove-field { background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; }
@@ -186,17 +200,6 @@
         .btn-add-field:hover { background: #374151; border-color: #fff; }
         .inline-checkbox { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; }
         .inline-checkbox input { width: auto; }
-
-        /* Botão Limpar (Fica no rodapé do editor) */
-        .editor-footer-actions {
-            padding: 15px 20px;
-            border-top: 1px solid #334155;
-            background: rgba(15, 23, 42, 0.5);
-            display: flex;
-            justify-content: flex-end;
-        }
-        .btn-clear { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .btn-clear:hover { background: #ef4444; color: #fff; }
 
         /* --- PREVIEW (DIREITA) --- */
         .preview-panel {
@@ -246,7 +249,6 @@
         .embed-footer { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #dcddde; margin-top: 8px; }
         .embed-footer img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover;}
 
-        /* Rodapé do site */
         .footer-credits {
             background: rgba(10, 15, 30, 0.95);
             border-top: 1px solid #1e293b;
@@ -259,6 +261,7 @@
         @media (max-width: 900px) {
             .main-grid { grid-template-columns: 1fr; height: auto; overflow: visible;}
             .preview-panel { min-height: 400px; }
+            .floating-color-widget { position: fixed; bottom: 20px; right: 20px; left: auto; } /* Mobile */
         }
     </style>
 </head>
@@ -278,9 +281,15 @@
         
         <div class="editor-panel">
             
-            <div class="tab-header">
-                <button class="tab-btn active" onclick="switchTab('visual')" id="btn-visual">Visual</button>
-                <button class="tab-btn" onclick="switchTab('json')" id="btn-json">JSON</button>
+            <div class="editor-header">
+                <div class="tabs-area">
+                    <button class="tab-btn active" onclick="switchTab('visual')" id="btn-visual">Visual</button>
+                    <button class="tab-btn" onclick="switchTab('json')" id="btn-json">JSON</button>
+                </div>
+                <div class="actions-area">
+                    <button class="action-btn" onclick="copyJSON()">📋 Copiar JSON</button>
+                    <button class="action-btn danger" onclick="clearAll()">🗑️ Limpar</button>
+                </div>
             </div>
 
             <div class="editor-content active" id="content-visual">
@@ -288,16 +297,8 @@
                 <details open>
                     <summary>Informações Básicas</summary>
                     <div class="control-group">
-                        <div class="title-row">
-                            <div style="flex: 1;">
-                                <label>Título</label>
-                                <input type="text" id="input-title" oninput="updatePreview()" placeholder="Título do Embed">
-                            </div>
-                            <div class="color-input-container">
-                                <label>Cor</label>
-                                <input type="color" id="input-color" value="#00b0f4" oninput="updatePreview()" title="Cor da Lateral">
-                            </div>
-                        </div>
+                        <label>Título</label>
+                        <input type="text" id="input-title" oninput="updatePreview()" placeholder="Título do Embed">
                         
                         <label>Descrição</label>
                         <textarea id="input-desc" oninput="updatePreview()" placeholder="Texto da mensagem..."></textarea>
@@ -342,14 +343,18 @@
                     </div>
                 </details>
 
+                <div style="height: 60px;"></div>
             </div>
 
             <div class="json-content" id="content-json">
                 <textarea class="json-editor-textarea" id="json-io" placeholder="Cole seu JSON aqui..." oninput="updateFromJSONInput()"></textarea>
             </div>
 
-            <div class="editor-footer-actions">
-                <button class="btn-clear" onclick="clearAll()">🗑️ Limpar Tudo</button>
+            <div class="floating-color-widget">
+                <div class="color-circle-btn" id="color-btn-visual">
+                    <span class="brush-icon">🖌️</span>
+                    <input type="color" id="input-color" value="#00b0f4" oninput="updateColorPreview(this.value); updatePreview();">
+                </div>
             </div>
 
         </div>
@@ -403,32 +408,33 @@
 
     <script>
         const colorInput = document.getElementById('input-color');
+        const colorBtnVisual = document.getElementById('color-btn-visual');
         const fieldsContainer = document.getElementById('fields-container');
         const previewFieldsContainer = document.getElementById('preview-fields');
         const jsonTextarea = document.getElementById('json-io');
         
+        // --- FUNÇÃO PARA ATUALIZAR A COR DO BOTÃO FLUTUANTE ---
+        function updateColorPreview(color) {
+            colorBtnVisual.style.backgroundColor = color;
+        }
+
         // --- LÓGICA DE ABAS ---
         function switchTab(mode) {
-            // Atualiza classes dos botões
             document.getElementById('btn-visual').classList.toggle('active', mode === 'visual');
             document.getElementById('btn-json').classList.toggle('active', mode === 'json');
 
-            // Atualiza visibilidade dos painéis
             document.getElementById('content-visual').classList.toggle('active', mode === 'visual');
             document.getElementById('content-json').classList.toggle('active', mode === 'json');
 
             if (mode === 'json') {
-                // Ao entrar no JSON, gera o código baseado nos inputs
                 jsonTextarea.value = generateJSONString();
             } else {
-                // Ao voltar para o Visual, lê o JSON e preenche os inputs
                 applyJSONToInputs(jsonTextarea.value);
             }
         }
 
         // --- ATUALIZAÇÃO DO JSON MANUALMENTE ---
         function updateFromJSONInput() {
-            // Tenta aplicar o JSON sem mudar de aba (para ver o preview em tempo real)
             try {
                 const raw = jsonTextarea.value;
                 if (!raw.trim()) return;
@@ -437,12 +443,9 @@
                 if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
                     data = data.embeds[0];
                 }
-                
-                // Aplicamos apenas ao preview visual, sem preencher os inputs ainda
-                // (Os inputs serão preenchidos quando o usuário clicar na aba Visual)
                 renderPreviewFromData(data);
             } catch (e) {
-                // Ignora erros enquanto digita (JSON inválido temporário)
+                // Ignora erro enquanto digita
             }
         }
 
@@ -482,13 +485,17 @@
         function clearAll() {
             if(!confirm("Deseja limpar todos os campos?")) return;
             document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+            
+            // Reseta cor
             colorInput.value = '#00b0f4';
+            updateColorPreview('#00b0f4');
+
             fieldsContainer.innerHTML = '';
             jsonTextarea.value = '';
             updatePreview();
         }
 
-        // --- GERAÇÃO DE DADOS (VISUAL -> JSON) ---
+        // --- GERAÇÃO DE JSON E COPY ---
         function getDataFromInputs() {
             const fieldsData = [];
             document.querySelectorAll('.field-item').forEach(item => {
@@ -515,7 +522,7 @@
                 thumbnail: { url: document.getElementById('input-thumb').value }
             };
 
-            // Remove vazios
+            // Limpa propriedades vazias
             if(!data.title) delete data.title;
             if(!data.description) delete data.description;
             if(data.fields.length === 0) delete data.fields;
@@ -532,6 +539,20 @@
             return JSON.stringify({ embeds: [data] }, null, 4);
         }
 
+        function copyJSON() {
+            // Se estiver na aba JSON, copia o texto do textarea, senão gera do visual
+            let textToCopy = "";
+            if (document.getElementById('content-json').classList.contains('active')) {
+                 textToCopy = jsonTextarea.value;
+            } else {
+                 textToCopy = generateJSONString();
+            }
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("JSON copiado!");
+            });
+        }
+
         // --- APLICAÇÃO DE DADOS (JSON -> VISUAL) ---
         function applyJSONToInputs(jsonString) {
             try {
@@ -541,10 +562,14 @@
                     data = data.embeds[0];
                 }
 
-                // Preenche Inputs
                 setVal('input-title', data.title);
                 setVal('input-desc', data.description);
-                if (data.color) colorInput.value = '#' + data.color.toString(16).padStart(6, '0');
+                
+                if (data.color) {
+                    const hex = '#' + data.color.toString(16).padStart(6, '0');
+                    colorInput.value = hex;
+                    updateColorPreview(hex);
+                }
                 
                 setVal('input-author-name', data.author?.name);
                 setVal('input-author-icon', data.author?.icon_url);
@@ -558,19 +583,20 @@
                     data.fields.forEach(f => addField(f.name, f.value, f.inline));
                 }
 
-                updatePreview(); // Atualiza visual
+                updatePreview();
             } catch(e) {
-                console.error("Erro ao converter JSON para Inputs", e);
+                console.error("Erro no JSON", e);
             }
         }
 
         // --- RENDERIZAÇÃO DO PREVIEW ---
         function renderPreviewFromData(data) {
-            // Cor
             const hexColor = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
             document.getElementById('embed-preview').style.borderLeftColor = hexColor;
+            
+            // Sincroniza o botão flutuante se a cor vier do JSON
+            updateColorPreview(hexColor);
 
-            // Textos e Imagens
             setText('preview-title', data.title);
             setText('preview-desc', data.description);
             setText('preview-author-name', data.author?.name);
@@ -581,11 +607,9 @@
             setImage('preview-thumb', data.thumbnail?.url);
             setImage('preview-footer-icon', data.footer?.icon_url);
 
-            // Containers Pais
             document.getElementById('preview-author').style.display = data.author?.name ? 'flex' : 'none';
             document.getElementById('preview-footer').style.display = data.footer?.text ? 'flex' : 'none';
 
-            // Fields
             previewFieldsContainer.innerHTML = '';
             if (data.fields) {
                 data.fields.forEach(f => {
@@ -617,6 +641,7 @@
 
         // Inicializa
         updatePreview();
+        updateColorPreview(colorInput.value);
     </script>
 </body>
 </html>
