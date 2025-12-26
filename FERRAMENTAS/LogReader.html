@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixelLog v16 - Final Cut</title>
     
-    <!-- CDNs -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -119,7 +118,6 @@
 <body>
 
 <div class="app">
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="brand">
             <i class="ph-fill ph-bug-droid"></i>
@@ -173,11 +171,13 @@
                 <button class="btn" style="flex:1" onclick="UI.openSettings()"><i class="ph ph-gear"></i></button>
                 <button class="btn" style="flex:1" onclick="App.reset()"><i class="ph ph-broom"></i></button>
             </div>
+            <button class="btn" onclick="window.location.href='index.html'" style="justify-content:center">
+                <i class="ph-bold ph-arrow-left"></i> Voltar ao Index
+            </button>
             <div id="statusText" style="text-align:center; font-size:0.75em; color:var(--tx-2)">Aguardando arquivo...</div>
         </div>
     </div>
 
-    <!-- Main -->
     <div class="main">
         <div class="header">
             <span id="resultsInfo" style="font-size:0.8em; font-weight:600; color:var(--tx-2)">0 LINHAS</span>
@@ -189,7 +189,6 @@
         
         <div id="logContainer" class="log-container"></div>
 
-        <!-- Loader -->
         <div id="loader" class="overlay">
             <div class="modal">
                 <i class="ph-duotone ph-spinner-gap" style="font-size:3em; color:var(--ac); animation:spin 1s linear infinite"></i>
@@ -201,7 +200,6 @@
             </div>
         </div>
 
-        <!-- Configs Modal -->
         <div id="settingsModal" class="overlay" onclick="if(event.target===this) this.style.display='none'">
             <div class="modal">
                 <h3>Configurações</h3>
