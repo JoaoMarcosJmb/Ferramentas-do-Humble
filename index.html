@@ -6,10 +6,18 @@
 
     <style>
         body {
+            margin: 0;
             font-family: Arial, sans-serif;
-            background: #020617;
             color: #e5e7eb;
             padding: 40px;
+
+            background:
+                linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
+                url("IMAGEM/Fundo.png");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
         h1 {
@@ -23,22 +31,23 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 20px;
         }
 
         .card {
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.85);
             border: 1px solid #1e293b;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 20px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.25s;
+            backdrop-filter: blur(6px);
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            border-color: #38bdf8;
+            transform: translateY(-6px);
+            border-color: #8B1D1D;
         }
 
         .card h2 {
@@ -63,17 +72,11 @@
     <p>Utilitários online para uso rápido</p>
 
     <div class="grid">
-        <a href="FERRAMEMTAS/EXCEL.html">
+        <!-- EXCEL -->
+        <a href="FERRAMENTAS/EXCEL.html">
             <div class="card">
                 <h2>📊 Leitor de Excel</h2>
-                <span>Ler planilhas .xlsx / .xls</span>
-            </div>
-        </a>
-
-        <a href="ferramentas/json.html">
-            <div class="card">
-                <h2>🧾 Visualizador de JSON</h2>
-                <span>Formatar e visualizar JSON</span>
+                <span>Ler e editar planilhas .xlsx / .xls</span>
             </div>
         </a>
     </div>
