@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Central de Ferramentas</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #020617;
+            color: #e5e7eb;
+            padding: 40px;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 30px;
+            color: #94a3b8;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #38bdf8;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        .card span {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🛠 Central de Ferramentas</h1>
+    <p>Utilitários online para uso rápido</p>
+
+    <div class="grid">
+        <a href="ferramentas/excel.html">
+            <div class="card">
+                <h2>📊 Leitor de Excel</h2>
+                <span>Ler planilhas .xlsx / .xls</span>
+            </div>
+        </a>
+
+        <a href="ferramentas/json.html">
+            <div class="card">
+                <h2>🧾 Visualizador de JSON</h2>
+                <span>Formatar e visualizar JSON</span>
+            </div>
+        </a>
+    </div>
+
+</body>
+</html>
