@@ -22,7 +22,7 @@
             flex-direction: column;
         }
 
-        /* --- NAVBAR COMPACTA --- */
+        /* --- NAVBAR --- */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -45,38 +45,29 @@
             font-size: 18px;
         }
 
-        .nav-brand img {
-            height: 30px;
-            width: auto;
-            border-radius: 50%;
-        }
+        .nav-brand img { height: 30px; width: auto; border-radius: 50%; }
 
         .nav-links { display: flex; gap: 15px; }
         .nav-links a {
-            color: #94a3b8;
-            font-weight: 500;
-            transition: 0.2s;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 14px;
-            text-decoration: none;
+            color: #94a3b8; font-weight: 500; transition: 0.2s; padding: 4px 8px; border-radius: 4px; font-size: 14px; text-decoration: none;
         }
         .nav-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
 
-        /* --- LAYOUT PRINCIPAL (GRID) --- */
+        /* --- GRID PRINCIPAL --- */
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Metade para cada */
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
             padding: 20px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             flex: 1;
             width: 100%;
             height: calc(100vh - 50px);
+            overflow: hidden; /* Importante para o scroll interno funcionar */
         }
 
-        /* --- COLUNA ESQUERDA: EDITOR --- */
+        /* --- EDITOR (ESQUERDA) --- */
         .editor-panel {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid #1e293b;
@@ -88,7 +79,6 @@
 
         .editor-panel h2 { margin-top: 0; color: #fff; font-size: 1.2rem; margin-bottom: 20px;}
 
-        /* Estilo dos Menus "Sanfona" */
         details {
             background: #1e293b;
             margin-bottom: 10px;
@@ -98,58 +88,56 @@
         }
 
         summary {
-            padding: 12px;
-            cursor: pointer;
-            font-weight: bold;
-            background: #252f42;
-            list-style: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center;
         }
-
         summary::after { content: "+"; font-size: 18px; }
         details[open] summary::after { content: "-"; }
 
-        .control-group {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        label { font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        .control-group { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; margin-bottom: -5px;}
         
         input, textarea, select {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #fff;
-            padding: 8px;
-            border-radius: 4px;
-            width: 100%;
-            font-family: inherit;
+            background: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 4px; width: 100%; font-family: inherit;
         }
-
         textarea { resize: vertical; min-height: 80px; }
 
         .color-picker-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #1e293b;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border: 1px solid #334155;
+            display: flex; align-items: center; gap: 10px; background: #1e293b; padding: 10px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #334155;
         }
-        
-        input[type="color"] {
-            width: 40px; height: 40px; padding: 0; border: none; cursor: pointer;
-        }
+        input[type="color"] { width: 40px; height: 40px; padding: 0; border: none; cursor: pointer; }
 
-        /* --- COLUNA DIREITA: PREVIEW --- */
+        /* ESTILO DOS CAMPOS (FIELDS) NO EDITOR */
+        .field-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .field-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .field-title { font-weight: bold; font-size: 12px; color: #fbbf24; }
+        .btn-remove-field {
+            background: #ef4444; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px;
+        }
+        .btn-add-field {
+            background: #2d3b52; color: #fff; border: 1px dashed #94a3b8; width: 100%; padding: 10px; cursor: pointer; border-radius: 5px; transition: 0.2s;
+        }
+        .btn-add-field:hover { background: #374151; border-color: #fff; }
+
+        .inline-checkbox {
+            display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px;
+        }
+        .inline-checkbox input { width: auto; }
+
+        /* --- PREVIEW (DIREITA) --- */
         .preview-panel {
-            background: #36393f;
+            background: #313338; /* Discord New Dark */
             border-radius: 8px;
             padding: 20px;
             display: flex;
@@ -159,102 +147,68 @@
             height: 100%;
         }
 
-        .discord-msg {
-            display: flex;
-            gap: 12px;
-            font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
-
-        .bot-avatar {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            background-image: url('../IMAGENS/Mascote.png');
-            background-size: cover;
-            flex-shrink: 0;
-        }
-
+        .discord-msg { display: flex; gap: 12px; font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.375rem;}
+        .bot-avatar { width: 40px; height: 40px; border-radius: 50%; background-image: url('../IMAGENS/Mascote.png'); background-size: cover; flex-shrink: 0; margin-top: 2px;}
         .msg-content { width: 100%; }
+        .bot-name { color: #f2f3f5; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .bot-tag { background: #5865F2; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 3px; line-height: 1.3; margin-top: 1px;}
+        .timestamp { font-size: 12px; color: #949BA4; margin-left: 5px; font-weight: 400;}
 
-        .bot-name {
-            color: #fff;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .bot-tag {
-            background: #5865F2;
-            color: #fff;
-            font-size: 10px;
-            padding: 1px 4px;
-            border-radius: 3px;
-            line-height: 1.3;
-        }
-
-        .timestamp { font-size: 12px; color: #72767d; margin-left: 5px; font-weight: 400;}
-
-        /* O EMBED */
+        /* O EMBED NO PREVIEW */
         .discord-embed {
             margin-top: 8px;
-            background: #2f3136;
+            background: #2b2d31;
             border-left: 4px solid #00b0f4;
             border-radius: 4px;
-            padding: 10px;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
+            padding: 16px; /* Discord padrão é mais espaçado agora */
+            max-width: 520px;
+            display: grid;
+            grid-template-columns: auto;
             gap: 8px;
         }
 
-        .embed-author {
+        .embed-author { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+        .embed-author img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover;}
+
+        .embed-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; white-space: pre-wrap;}
+        .embed-desc { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.4; margin-bottom: 8px;}
+
+        .embed-image { max-width: 100%; border-radius: 4px; margin-top: 8px; display: none; object-fit: cover;}
+        .embed-thumb { float: right; max-width: 80px; max-height: 80px; border-radius: 4px; margin-left: 16px; display: none; object-fit: cover;}
+
+        /* GRID DE CAMPOS NO PREVIEW */
+        .embed-fields {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #fff;
+            margin-top: 4px;
         }
-        .embed-author img { width: 24px; height: 24px; border-radius: 50%; }
-
-        .embed-title { font-size: 16px; font-weight: 600; color: #fff; }
-        .embed-desc { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.4; }
-
-        .embed-image { max-width: 100%; border-radius: 4px; margin-top: 5px; display: none; }
-        .embed-thumb { float: right; max-width: 80px; max-height: 80px; border-radius: 4px; margin-left: 10px; display: none; }
+        .embed-field {
+            min-width: 100%; /* Default não inline */
+            margin-bottom: 4px;
+        }
+        .embed-field.inline {
+            min-width: 30%;
+            flex: 1;
+        }
+        .field-name { font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 2px; }
+        .field-value { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.375rem; }
 
         .embed-footer {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            color: #dcddde;
-            margin-top: 5px;
+            display: flex; align-items: center; gap: 8px; font-size: 12px; color: #dcddde; margin-top: 8px;
         }
-        .embed-footer img { width: 20px; height: 20px; border-radius: 50%; }
+        .embed-footer img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover;}
 
-        /* Botões */
+        /* BOTOES */
         .btn-action {
-            background: #5865F2;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
-            transition: 0.2s;
+            background: #5865F2; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; transition: 0.2s;
         }
         .btn-action:hover { background: #4752c4; }
-
-        .btn-import {
-            background: #2d7d46;
-        }
+        .btn-import { background: #2d7d46; }
         .btn-import:hover { background: #1e5c32; }
 
-        @media (max-width: 800px) {
-            .main-grid { grid-template-columns: 1fr; height: auto; }
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; height: auto; overflow: visible;}
             .preview-panel { min-height: 400px; }
         }
     </style>
@@ -280,7 +234,7 @@
                 <summary>📥 Importar JSON</summary>
                 <div class="control-group">
                     <label>Cole o código JSON aqui:</label>
-                    <textarea id="input-json-import" placeholder='{"title": "Exemplo", "description": "..."}' style="height: 100px; font-family: monospace; font-size: 12px;"></textarea>
+                    <textarea id="input-json-import" placeholder='{"embeds": [{"title": "Exemplo"}]}' style="height: 100px; font-family: monospace; font-size: 12px;"></textarea>
                     <button class="btn-action btn-import" onclick="importJSON()">Carregar JSON</button>
                 </div>
             </details>
@@ -295,10 +249,18 @@
                 <summary>Informações Básicas</summary>
                 <div class="control-group">
                     <label>Título</label>
-                    <input type="text" id="input-title" placeholder="Título do Embed">
+                    <input type="text" id="input-title" oninput="updatePreview()">
                     
                     <label>Descrição</label>
-                    <textarea id="input-desc" placeholder="Escreva a descrição aqui..."></textarea>
+                    <textarea id="input-desc" oninput="updatePreview()"></textarea>
+                </div>
+            </details>
+
+            <details>
+                <summary>Campos (Fields)</summary>
+                <div class="control-group">
+                    <div id="fields-container"></div>
+                    <button class="btn-add-field" onclick="addField()">+ Adicionar Campo</button>
                 </div>
             </details>
 
@@ -306,9 +268,9 @@
                 <summary>Autor</summary>
                 <div class="control-group">
                     <label>Nome do Autor</label>
-                    <input type="text" id="input-author-name" placeholder="Ex: Moderador">
+                    <input type="text" id="input-author-name" oninput="updatePreview()">
                     <label>Ícone do Autor (URL)</label>
-                    <input type="text" id="input-author-icon" placeholder="https://...">
+                    <input type="text" id="input-author-icon" oninput="updatePreview()">
                 </div>
             </details>
 
@@ -316,9 +278,9 @@
                 <summary>Imagens</summary>
                 <div class="control-group">
                     <label>Imagem Grande (URL)</label>
-                    <input type="text" id="input-image" placeholder="https://...">
+                    <input type="text" id="input-image" oninput="updatePreview()">
                     <label>Thumbnail (Miniatura Direita)</label>
-                    <input type="text" id="input-thumb" placeholder="https://...">
+                    <input type="text" id="input-thumb" oninput="updatePreview()">
                 </div>
             </details>
 
@@ -326,9 +288,9 @@
                 <summary>Rodapé (Footer)</summary>
                 <div class="control-group">
                     <label>Texto do Rodapé</label>
-                    <input type="text" id="input-footer-text" placeholder="Ex: ID: 123456">
+                    <input type="text" id="input-footer-text" oninput="updatePreview()">
                     <label>Ícone do Rodapé (URL)</label>
-                    <input type="text" id="input-footer-icon" placeholder="https://...">
+                    <input type="text" id="input-footer-icon" oninput="updatePreview()">
                 </div>
             </details>
 
@@ -345,24 +307,30 @@
 
                     <div class="discord-embed" id="embed-preview">
                         
-                        <div class="embed-author" id="preview-author" style="display:none;">
-                            <img id="preview-author-icon" src="" style="display:none;">
-                            <span id="preview-author-name"></span>
-                        </div>
-
-                        <div style="display: flex;">
-                            <div style="flex: 1;">
-                                <div class="embed-title" id="preview-title" style="display:none;"></div>
-                                <div class="embed-desc" id="preview-desc" style="display:none;"></div>
+                        <div style="grid-column: 1; min-width: 0;">
+                            
+                            <div class="embed-author" id="preview-author" style="display:none;">
+                                <img id="preview-author-icon" src="" style="display:none;">
+                                <span id="preview-author-name"></span>
                             </div>
-                            <img class="embed-thumb" id="preview-thumb" src="">
-                        </div>
 
-                        <img class="embed-image" id="preview-image" src="">
+                            <div style="display: flex;">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="embed-title" id="preview-title" style="display:none;"></div>
+                                    <div class="embed-desc" id="preview-desc" style="display:none;"></div>
+                                    
+                                    <div class="embed-fields" id="preview-fields"></div>
+                                </div>
+                                <img class="embed-thumb" id="preview-thumb" src="">
+                            </div>
 
-                        <div class="embed-footer" id="preview-footer" style="display:none;">
-                            <img id="preview-footer-icon" src="" style="display:none;">
-                            <span id="preview-footer-text"></span>
+                            <img class="embed-image" id="preview-image" src="">
+
+                            <div class="embed-footer" id="preview-footer" style="display:none;">
+                                <img id="preview-footer-icon" src="" style="display:none;">
+                                <span id="preview-footer-text"></span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -373,168 +341,207 @@
     </div>
 
     <script>
-        const inputs = {
-            color: document.getElementById('input-color'),
-            title: document.getElementById('input-title'),
-            desc: document.getElementById('input-desc'),
-            authorName: document.getElementById('input-author-name'),
-            authorIcon: document.getElementById('input-author-icon'),
-            image: document.getElementById('input-image'),
-            thumb: document.getElementById('input-thumb'),
-            footerText: document.getElementById('input-footer-text'),
-            footerIcon: document.getElementById('input-footer-icon')
-        };
+        // Elementos Globais
+        const colorInput = document.getElementById('input-color');
+        const fieldsContainer = document.getElementById('fields-container');
+        const previewFieldsContainer = document.getElementById('preview-fields');
+        
+        // Listeners fixos
+        colorInput.addEventListener('input', updatePreview);
 
-        const preview = {
-            embed: document.getElementById('embed-preview'),
-            title: document.getElementById('preview-title'),
-            desc: document.getElementById('preview-desc'),
-            author: document.getElementById('preview-author'),
-            authorName: document.getElementById('preview-author-name'),
-            authorIcon: document.getElementById('preview-author-icon'),
-            image: document.getElementById('preview-image'),
-            thumb: document.getElementById('preview-thumb'),
-            footer: document.getElementById('preview-footer'),
-            footerText: document.getElementById('preview-footer-text'),
-            footerIcon: document.getElementById('preview-footer-icon')
-        };
+        // --- GERENCIAMENTO DE FIELDS ---
+        function addField(name = "", value = "", inline = false) {
+            const id = Date.now();
+            const div = document.createElement('div');
+            div.className = 'field-item';
+            div.dataset.id = id;
 
+            div.innerHTML = `
+                <div class="field-header">
+                    <span class="field-title">Campo</span>
+                    <button class="btn-remove-field" onclick="removeField(${id})">Remover</button>
+                </div>
+                <label>Título do Campo</label>
+                <input type="text" class="field-name-input" value="${name}" oninput="updatePreview()">
+                
+                <label style="margin-top: 8px; display:block;">Conteúdo</label>
+                <textarea class="field-value-input" oninput="updatePreview()">${value}</textarea>
+
+                <label class="inline-checkbox">
+                    <input type="checkbox" class="field-inline-input" ${inline ? 'checked' : ''} onchange="updatePreview()">
+                    Inline (Mesma linha)
+                </label>
+            `;
+            fieldsContainer.appendChild(div);
+            updatePreview();
+        }
+
+        function removeField(id) {
+            const item = document.querySelector(`.field-item[data-id="${id}"]`);
+            if(item) item.remove();
+            updatePreview();
+        }
+
+        // --- UPDATE PREVIEW ---
         function updatePreview() {
-            preview.embed.style.borderLeftColor = inputs.color.value;
+            // 1. Cor Lateral
+            document.getElementById('embed-preview').style.borderLeftColor = colorInput.value;
 
-            // Título e Descrição
-            toggleDisplay(preview.title, inputs.title.value);
-            toggleDisplay(preview.desc, inputs.desc.value);
+            // 2. Textos Básicos
+            setText('preview-title', 'input-title');
+            setText('preview-desc', 'input-desc');
+            setText('preview-author-name', 'input-author-name');
+            setText('preview-footer-text', 'input-footer-text');
 
-            // Autor
-            if (inputs.authorName.value) {
-                preview.author.style.display = 'flex';
-                preview.authorName.innerText = inputs.authorName.value;
-                toggleImage(preview.authorIcon, inputs.authorIcon.value);
-            } else {
-                preview.author.style.display = 'none';
-            }
+            // 3. Imagens
+            setImage('preview-author-icon', 'input-author-icon');
+            setImage('preview-image', 'input-image');
+            setImage('preview-thumb', 'input-thumb');
+            setImage('preview-footer-icon', 'input-footer-icon');
 
-            // Imagens
-            toggleImage(preview.image, inputs.image.value);
-            toggleImage(preview.thumb, inputs.thumb.value);
+            // Controle de visibilidade de containers pai
+            const authorName = document.getElementById('input-author-name').value;
+            document.getElementById('preview-author').style.display = authorName ? 'flex' : 'none';
 
-            // Rodapé
-            if (inputs.footerText.value) {
-                preview.footer.style.display = 'flex';
-                preview.footerText.innerText = inputs.footerText.value;
-                toggleImage(preview.footerIcon, inputs.footerIcon.value);
-            } else {
-                preview.footer.style.display = 'none';
-            }
+            const footerText = document.getElementById('input-footer-text').value;
+            document.getElementById('preview-footer').style.display = footerText ? 'flex' : 'none';
+
+            // 4. Renderizar FIELDS
+            previewFieldsContainer.innerHTML = '';
+            const fieldItems = document.querySelectorAll('.field-item');
+            
+            fieldItems.forEach(item => {
+                const name = item.querySelector('.field-name-input').value;
+                const value = item.querySelector('.field-value-input').value;
+                const isInline = item.querySelector('.field-inline-input').checked;
+
+                if(name || value) {
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.className = `embed-field ${isInline ? 'inline' : ''}`;
+                    fieldDiv.innerHTML = `
+                        <div class="field-name">${name}</div>
+                        <div class="field-value">${value}</div>
+                    `;
+                    previewFieldsContainer.appendChild(fieldDiv);
+                }
+            });
         }
 
-        // Helpers Visuais
-        function toggleDisplay(element, value) {
-            element.innerText = value || "";
-            element.style.display = value ? 'block' : 'none';
+        // Helpers
+        function setText(previewId, inputId) {
+            const val = document.getElementById(inputId).value;
+            const el = document.getElementById(previewId);
+            el.innerText = val;
+            el.style.display = val ? 'block' : 'none';
         }
 
-        function toggleImage(imgElement, url) {
-            if (url) {
-                imgElement.src = url;
-                imgElement.style.display = 'block';
-            } else {
-                imgElement.style.display = 'none';
-            }
+        function setImage(previewId, inputId) {
+            const url = document.getElementById(inputId).value;
+            const el = document.getElementById(previewId);
+            if(url) { el.src = url; el.style.display = 'block'; }
+            else { el.style.display = 'none'; }
         }
 
-        // Listeners
-        Object.values(inputs).forEach(input => {
-            input.addEventListener('input', updatePreview);
-        });
-
-        // --- FUNÇÃO DE IMPORTAR JSON ---
+        // --- IMPORTAR JSON ---
         function importJSON() {
             try {
                 const raw = document.getElementById('input-json-import').value;
                 if (!raw.trim()) return alert("Cole um JSON primeiro!");
                 
-                const data = JSON.parse(raw);
+                let data = JSON.parse(raw);
 
-                // Preencher campos (verifica se existem no JSON)
-                inputs.title.value = data.title || "";
-                inputs.desc.value = data.description || "";
+                // Lógica Inteligente: Se tiver "embeds" (array), pega o primeiro
+                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
+                    data = data.embeds[0];
+                }
+
+                // Campos Simples
+                document.getElementById('input-title').value = data.title || "";
+                document.getElementById('input-desc').value = data.description || "";
                 
-                // Conversão de Cor (Decimal para Hex)
+                // Cor (Decimal -> Hex)
                 if (data.color) {
-                    // Discord usa Inteiro (ex: 16711680), HTML usa Hex (#FF0000)
                     const hexColor = '#' + data.color.toString(16).padStart(6, '0');
-                    inputs.color.value = hexColor;
+                    colorInput.value = hexColor;
                 }
 
-                if (data.author) {
-                    inputs.authorName.value = data.author.name || "";
-                    inputs.authorIcon.value = data.author.icon_url || "";
-                } else {
-                    inputs.authorName.value = "";
-                    inputs.authorIcon.value = "";
+                // Objetos Aninhados (Autor, Footer, Imagens)
+                setValSafe('input-author-name', data.author?.name);
+                setValSafe('input-author-icon', data.author?.icon_url);
+                setValSafe('input-footer-text', data.footer?.text);
+                setValSafe('input-footer-icon', data.footer?.icon_url);
+                setValSafe('input-image', data.image?.url);
+                setValSafe('input-thumb', data.thumbnail?.url);
+
+                // Campos (Fields) - Zera e recria
+                fieldsContainer.innerHTML = '';
+                if (data.fields && Array.isArray(data.fields)) {
+                    data.fields.forEach(f => {
+                        addField(f.name || "", f.value || "", f.inline || false);
+                    });
                 }
-
-                if (data.footer) {
-                    inputs.footerText.value = data.footer.text || "";
-                    inputs.footerIcon.value = data.footer.icon_url || "";
-                } else {
-                    inputs.footerText.value = "";
-                    inputs.footerIcon.value = "";
-                }
-
-                if (data.image) inputs.image.value = data.image.url || "";
-                else inputs.image.value = "";
-
-                if (data.thumbnail) inputs.thumb.value = data.thumbnail.url || "";
-                else inputs.thumb.value = "";
 
                 updatePreview();
                 alert("JSON carregado com sucesso!");
 
             } catch (e) {
-                alert("Erro ao ler JSON. Verifique se a formatação está correta.\n\n" + e.message);
+                alert("Erro ao ler JSON. Verifique a formatação.\n\n" + e.message);
+                console.error(e);
             }
         }
 
-        // --- FUNÇÃO DE COPIAR JSON ---
+        function setValSafe(id, val) {
+            document.getElementById(id).value = val || "";
+        }
+
+        // --- EXPORTAR JSON ---
         function copyJSON() {
+            // Coleta fields
+            const fieldsData = [];
+            document.querySelectorAll('.field-item').forEach(item => {
+                const name = item.querySelector('.field-name-input').value;
+                const value = item.querySelector('.field-value-input').value;
+                const inline = item.querySelector('.field-inline-input').checked;
+                if(name || value) {
+                    fieldsData.push({ name, value, inline });
+                }
+            });
+
             const jsonObject = {
-                title: inputs.title.value,
-                description: inputs.desc.value,
-                // Converte Hex para Decimal (Padrão Discord)
-                color: parseInt(inputs.color.value.replace('#', ''), 16),
+                title: document.getElementById('input-title').value,
+                description: document.getElementById('input-desc').value,
+                color: parseInt(colorInput.value.replace('#', ''), 16),
+                fields: fieldsData,
                 footer: {
-                    text: inputs.footerText.value,
-                    icon_url: inputs.footerIcon.value
+                    text: document.getElementById('input-footer-text').value,
+                    icon_url: document.getElementById('input-footer-icon').value
                 },
                 author: {
-                    name: inputs.authorName.value,
-                    icon_url: inputs.authorIcon.value
+                    name: document.getElementById('input-author-name').value,
+                    icon_url: document.getElementById('input-author-icon').value
                 },
-                image: {
-                    url: inputs.image.value
-                },
-                thumbnail: {
-                    url: inputs.thumb.value
-                }
+                image: { url: document.getElementById('input-image').value },
+                thumbnail: { url: document.getElementById('input-thumb').value }
             };
 
-            // Limpeza de campos vazios
+            // Limpeza
             if(!jsonObject.title) delete jsonObject.title;
             if(!jsonObject.description) delete jsonObject.description;
+            if(jsonObject.fields.length === 0) delete jsonObject.fields;
             if(!jsonObject.footer.text) delete jsonObject.footer;
             if(!jsonObject.author.name) delete jsonObject.author;
             if(!jsonObject.image.url) delete jsonObject.image;
             if(!jsonObject.thumbnail.url) delete jsonObject.thumbnail;
 
-            const jsonString = JSON.stringify(jsonObject, null, 2);
-            navigator.clipboard.writeText(jsonString).then(() => {
-                alert("JSON copiado para a área de transferência!");
+            // Formato compatível com a maioria dos bots (dentro de embeds array)
+            const finalStructure = { embeds: [jsonObject] };
+
+            navigator.clipboard.writeText(JSON.stringify(finalStructure, null, 2)).then(() => {
+                alert("JSON copiado! (Estrutura: embeds[...])");
             });
         }
 
+        // Inicializa
         updatePreview();
     </script>
 </body>
