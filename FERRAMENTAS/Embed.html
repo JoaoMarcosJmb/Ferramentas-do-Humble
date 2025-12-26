@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Criador de Embed - Humble Ferramentas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /* --- GERAL --- */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: #dcddde;
+            background:
+                linear-gradient(rgba(22,26,35,0.92), rgba(22,26,35,0.92)),
+                url("../IMAGENS/Fundo.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- NAVBAR COMPACTA --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 30px;
+            background: rgba(15, 23, 42, 0.95);
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 50px;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .nav-brand img {
+            height: 30px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .nav-links { display: flex; gap: 15px; }
+        .nav-links a {
+            color: #94a3b8;
+            font-weight: 500;
+            transition: 0.2s;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .nav-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.05); }
+
+        /* --- LAYOUT PRINCIPAL (GRID) --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Metade para cada */
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 50px); /* Ocupa a tela toda menos a navbar */
+        }
+
+        /* --- COLUNA ESQUERDA: EDITOR --- */
+        .editor-panel {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        .editor-panel h2 { margin-top: 0; color: #fff; font-size: 1.2rem; margin-bottom: 20px;}
+
+        /* Estilo dos Menus "Sanfona" (Details/Summary) */
+        details {
+            background: #1e293b;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        summary {
+            padding: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #252f42;
+            list-style: none; /* Remove seta padrão */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        summary::after { content: "+"; font-size: 18px; }
+        details[open] summary::after { content: "-"; }
+
+        .control-group {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label { font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: bold; }
+        
+        input, textarea, select {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+        }
+        
+        input[type="color"] {
+            width: 40px; height: 40px; padding: 0; border: none; cursor: pointer;
+        }
+
+        /* --- COLUNA DIREITA: PREVIEW (DISCORD STYLE) --- */
+        .preview-panel {
+            background: #36393f; /* Cor padrão do Discord */
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        /* O CONTAINER DA MENSAGEM */
+        .discord-msg {
+            display: flex;
+            gap: 12px;
+            font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        .bot-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background-image: url('../IMAGENS/Mascote.png'); /* Padrão */
+            background-size: cover;
+            flex-shrink: 0;
+        }
+
+        .msg-content { width: 100%; }
+
+        .bot-name {
+            color: #fff;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .bot-tag {
+            background: #5865F2;
+            color: #fff;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            line-height: 1.3;
+        }
+
+        .timestamp { font-size: 12px; color: #72767d; margin-left: 5px; font-weight: 400;}
+
+        /* O EMBED EM SI */
+        .discord-embed {
+            margin-top: 8px;
+            background: #2f3136;
+            border-left: 4px solid #00b0f4; /* Cor dinâmica */
+            border-radius: 4px;
+            padding: 10px;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .embed-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .embed-author img { width: 24px; height: 24px; border-radius: 50%; }
+
+        .embed-title { font-size: 16px; font-weight: 600; color: #fff; }
+        .embed-desc { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.4; }
+
+        .embed-image { max-width: 100%; border-radius: 4px; margin-top: 5px; display: none; }
+        .embed-thumb { float: right; max-width: 80px; max-height: 80px; border-radius: 4px; margin-left: 10px; display: none; }
+
+        .embed-footer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #dcddde;
+            margin-top: 5px;
+        }
+        .embed-footer img { width: 20px; height: 20px; border-radius: 50%; }
+
+        /* Botão de Ação */
+        .btn-action {
+            background: #5865F2;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-action:hover { background: #4752c4; }
+
+        /* Mobile */
+        @media (max-width: 800px) {
+            .main-grid { grid-template-columns: 1fr; height: auto; }
+            .preview-panel { min-height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
+            <span>Editor de Embed</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">⬅ Voltar</a>
+        </div>
+    </nav>
+
+    <div class="main-grid">
+        
+        <div class="editor-panel">
+            <h2>Configuração</h2>
+
+            <div class="color-picker-wrapper">
+                <input type="color" id="input-color" value="#00b0f4">
+                <span>Cor da Lateral</span>
+            </div>
+
+            <details open>
+                <summary>Informações Básicas</summary>
+                <div class="control-group">
+                    <label>Título</label>
+                    <input type="text" id="input-title" placeholder="Título do Embed">
+                    
+                    <label>Descrição</label>
+                    <textarea id="input-desc" placeholder="Escreva a descrição aqui..."></textarea>
+                </div>
+            </details>
+
+            <details>
+                <summary>Autor</summary>
+                <div class="control-group">
+                    <label>Nome do Autor</label>
+                    <input type="text" id="input-author-name" placeholder="Ex: Moderador">
+                    <label>Ícone do Autor (URL)</label>
+                    <input type="text" id="input-author-icon" placeholder="https://...">
+                </div>
+            </details>
+
+            <details>
+                <summary>Imagens</summary>
+                <div class="control-group">
+                    <label>Imagem Grande (URL)</label>
+                    <input type="text" id="input-image" placeholder="https://...">
+                    <label>Thumbnail (Miniatura Direita)</label>
+                    <input type="text" id="input-thumb" placeholder="https://...">
+                </div>
+            </details>
+
+            <details>
+                <summary>Rodapé (Footer)</summary>
+                <div class="control-group">
+                    <label>Texto do Rodapé</label>
+                    <input type="text" id="input-footer-text" placeholder="Ex: ID: 123456">
+                    <label>Ícone do Rodapé (URL)</label>
+                    <input type="text" id="input-footer-icon" placeholder="https://...">
+                </div>
+            </details>
+
+            <button class="btn-action" onclick="copyJSON()">📋 Copiar JSON</button>
+        </div>
+
+        <div class="preview-panel">
+            <div class="discord-msg">
+                <div class="bot-avatar"></div>
+                <div class="msg-content">
+                    <div class="bot-name">
+                        Humble Bot <span class="bot-tag">BOT</span> <span class="timestamp">Hoje às 14:30</span>
+                    </div>
+
+                    <div class="discord-embed" id="embed-preview">
+                        
+                        <div class="embed-author" id="preview-author" style="display:none;">
+                            <img id="preview-author-icon" src="" style="display:none;">
+                            <span id="preview-author-name"></span>
+                        </div>
+
+                        <div style="display: flex;">
+                            <div style="flex: 1;">
+                                <div class="embed-title" id="preview-title" style="display:none;"></div>
+                                <div class="embed-desc" id="preview-desc" style="display:none;"></div>
+                            </div>
+                            <img class="embed-thumb" id="preview-thumb" src="">
+                        </div>
+
+                        <img class="embed-image" id="preview-image" src="">
+
+                        <div class="embed-footer" id="preview-footer" style="display:none;">
+                            <img id="preview-footer-icon" src="" style="display:none;">
+                            <span id="preview-footer-text"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Mapeamento de Inputs para Elementos do Preview
+        const inputs = {
+            color: document.getElementById('input-color'),
+            title: document.getElementById('input-title'),
+            desc: document.getElementById('input-desc'),
+            authorName: document.getElementById('input-author-name'),
+            authorIcon: document.getElementById('input-author-icon'),
+            image: document.getElementById('input-image'),
+            thumb: document.getElementById('input-thumb'),
+            footerText: document.getElementById('input-footer-text'),
+            footerIcon: document.getElementById('input-footer-icon')
+        };
+
+        const preview = {
+            embed: document.getElementById('embed-preview'),
+            title: document.getElementById('preview-title'),
+            desc: document.getElementById('preview-desc'),
+            author: document.getElementById('preview-author'),
+            authorName: document.getElementById('preview-author-name'),
+            authorIcon: document.getElementById('preview-author-icon'),
+            image: document.getElementById('preview-image'),
+            thumb: document.getElementById('preview-thumb'),
+            footer: document.getElementById('preview-footer'),
+            footerText: document.getElementById('preview-footer-text'),
+            footerIcon: document.getElementById('preview-footer-icon')
+        };
+
+        // Função principal de atualização
+        function updatePreview() {
+            // 1. Cor da Borda
+            preview.embed.style.borderLeftColor = inputs.color.value;
+
+            // 2. Título
+            if (inputs.title.value) {
+                preview.title.innerText = inputs.title.value;
+                preview.title.style.display = 'block';
+            } else {
+                preview.title.style.display = 'none';
+            }
+
+            // 3. Descrição
+            if (inputs.desc.value) {
+                preview.desc.innerText = inputs.desc.value;
+                preview.desc.style.display = 'block';
+            } else {
+                preview.desc.style.display = 'none';
+            }
+
+            // 4. Autor
+            if (inputs.authorName.value) {
+                preview.author.style.display = 'flex';
+                preview.authorName.innerText = inputs.authorName.value;
+                
+                if (inputs.authorIcon.value) {
+                    preview.authorIcon.src = inputs.authorIcon.value;
+                    preview.authorIcon.style.display = 'block';
+                } else {
+                    preview.authorIcon.style.display = 'none';
+                }
+            } else {
+                preview.author.style.display = 'none';
+            }
+
+            // 5. Imagem Grande
+            if (inputs.image.value) {
+                preview.image.src = inputs.image.value;
+                preview.image.style.display = 'block';
+            } else {
+                preview.image.style.display = 'none';
+            }
+
+            // 6. Thumbnail (Miniatura)
+            if (inputs.thumb.value) {
+                preview.thumb.src = inputs.thumb.value;
+                preview.thumb.style.display = 'block';
+            } else {
+                preview.thumb.style.display = 'none';
+            }
+
+            // 7. Rodapé
+            if (inputs.footerText.value) {
+                preview.footer.style.display = 'flex';
+                preview.footerText.innerText = inputs.footerText.value;
+
+                if (inputs.footerIcon.value) {
+                    preview.footerIcon.src = inputs.footerIcon.value;
+                    preview.footerIcon.style.display = 'block';
+                } else {
+                    preview.footerIcon.style.display = 'none';
+                }
+            } else {
+                preview.footer.style.display = 'none';
+            }
+        }
+
+        // Adiciona listeners para todos os inputs
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+
+        // Copiar JSON
+        function copyJSON() {
+            const jsonObject = {
+                title: inputs.title.value,
+                description: inputs.desc.value,
+                color: parseInt(inputs.color.value.replace('#', ''), 16),
+                footer: {
+                    text: inputs.footerText.value,
+                    icon_url: inputs.footerIcon.value
+                },
+                author: {
+                    name: inputs.authorName.value,
+                    icon_url: inputs.authorIcon.value
+                },
+                image: {
+                    url: inputs.image.value
+                },
+                thumbnail: {
+                    url: inputs.thumb.value
+                }
+            };
+
+            // Remove campos vazios para limpar o JSON
+            if(!jsonObject.title) delete jsonObject.title;
+            if(!jsonObject.description) delete jsonObject.description;
+            if(!jsonObject.footer.text) delete jsonObject.footer;
+            if(!jsonObject.author.name) delete jsonObject.author;
+            if(!jsonObject.image.url) delete jsonObject.image;
+            if(!jsonObject.thumbnail.url) delete jsonObject.thumbnail;
+
+            const jsonString = JSON.stringify(jsonObject, null, 2);
+            navigator.clipboard.writeText(jsonString).then(() => {
+                alert("JSON copiado para a área de transferência!");
+            });
+        }
+
+        // Inicializa
+        updatePreview();
+
+    </script>
+</body>
+</html>
