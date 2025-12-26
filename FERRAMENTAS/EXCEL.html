@@ -2,25 +2,21 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Leitor de Planilhas Excel</title>
+    <title>Leitor de Excel</title>
 
-    <!-- SheetJS -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #0f172a;
+            background: #020617;
             color: #e5e7eb;
             padding: 20px;
         }
 
-        h1 {
-            margin-bottom: 10px;
-        }
-
-        input {
-            margin: 15px 0;
+        a {
+            color: #38bdf8;
+            text-decoration: none;
         }
 
         table {
@@ -33,29 +29,20 @@
         th, td {
             border: 1px solid #334155;
             padding: 8px;
-            text-align: left;
         }
 
         th {
             background: #1e293b;
         }
-
-        tr:nth-child(even) {
-            background: #020617;
-        }
-
-        tr:nth-child(odd) {
-            background: #020617;
-        }
     </style>
 </head>
 <body>
 
+    <a href="../index.html">⬅ Voltar</a>
+
     <h1>📊 Leitor de Excel</h1>
-    <p>Selecione um arquivo .xlsx ou .xls</p>
 
-    <input type="file" id="input-excel" accept=".xlsx,.xls" />
-
+    <input type="file" accept=".xlsx,.xls" id="input-excel" />
     <div id="output"></div>
 
     <script>
@@ -72,13 +59,10 @@
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
 
-                // Pega a primeira planilha
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
 
-                // Converte para HTML
-                const html = XLSX.utils.sheet_to_html(sheet);
-                output.innerHTML = html;
+                output.innerHTML = XLSX.utils.sheet_to_html(sheet);
             };
 
             reader.readAsArrayBuffer(file);
