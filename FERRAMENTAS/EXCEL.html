@@ -2,79 +2,68 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Central de Ferramentas</title>
+    <title>Leitor / Editor de Excel - Humble League</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
-        /* --- RESET E GERAL --- */
-        * {
-            box-sizing: border-box;
-        }
-
+        /* --- GERAL --- */
         body {
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #e5e7eb;
-            padding: 0; 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-
             background:
-                linear-gradient(rgba(22,26,35,0.85), rgba(22,26,35,0.85)),
-                url("IMAGENS/Fundo.png");
+                linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
+                url("../IMAGENS/Fundo.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* --- NAVBAR COMPACTA --- */
+        /* --- NAVBAR (Igual ao Index) --- */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* REDUZI O PADDING AQUI (era 15px 40px) */
-            padding: 8px 30px;
-            background: rgba(15, 23, 42, 0.95); /* Aumentei levemente a opacidade */
+            padding: 15px 40px;
+            background: rgba(15, 23, 42, 0.9);
             border-bottom: 1px solid #1e293b;
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 1000;
-            height: 50px; /* Altura fixa definida para garantir que fique fina */
         }
 
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             font-weight: bold;
-            font-size: 18px; /* Fonte levemente menor */
+            font-size: 20px;
         }
 
         .nav-brand img {
-            height: 30px; /* REDUZI O LOGO AQUI (era 40px) */
+            height: 40px;
             width: auto;
             border-radius: 50%;
         }
 
         .nav-links {
             display: flex;
-            gap: 15px;
+            gap: 20px;
         }
 
         .nav-links a {
             color: #94a3b8;
             font-weight: 500;
             transition: 0.2s;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 14px; /* Fonte do menu menor */
+            padding: 5px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
         }
 
         .nav-links a:hover {
@@ -82,78 +71,190 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* --- CONTEÚDO PRINCIPAL --- */
+        /* --- CONTEÚDO --- */
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px;
-            flex: 1;
-            width: 100%;
-        }
-
-        h1 {
-            margin-bottom: 5px;
-            font-size: 2rem;
-        }
-
-        p.subtitle {
-            margin-bottom: 40px;
-            color: #94a3b8;
-            font-size: 1.1rem;
-        }
-
-        /* --- GRID DE CARDS --- */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid #1e293b;
+            margin: 40px auto;
+            background: rgba(22,26,35,0.95);
+            border: 1px solid #1f2933;
             border-radius: 16px;
-            padding: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(6px);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 90%; 
+            flex: 1; /* Empurra o rodapé para baixo */
         }
-
-        .card:hover {
-            transform: translateY(-6px);
-            border-color: #8B1D1D;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            background: rgba(15, 23, 42, 0.9);
-        }
-
-        .card h2 {
-            margin: 0 0 10px;
-            font-size: 20px;
+        
+        /* Título da ferramenta dentro do container */
+        .page-title {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
             color: #fff;
         }
 
-        .card span {
-            font-size: 15px;
-            color: #94a3b8;
-            line-height: 1.4;
+        /* BOTÕES E INPUTS */
+        input[type="file"] {
+            margin-bottom: 0;
+            color: #ccc;
         }
 
-        /* --- RODAPÉ SIMPLES --- */
+        .btn {
+            background: #8B1D1D;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #a32424;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            border: 1px solid #334155;
+        }
+        
+        .btn-secondary:hover {
+            background: #2d3b52;
+        }
+
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        /* TABELA */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #334155;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px; 
+        }
+
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Coluna 1: NICK */
+        td:nth-child(1), th:nth-child(1) {
+            text-align: left;
+            min-width: 150px;
+            font-weight: bold;
+            color: #e5e7eb;
+            background: #131c2e; /* Destaque leve */
+        }
+
+        /* Coluna 2: ESPAÇO VAZIO */
+        td:nth-child(2), th:nth-child(2) {
+            width: 50px;
+            background-color: #0d1321;
+        }
+
+        /* Coluna 7: TOTAL */
+        td:nth-child(7), th:nth-child(7) {
+            font-weight: bold;
+            color: #fbbf24;
+            background-color: #162032;
+        }
+
+        th {
+            background: #1e293b;
+            color: #94a3b8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
+
+        td {
+            background: #0f172a;
+        }
+
+        td[contenteditable="true"]:focus {
+            background: #1e293b;
+            outline: 2px solid #8B1D1D;
+            outline-offset: -2px;
+        }
+
+        /* AREA DO DISCORD */
+        .discord-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .discord-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .discord-inputs input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-family: 'Consolas', monospace;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #8B1D1D;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        /* --- RODAPÉ --- */
         .footer-credits {
             background: rgba(10, 15, 30, 0.95);
             border-top: 1px solid #1e293b;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
-            margin-top: 30px;
+            width: 100%;
         }
 
         .credits-content p {
             color: #94a3b8;
-            font-size: 13px;
+            font-size: 14px;
             margin: 0;
         }
     </style>
@@ -162,43 +263,207 @@
 
     <nav class="navbar">
         <div class="nav-brand">
-            <img src="IMAGENS/Mascote.png" alt="Logo Mascote">
+            <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
             <span>Central de Ferramentas</span>
         </div>
         <div class="nav-links">
-            <a href="#">Início</a>
-            <a href="CREDITOS.html">Créditos</a>
+            <a href="../index.html">⬅ Voltar ao Início</a>
         </div>
     </nav>
 
-    <main class="container">
-        <h1>🛠 Utilitários</h1>
-        <p class="subtitle">Selecione uma ferramenta abaixo para começar</p>
+    <div class="container">
+        
+        <h1 class="page-title">📊 Leitor / Editor de Excel</h1>
 
-        <div class="grid">
-            
-            <a href="FERRAMENTAS/EXCEL.html">
-                <div class="card">
-                    <h2>📊 Leitor de Excel</h2>
-                    <span>Ler e editar planilhas .xlsx / .xls de forma rápida.</span>
-                </div>
-            </a>
-
-            <a href="FERRAMENTAS/LogReader.html">
-                <div class="card">
-                    <h2>📝 Leitor de Logs</h2>
-                    <span>Analise logs de jogadores utilizando filtros avançados.</span>
-                </div>
-            </a>
-
+        <div class="actions-bar">
+            <input type="file" id="input-excel" accept=".xlsx,.xls">
+            <button class="btn btn-secondary" onclick="criarTabelaPadrao()">📝 Criar Tabela Padrão</button>
+            <button class="btn" onclick="exportarExcel()">💾 Salvar Excel</button>
         </div>
-    </main>
+
+        <div class="table-container" id="output">
+            <div style="padding: 40px; text-align: center; color: #64748b;">
+                <p>Nenhuma planilha carregada.</p>
+                <p style="font-size: 14px;">Carregue um arquivo .xlsx acima ou clique em "Criar Tabela Padrão".</p>
+            </div>
+        </div>
+
+        <div class="discord-section">
+            <h3>Gerador de Embed Discord</h3>
+            <div class="discord-inputs">
+                <input type="text" id="dc-title" value="Pontos Humble League" placeholder="Título do Evento">
+                <input type="text" id="dc-emoji" value="<:Rayquaza:1427676581727309865>" placeholder="Emoji Customizado">
+                <input type="text" id="dc-round" value="3/4" placeholder="Rodada (ex: 3/4)">
+            </div>
+            <button class="btn" style="background-color: #5865F2;" onclick="gerarDiscord()">📑 Gerar Texto Discord</button>
+            
+            <textarea id="discord-output" placeholder="O código formatado aparecerá aqui..."></textarea>
+        </div>
+    </div>
 
     <footer class="footer-credits">
         <div class="credits-content">
             <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
         </div>
     </footer>
+
+    <script>
+        let workbook;
+        let sheetName;
+
+        // --- 1. CARREGAR EXCEL ---
+        document.getElementById('input-excel').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                workbook = XLSX.read(data, { type: 'array' });
+                sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                
+                // Gera o HTML
+                document.getElementById('output').innerHTML =
+                    XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
+                
+                ativarCalculoAutomatico();
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // --- 2. CRIAR TABELA PADRÃO (7 COLUNAS) ---
+        function criarTabelaPadrao() {
+            const html = `
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nick</th>
+                            <th></th> <th>1°</th>
+                            <th>2°</th>
+                            <th>3°</th>
+                            <th>4°</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td contenteditable="true">Player1</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                        <tr><td contenteditable="true">Player2</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                        <tr><td contenteditable="true">Player3</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                        <tr><td contenteditable="true">Player4</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                        <tr><td contenteditable="true">Player5</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                    </tbody>
+                </table>
+                <div style="padding: 10px;">
+                    <button class="btn btn-secondary" onclick="adicionarLinha()" style="font-size:13px;">+ Adicionar Linha</button>
+                </div>
+            `;
+            document.getElementById('output').innerHTML = html;
+            sheetName = "Pontuacao";
+            ativarCalculoAutomatico();
+        }
+
+        function adicionarLinha() {
+            const table = document.querySelector("#data-table tbody");
+            if(table) {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true"></td>
+                    <td contenteditable="true">0</td>
+                    <td contenteditable="true">0</td>
+                    <td contenteditable="true">0</td>
+                    <td contenteditable="true">0</td>
+                    <td contenteditable="false">0</td>
+                `;
+            }
+        }
+
+        // --- 3. SOMA AUTOMÁTICA (VISUAL) ---
+        function ativarCalculoAutomatico() {
+            const container = document.getElementById('output');
+            container.removeEventListener('input', calcularLinha);
+            container.addEventListener('input', calcularLinha);
+        }
+
+        function calcularLinha(e) {
+            const cell = e.target;
+            if (cell.tagName === 'TD') {
+                const row = cell.parentElement;
+                const cells = row.querySelectorAll('td');
+
+                if (cells.length >= 7) {
+                    const p1 = parseInt(cells[2].innerText) || 0;
+                    const p2 = parseInt(cells[3].innerText) || 0;
+                    const p3 = parseInt(cells[4].innerText) || 0;
+                    const p4 = parseInt(cells[5].innerText) || 0;
+                    const total = p1 + p2 + p3 + p4;
+                    cells[6].innerText = total; // Atualiza visualmente
+                }
+            }
+        }
+
+        // --- 4. EXPORTAR EXCEL ---
+        function exportarExcel() {
+            const table = document.querySelector("table");
+            if (!table) return alert("Nenhuma planilha carregada");
+            const newSheet = XLSX.utils.table_to_sheet(table);
+            const newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
+            XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
+        }
+
+        // --- 5. GERAR DISCORD ---
+        function gerarDiscord() {
+            const table = document.querySelector("table");
+            if (!table) return alert("Crie ou carregue uma tabela primeiro!");
+
+            const title = document.getElementById('dc-title').value;
+            const emoji = document.getElementById('dc-emoji').value;
+            const round = document.getElementById('dc-round').value;
+
+            let dados = [];
+            
+            // Pega linhas ignorando cabeçalho
+            let rows = table.querySelectorAll('tbody tr');
+            if (rows.length === 0) { 
+                const allRows = table.querySelectorAll('tr');
+                rows = Array.from(allRows).slice(1); 
+            } else {
+                rows = Array.from(rows);
+            }
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                
+                if (cells.length >= 7) {
+                    const nick = cells[0].innerText.trim();
+                    const p1 = parseInt(cells[2].innerText) || 0;
+                    const p2 = parseInt(cells[3].innerText) || 0;
+                    const p3 = parseInt(cells[4].innerText) || 0;
+                    const p4 = parseInt(cells[5].innerText) || 0;
+                    const totalReal = p1 + p2 + p3 + p4;
+
+                    if (nick) { 
+                        dados.push({ nick: nick, pontos: totalReal });
+                    }
+                }
+            });
+
+            // Ordena do Maior para o Menor
+            dados.sort((a, b) => b.pontos - a.pontos);
+
+            let result = `# ${title} - ${emoji}   (${round})\n\n`;
+
+            dados.forEach((jogador, index) => {
+                const posicao = index + 1;
+                result += `> **${posicao}°: ${jogador.nick} -> ${jogador.pontos}**\n`;
+            });
+
+            const outputBox = document.getElementById('discord-output');
+            outputBox.value = result;
+            outputBox.select();
+        }
+    </script>
 
 </body>
 </html>
