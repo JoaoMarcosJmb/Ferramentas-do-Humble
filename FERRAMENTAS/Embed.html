@@ -35,7 +35,7 @@
             top: 0;
             z-index: 1000;
             height: 50px;
-            flex-shrink: 0; /* Impede a navbar de encolher */
+            flex-shrink: 0;
         }
 
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 18px; }
@@ -55,61 +55,84 @@
             padding: 20px;
             max-width: 1600px;
             margin: 0 auto;
-            flex: 1; /* Ocupa todo o espaço restante verticalmente */
+            flex: 1;
             width: 100%;
-            height: auto; /* Altura automática baseada no flex */
-            overflow: hidden; /* Mantém o scroll apenas dentro dos painéis */
+            height: auto;
+            overflow: hidden; 
         }
 
-        /* --- EDITOR (ESQUERDA) --- */
+        /* --- PAINEL ESQUERDO (EDITOR) --- */
         .editor-panel {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.9);
             border: 1px solid #1e293b;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
             height: 100%;
             overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
-        /* TOOLBAR */
-        .editor-toolbar {
-            padding: 10px 20px;
+        /* --- ABAS (TABS) --- */
+        .tab-header {
+            display: flex;
+            padding: 15px 20px;
+            gap: 10px;
             border-bottom: 1px solid #334155;
-            background: rgba(15, 23, 42, 0.95);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: rgba(15, 23, 42, 0.5);
         }
 
-        .editor-toolbar h2 { margin: 0; font-size: 16px; color: #fff; }
-
-        .toolbar-actions { display: flex; gap: 8px; }
-
-        .btn-tool {
+        .tab-btn {
             background: transparent;
-            border: 1px solid #334155;
+            border: none;
             color: #94a3b8;
-            padding: 6px 12px;
-            border-radius: 4px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 4px;
             transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .btn-tool:hover { background: #334155; color: #fff; }
-        .btn-tool.danger:hover { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.1); }
 
-        /* SCROLL AREA */
-        .editor-scroll-area {
+        .tab-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        
+        .tab-btn.active {
+            background: #4752c4; /* Cor do Discord Blurple */
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* --- ÁREAS DE CONTEÚDO --- */
+        .editor-content, .json-content {
             padding: 20px;
             overflow-y: auto;
             flex: 1;
+            display: none; /* Escondido por padrão */
+        }
+        
+        .editor-content.active, .json-content.active {
+            display: block; /* Mostra se ativo */
         }
 
+        /* Input JSON (Area de Texto) */
+        .json-editor-textarea {
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #a5b3ce;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            resize: none;
+            outline: none;
+        }
+        .json-editor-textarea:focus { border-color: #4752c4; }
+
+        /* --- ESTILOS DO FORMULÁRIO VISUAL --- */
         details {
             background: #1e293b;
             margin-bottom: 10px;
@@ -132,12 +155,23 @@
         }
         textarea { resize: vertical; min-height: 80px; }
 
-        .color-picker-wrapper {
-            display: flex; align-items: center; gap: 10px; background: #1e293b; padding: 10px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #334155;
+        /* Nova linha para Título + Cor */
+        .title-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end; /* Alinha o input de cor com o texto */
         }
-        input[type="color"] { width: 40px; height: 30px; padding: 0; border: none; cursor: pointer; background: none;}
+        
+        .color-input-container {
+            flex-shrink: 0;
+            width: 40px;
+        }
+        
+        input[type="color"] {
+            width: 100%; height: 36px; padding: 0; border: 1px solid #334155; cursor: pointer; background: #0f172a; border-radius: 4px;
+        }
 
-        /* FIELDS */
+        /* Fields */
         .field-item {
             background: #0f172a;
             border: 1px solid #334155;
@@ -153,9 +187,16 @@
         .inline-checkbox { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; }
         .inline-checkbox input { width: auto; }
 
-        .json-actions { display: flex; justify-content: flex-end; margin-top: 5px; }
-        .btn-small-action { background: #2d7d46; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-        .btn-small-action:hover { background: #1e5c32; }
+        /* Botão Limpar (Fica no rodapé do editor) */
+        .editor-footer-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            justify-content: flex-end;
+        }
+        .btn-clear { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-clear:hover { background: #ef4444; color: #fff; }
 
         /* --- PREVIEW (DIREITA) --- */
         .preview-panel {
@@ -205,13 +246,13 @@
         .embed-footer { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #dcddde; margin-top: 8px; }
         .embed-footer img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover;}
 
-        /* --- RODAPÉ --- */
+        /* Rodapé do site */
         .footer-credits {
             background: rgba(10, 15, 30, 0.95);
             border-top: 1px solid #1e293b;
             padding: 15px;
             text-align: center;
-            flex-shrink: 0; /* Impede o rodapé de sumir se faltar espaço */
+            flex-shrink: 0;
         }
         .credits-content p { color: #94a3b8; font-size: 13px; margin: 0; }
 
@@ -237,40 +278,29 @@
         
         <div class="editor-panel">
             
-            <div class="editor-toolbar">
-                <h2>Configuração</h2>
-                <div class="toolbar-actions">
-                    <button class="btn-tool" onclick="toggleImport()">📥 Importar</button>
-                    <button class="btn-tool" onclick="copyJSON()">📋 Copiar JSON</button>
-                    <button class="btn-tool danger" onclick="clearAll()">🗑️ Limpar</button>
-                </div>
+            <div class="tab-header">
+                <button class="tab-btn active" onclick="switchTab('visual')" id="btn-visual">Visual</button>
+                <button class="tab-btn" onclick="switchTab('json')" id="btn-json">JSON</button>
             </div>
 
-            <div class="editor-scroll-area">
-
-                <details id="import-details">
-                    <summary>Colar JSON</summary>
-                    <div class="control-group">
-                        <textarea id="input-json-import" placeholder='Cole o código JSON aqui...' style="height: 80px; font-family: monospace; font-size: 11px;"></textarea>
-                        <div class="json-actions">
-                            <button class="btn-small-action" onclick="importJSON()">Carregar</button>
-                        </div>
-                    </div>
-                </details>
-
-                <div class="color-picker-wrapper">
-                    <input type="color" id="input-color" value="#00b0f4">
-                    <span>Cor da Lateral</span>
-                </div>
-
+            <div class="editor-content active" id="content-visual">
+                
                 <details open>
                     <summary>Informações Básicas</summary>
                     <div class="control-group">
-                        <label>Título</label>
-                        <input type="text" id="input-title" oninput="updatePreview()">
+                        <div class="title-row">
+                            <div style="flex: 1;">
+                                <label>Título</label>
+                                <input type="text" id="input-title" oninput="updatePreview()" placeholder="Título do Embed">
+                            </div>
+                            <div class="color-input-container">
+                                <label>Cor</label>
+                                <input type="color" id="input-color" value="#00b0f4" oninput="updatePreview()" title="Cor da Lateral">
+                            </div>
+                        </div>
                         
                         <label>Descrição</label>
-                        <textarea id="input-desc" oninput="updatePreview()"></textarea>
+                        <textarea id="input-desc" oninput="updatePreview()" placeholder="Texto da mensagem..."></textarea>
                     </div>
                 </details>
 
@@ -311,7 +341,17 @@
                         <input type="text" id="input-footer-icon" oninput="updatePreview()">
                     </div>
                 </details>
+
             </div>
+
+            <div class="json-content" id="content-json">
+                <textarea class="json-editor-textarea" id="json-io" placeholder="Cole seu JSON aqui..." oninput="updateFromJSONInput()"></textarea>
+            </div>
+
+            <div class="editor-footer-actions">
+                <button class="btn-clear" onclick="clearAll()">🗑️ Limpar Tudo</button>
+            </div>
+
         </div>
 
         <div class="preview-panel">
@@ -365,12 +405,50 @@
         const colorInput = document.getElementById('input-color');
         const fieldsContainer = document.getElementById('fields-container');
         const previewFieldsContainer = document.getElementById('preview-fields');
+        const jsonTextarea = document.getElementById('json-io');
         
-        colorInput.addEventListener('input', updatePreview);
+        // --- LÓGICA DE ABAS ---
+        function switchTab(mode) {
+            // Atualiza classes dos botões
+            document.getElementById('btn-visual').classList.toggle('active', mode === 'visual');
+            document.getElementById('btn-json').classList.toggle('active', mode === 'json');
 
-        // --- MANIPULAÇÃO DE CAMPOS ---
+            // Atualiza visibilidade dos painéis
+            document.getElementById('content-visual').classList.toggle('active', mode === 'visual');
+            document.getElementById('content-json').classList.toggle('active', mode === 'json');
+
+            if (mode === 'json') {
+                // Ao entrar no JSON, gera o código baseado nos inputs
+                jsonTextarea.value = generateJSONString();
+            } else {
+                // Ao voltar para o Visual, lê o JSON e preenche os inputs
+                applyJSONToInputs(jsonTextarea.value);
+            }
+        }
+
+        // --- ATUALIZAÇÃO DO JSON MANUALMENTE ---
+        function updateFromJSONInput() {
+            // Tenta aplicar o JSON sem mudar de aba (para ver o preview em tempo real)
+            try {
+                const raw = jsonTextarea.value;
+                if (!raw.trim()) return;
+                
+                let data = JSON.parse(raw);
+                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
+                    data = data.embeds[0];
+                }
+                
+                // Aplicamos apenas ao preview visual, sem preencher os inputs ainda
+                // (Os inputs serão preenchidos quando o usuário clicar na aba Visual)
+                renderPreviewFromData(data);
+            } catch (e) {
+                // Ignora erros enquanto digita (JSON inválido temporário)
+            }
+        }
+
+        // --- MANIPULAÇÃO DE CAMPOS (FIELDS) ---
         function addField(name = "", value = "", inline = false) {
-            const id = Date.now() + Math.random(); // ID Único
+            const id = Date.now() + Math.random();
             const div = document.createElement('div');
             div.className = 'field-item';
             div.dataset.id = id;
@@ -401,138 +479,26 @@
             updatePreview();
         }
 
-        // --- LIMPAR TUDO ---
         function clearAll() {
-            if(!confirm("Tem certeza que deseja limpar todo o Embed?")) return;
-
+            if(!confirm("Deseja limpar todos os campos?")) return;
             document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
             colorInput.value = '#00b0f4';
             fieldsContainer.innerHTML = '';
+            jsonTextarea.value = '';
             updatePreview();
         }
 
-        // --- UPDATE PREVIEW ---
-        function updatePreview() {
-            document.getElementById('embed-preview').style.borderLeftColor = colorInput.value;
-
-            setText('preview-title', 'input-title');
-            setText('preview-desc', 'input-desc');
-            setText('preview-author-name', 'input-author-name');
-            setText('preview-footer-text', 'input-footer-text');
-
-            setImage('preview-author-icon', 'input-author-icon');
-            setImage('preview-image', 'input-image');
-            setImage('preview-thumb', 'input-thumb');
-            setImage('preview-footer-icon', 'input-footer-icon');
-
-            const authorName = document.getElementById('input-author-name').value;
-            document.getElementById('preview-author').style.display = authorName ? 'flex' : 'none';
-
-            const footerText = document.getElementById('input-footer-text').value;
-            document.getElementById('preview-footer').style.display = footerText ? 'flex' : 'none';
-
-            previewFieldsContainer.innerHTML = '';
-            const fieldItems = document.querySelectorAll('.field-item');
-            
-            fieldItems.forEach(item => {
-                const name = item.querySelector('.field-name-input').value;
-                const value = item.querySelector('.field-value-input').value;
-                const isInline = item.querySelector('.field-inline-input').checked;
-
-                if(name || value) {
-                    const fieldDiv = document.createElement('div');
-                    fieldDiv.className = `embed-field ${isInline ? 'inline' : ''}`;
-                    fieldDiv.innerHTML = `
-                        <div class="field-name">${name}</div>
-                        <div class="field-value">${value}</div>
-                    `;
-                    previewFieldsContainer.appendChild(fieldDiv);
-                }
-            });
-        }
-
-        function setText(previewId, inputId) {
-            const val = document.getElementById(inputId).value;
-            const el = document.getElementById(previewId);
-            el.innerText = val;
-            el.style.display = val ? 'block' : 'none';
-        }
-
-        function setImage(previewId, inputId) {
-            const url = document.getElementById(inputId).value;
-            const el = document.getElementById(previewId);
-            if(url) { el.src = url; el.style.display = 'block'; }
-            else { el.style.display = 'none'; }
-        }
-
-        // --- IMPORTAR JSON ---
-        function toggleImport() {
-            const details = document.getElementById('import-details');
-            details.open = !details.open;
-            if(details.open) {
-                document.getElementById('input-json-import').focus();
-            }
-        }
-
-        function importJSON() {
-            try {
-                const raw = document.getElementById('input-json-import').value;
-                if (!raw.trim()) return alert("Cole um JSON primeiro!");
-                
-                let data = JSON.parse(raw);
-
-                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
-                    data = data.embeds[0];
-                }
-
-                fieldsContainer.innerHTML = '';
-
-                setVal('input-title', data.title);
-                setVal('input-desc', data.description);
-                
-                if (data.color) {
-                    const hexColor = '#' + data.color.toString(16).padStart(6, '0');
-                    colorInput.value = hexColor;
-                }
-
-                setVal('input-author-name', data.author?.name);
-                setVal('input-author-icon', data.author?.icon_url);
-                setVal('input-footer-text', data.footer?.text);
-                setVal('input-footer-icon', data.footer?.icon_url);
-                setVal('input-image', data.image?.url);
-                setVal('input-thumb', data.thumbnail?.url);
-
-                if (data.fields && Array.isArray(data.fields)) {
-                    data.fields.forEach(f => {
-                        addField(f.name || "", f.value || "", f.inline || false);
-                    });
-                }
-
-                updatePreview();
-                document.getElementById('import-details').open = false;
-
-            } catch (e) {
-                alert("Erro ao ler JSON. Verifique a formatação.\n\n" + e.message);
-            }
-        }
-
-        function setVal(id, val) {
-            document.getElementById(id).value = val || "";
-        }
-
-        // --- EXPORTAR JSON ---
-        function copyJSON() {
+        // --- GERAÇÃO DE DADOS (VISUAL -> JSON) ---
+        function getDataFromInputs() {
             const fieldsData = [];
             document.querySelectorAll('.field-item').forEach(item => {
                 const name = item.querySelector('.field-name-input').value;
                 const value = item.querySelector('.field-value-input').value;
                 const inline = item.querySelector('.field-inline-input').checked;
-                if(name || value) {
-                    fieldsData.push({ name, value, inline });
-                }
+                if(name || value) fieldsData.push({ name, value, inline });
             });
 
-            const jsonObject = {
+            const data = {
                 title: document.getElementById('input-title').value,
                 description: document.getElementById('input-desc').value,
                 color: parseInt(colorInput.value.replace('#', ''), 16),
@@ -549,21 +515,107 @@
                 thumbnail: { url: document.getElementById('input-thumb').value }
             };
 
-            if(!jsonObject.title) delete jsonObject.title;
-            if(!jsonObject.description) delete jsonObject.description;
-            if(jsonObject.fields.length === 0) delete jsonObject.fields;
-            if(!jsonObject.footer.text) delete jsonObject.footer;
-            if(!jsonObject.author.name) delete jsonObject.author;
-            if(!jsonObject.image.url) delete jsonObject.image;
-            if(!jsonObject.thumbnail.url) delete jsonObject.thumbnail;
+            // Remove vazios
+            if(!data.title) delete data.title;
+            if(!data.description) delete data.description;
+            if(data.fields.length === 0) delete data.fields;
+            if(!data.footer.text) delete data.footer;
+            if(!data.author.name) delete data.author;
+            if(!data.image.url) delete data.image;
+            if(!data.thumbnail.url) delete data.thumbnail;
 
-            const finalStructure = { embeds: [jsonObject] };
-
-            navigator.clipboard.writeText(JSON.stringify(finalStructure, null, 2)).then(() => {
-                alert("JSON copiado para a área de transferência!");
-            });
+            return data;
         }
 
+        function generateJSONString() {
+            const data = getDataFromInputs();
+            return JSON.stringify({ embeds: [data] }, null, 4);
+        }
+
+        // --- APLICAÇÃO DE DADOS (JSON -> VISUAL) ---
+        function applyJSONToInputs(jsonString) {
+            try {
+                if(!jsonString.trim()) return;
+                let data = JSON.parse(jsonString);
+                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
+                    data = data.embeds[0];
+                }
+
+                // Preenche Inputs
+                setVal('input-title', data.title);
+                setVal('input-desc', data.description);
+                if (data.color) colorInput.value = '#' + data.color.toString(16).padStart(6, '0');
+                
+                setVal('input-author-name', data.author?.name);
+                setVal('input-author-icon', data.author?.icon_url);
+                setVal('input-footer-text', data.footer?.text);
+                setVal('input-footer-icon', data.footer?.icon_url);
+                setVal('input-image', data.image?.url);
+                setVal('input-thumb', data.thumbnail?.url);
+
+                fieldsContainer.innerHTML = '';
+                if (data.fields) {
+                    data.fields.forEach(f => addField(f.name, f.value, f.inline));
+                }
+
+                updatePreview(); // Atualiza visual
+            } catch(e) {
+                console.error("Erro ao converter JSON para Inputs", e);
+            }
+        }
+
+        // --- RENDERIZAÇÃO DO PREVIEW ---
+        function renderPreviewFromData(data) {
+            // Cor
+            const hexColor = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
+            document.getElementById('embed-preview').style.borderLeftColor = hexColor;
+
+            // Textos e Imagens
+            setText('preview-title', data.title);
+            setText('preview-desc', data.description);
+            setText('preview-author-name', data.author?.name);
+            setText('preview-footer-text', data.footer?.text);
+
+            setImage('preview-author-icon', data.author?.icon_url);
+            setImage('preview-image', data.image?.url);
+            setImage('preview-thumb', data.thumbnail?.url);
+            setImage('preview-footer-icon', data.footer?.icon_url);
+
+            // Containers Pais
+            document.getElementById('preview-author').style.display = data.author?.name ? 'flex' : 'none';
+            document.getElementById('preview-footer').style.display = data.footer?.text ? 'flex' : 'none';
+
+            // Fields
+            previewFieldsContainer.innerHTML = '';
+            if (data.fields) {
+                data.fields.forEach(f => {
+                    const fieldDiv = document.createElement('div');
+                    fieldDiv.className = `embed-field ${f.inline ? 'inline' : ''}`;
+                    fieldDiv.innerHTML = `<div class="field-name">${f.name || ''}</div><div class="field-value">${f.value || ''}</div>`;
+                    previewFieldsContainer.appendChild(fieldDiv);
+                });
+            }
+        }
+
+        function updatePreview() {
+            const data = getDataFromInputs();
+            renderPreviewFromData(data);
+        }
+
+        // Helpers
+        function setVal(id, val) { document.getElementById(id).value = val || ""; }
+        function setText(pid, val) { 
+            const el = document.getElementById(pid); 
+            el.innerText = val || ""; 
+            el.style.display = val ? 'block' : 'none'; 
+        }
+        function setImage(pid, url) { 
+            const el = document.getElementById(pid); 
+            if(url) { el.src = url; el.style.display = 'block'; } 
+            else { el.style.display = 'none'; } 
+        }
+
+        // Inicializa
         updatePreview();
     </script>
 </body>
