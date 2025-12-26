@@ -71,17 +71,18 @@
             height: 100%;
             overflow: hidden;
             backdrop-filter: blur(5px);
-            position: relative; /* Para o botão flutuante funcionar */
+            position: relative;
         }
 
-        /* --- CABEÇALHO DO EDITOR (ABAS + BOTÕES) --- */
+        /* --- CABEÇALHO DO EDITOR --- */
         .editor-header {
             display: flex;
-            justify-content: space-between; /* Abas na esq, Botões na dir */
+            justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
             border-bottom: 1px solid #334155;
             background: rgba(15, 23, 42, 0.5);
+            flex-wrap: wrap; gap: 10px;
         }
 
         .tabs-area { display: flex; gap: 10px; }
@@ -101,7 +102,7 @@
         .tab-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
         .tab-btn.active { background: #4752c4; color: #fff; }
 
-        .actions-area { display: flex; gap: 8px; }
+        .actions-area { display: flex; gap: 8px; flex-wrap: wrap;}
 
         .action-btn {
             background: rgba(255,255,255,0.05);
@@ -118,9 +119,66 @@
             transition: 0.2s;
         }
         .action-btn:hover { background: #334155; }
+        .action-btn.primary { background: #2d7d46; border-color: #2d7d46; color: #fff; } /* Verde */
+        .action-btn.primary:hover { background: #1e5c32; }
+        .action-btn.share { background: #00b0f4; border-color: #00b0f4; color: #fff; } /* Azul */
+        .action-btn.share:hover { background: #0088bd; }
         .action-btn.danger:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; }
 
-        /* --- ÁREAS DE CONTEÚDO --- */
+        /* --- MODAL (ARQUIVADOS) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: none; /* Escondido por padrão */
+            justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 80vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { margin: 0; color: #fff; font-size: 16px; }
+        .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
+        .close-modal:hover { color: #fff; }
+        
+        .modal-body { padding: 0; overflow-y: auto; flex: 1; }
+
+        .saved-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #334155;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: 0.2s;
+        }
+        .saved-item:hover { background: rgba(255,255,255,0.02); }
+        .saved-item:last-child { border-bottom: none; }
+
+        .saved-info h4 { margin: 0 0 5px 0; font-size: 14px; color: #fff; }
+        .saved-info span { font-size: 11px; color: #94a3b8; }
+
+        .saved-actions { display: flex; gap: 8px; }
+        .btn-mini {
+            padding: 6px; border-radius: 4px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; font-size: 14px;
+        }
+        .btn-mini:hover { background: #334155; color: #fff; }
+        .btn-mini.load { color: #2d7d46; border-color: #2d7d46; }
+        .btn-mini.load:hover { background: #2d7d46; color: white; }
+        .btn-mini.share { color: #00b0f4; border-color: #00b0f4; }
+        .btn-mini.share:hover { background: #00b0f4; color: white; }
+        .btn-mini.del:hover { border-color: #ef4444; color: #ef4444; }
+
+        /* --- EDITOR E JSON --- */
         .editor-content, .json-content {
             padding: 20px;
             overflow-y: auto;
@@ -129,66 +187,37 @@
         }
         .editor-content.active, .json-content.active { display: block; }
 
-        /* JSON Editor */
         .json-editor-textarea {
             width: 100%; height: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 6px;
             color: #a5b3ce; padding: 15px; font-family: 'Consolas', 'Monaco', monospace; font-size: 13px; resize: none; outline: none;
         }
         .json-editor-textarea:focus { border-color: #4752c4; }
 
-        /* --- BOTÃO FLUTUANTE DE COR --- */
+        /* Floating Color */
         .floating-color-widget {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 10;
+            bottom: 20px; left: 20px; z-index: 10;
         }
-
         .color-circle-btn {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            cursor: pointer;
-            overflow: hidden;
-            position: relative;
-            background: #00b0f4; /* Cor inicial */
-            transition: transform 0.2s;
+            width: 45px; height: 45px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            cursor: pointer; overflow: hidden; position: relative; background: #00b0f4; transition: transform 0.2s;
         }
         .color-circle-btn:hover { transform: scale(1.1); }
-
-        /* O input fica invisível mas clicável por cima do botão */
         .color-circle-btn input[type="color"] {
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            padding: 0; margin: 0;
-            opacity: 0;
-            cursor: pointer;
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; padding: 0; margin: 0; opacity: 0; cursor: pointer;
         }
-
         .brush-icon {
-            pointer-events: none;
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px;
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+            pointer-events: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* --- FORMULÁRIO --- */
+        /* Form Elements */
         details { background: #1e293b; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #334155; }
         summary { padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         summary::after { content: "+"; font-size: 16px; }
         details[open] summary::after { content: "-"; }
-
         .control-group { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; margin-bottom: -5px;}
-        
-        input, textarea, select {
-            background: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 4px; width: 100%; font-family: inherit; font-size: 13px;
-        }
+        input, textarea, select { background: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 4px; width: 100%; font-family: inherit; font-size: 13px; }
         textarea { resize: vertical; min-height: 80px; }
 
         /* Fields */
@@ -201,18 +230,10 @@
         .inline-checkbox { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; }
         .inline-checkbox input { width: auto; }
 
-        /* --- PREVIEW (DIREITA) --- */
+        /* --- PREVIEW --- */
         .preview-panel {
-            background: #313338;
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto;
-            height: 100%;
+            background: #313338; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; height: 100%;
         }
-
         .discord-msg { display: flex; gap: 12px; font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.375rem;}
         .bot-avatar { width: 40px; height: 40px; border-radius: 50%; background-image: url('../IMAGENS/Mascote.png'); background-size: cover; flex-shrink: 0; margin-top: 2px;}
         .msg-content { width: 100%; }
@@ -220,48 +241,30 @@
         .bot-tag { background: #5865F2; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 3px; line-height: 1.3; margin-top: 1px;}
         .timestamp { font-size: 12px; color: #949BA4; margin-left: 5px; font-weight: 400;}
 
-        /* O EMBED */
         .discord-embed {
-            margin-top: 8px;
-            background: #2b2d31;
-            border-left: 4px solid #00b0f4;
-            border-radius: 4px;
-            padding: 16px;
-            max-width: 520px;
-            display: grid;
-            grid-template-columns: auto;
-            gap: 8px;
+            margin-top: 8px; background: #2b2d31; border-left: 4px solid #00b0f4; border-radius: 4px; padding: 16px; max-width: 520px; display: grid; grid-template-columns: auto; gap: 8px;
         }
-
         .embed-author { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
         .embed-author img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover;}
         .embed-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; white-space: pre-wrap;}
         .embed-desc { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.4; margin-bottom: 8px;}
         .embed-image { max-width: 100%; border-radius: 4px; margin-top: 8px; display: none; object-fit: cover;}
         .embed-thumb { float: right; max-width: 80px; max-height: 80px; border-radius: 4px; margin-left: 16px; display: none; object-fit: cover;}
-        
         .embed-fields { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
         .embed-field { min-width: 100%; margin-bottom: 4px; }
         .embed-field.inline { min-width: 30%; flex: 1; }
         .field-name { font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 2px; }
         .field-value { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.375rem; }
-
         .embed-footer { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #dcddde; margin-top: 8px; }
         .embed-footer img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover;}
 
-        .footer-credits {
-            background: rgba(10, 15, 30, 0.95);
-            border-top: 1px solid #1e293b;
-            padding: 15px;
-            text-align: center;
-            flex-shrink: 0;
-        }
+        .footer-credits { background: rgba(10, 15, 30, 0.95); border-top: 1px solid #1e293b; padding: 15px; text-align: center; flex-shrink: 0; }
         .credits-content p { color: #94a3b8; font-size: 13px; margin: 0; }
 
         @media (max-width: 900px) {
             .main-grid { grid-template-columns: 1fr; height: auto; overflow: visible;}
             .preview-panel { min-height: 400px; }
-            .floating-color-widget { position: fixed; bottom: 20px; right: 20px; left: auto; } /* Mobile */
+            .floating-color-widget { position: fixed; bottom: 20px; right: 20px; left: auto; }
         }
     </style>
 </head>
@@ -287,13 +290,15 @@
                     <button class="tab-btn" onclick="switchTab('json')" id="btn-json">JSON</button>
                 </div>
                 <div class="actions-area">
+                    <button class="action-btn share" onclick="copyShareLink()">🔗 Copiar Link</button>
+                    <button class="action-btn primary" onclick="saveEmbed()">💾 Salvar</button>
+                    <button class="action-btn" onclick="openSavedModal()">📂 Meus Embeds</button>
                     <button class="action-btn" onclick="copyJSON()">📋 Copiar JSON</button>
-                    <button class="action-btn danger" onclick="clearAll()">🗑️ Limpar</button>
+                    <button class="action-btn danger" onclick="clearAll()">🗑️</button>
                 </div>
             </div>
 
             <div class="editor-content active" id="content-visual">
-                
                 <details open>
                     <summary>Informações Básicas</summary>
                     <div class="control-group">
@@ -356,7 +361,6 @@
                     <input type="color" id="input-color" value="#00b0f4" oninput="updateColorPreview(this.value); updatePreview();">
                 </div>
             </div>
-
         </div>
 
         <div class="preview-panel">
@@ -369,12 +373,10 @@
 
                     <div class="discord-embed" id="embed-preview">
                         <div style="grid-column: 1; min-width: 0;">
-                            
                             <div class="embed-author" id="preview-author" style="display:none;">
                                 <img id="preview-author-icon" src="" style="display:none;">
                                 <span id="preview-author-name"></span>
                             </div>
-
                             <div style="display: flex;">
                                 <div style="flex: 1; min-width: 0;">
                                     <div class="embed-title" id="preview-title" style="display:none;"></div>
@@ -383,21 +385,28 @@
                                 </div>
                                 <img class="embed-thumb" id="preview-thumb" src="">
                             </div>
-
                             <img class="embed-image" id="preview-image" src="">
-
                             <div class="embed-footer" id="preview-footer" style="display:none;">
                                 <img id="preview-footer-icon" src="" style="display:none;">
                                 <span id="preview-footer-text"></span>
                             </div>
-
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="modal-overlay" id="modal-saved">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📂 Meus Embeds Salvos</h3>
+                <button class="close-modal" onclick="closeSavedModal()">×</button>
+            </div>
+            <div class="modal-body" id="saved-list">
+                <div style="padding: 20px; text-align: center; color: #94a3b8;">Nenhum embed salvo.</div>
+            </div>
+        </div>
     </div>
 
     <footer class="footer-credits">
@@ -413,12 +422,135 @@
         const previewFieldsContainer = document.getElementById('preview-fields');
         const jsonTextarea = document.getElementById('json-io');
         
-        // --- FUNÇÃO PARA ATUALIZAR A COR DO BOTÃO FLUTUANTE ---
+        // --- INICIALIZAÇÃO E URL PARAMS ---
+        window.addEventListener('load', () => {
+            // Verifica se tem dados na URL para carregar
+            const params = new URLSearchParams(window.location.search);
+            const state = params.get('data');
+            
+            if(state) {
+                try {
+                    // Decodifica Base64 + URI Component
+                    const jsonString = decodeURIComponent(atob(state));
+                    applyJSONToInputs(jsonString);
+                    console.log("Embed carregado via Link!");
+                } catch(e) {
+                    console.error("Link inválido ou corrompido.", e);
+                }
+            } else {
+                updatePreview();
+                updateColorPreview(colorInput.value);
+            }
+        });
+
+        // --- SISTEMA DE LINK COMPARTILHÁVEL ---
+        function copyShareLink() {
+            const data = getDataFromInputs();
+            const jsonString = JSON.stringify({ embeds: [data] });
+            
+            // Comprime para URL: JSON -> EncodeURI -> Base64
+            const compressed = btoa(encodeURIComponent(jsonString));
+            
+            // Monta a URL atual + parametro
+            const url = window.location.origin + window.location.pathname + '?data=' + compressed;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                alert("🔗 Link copiado!\n\nEnvie este link para qualquer pessoa e ela verá este embed.");
+            });
+        }
+
+        // --- SISTEMA DE SALVAMENTO LOCAL (ARQUIVO) ---
+        function saveEmbed() {
+            const name = prompt("Dê um nome para este Embed:");
+            if(!name) return;
+
+            const data = getDataFromInputs();
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            
+            savedItems.push({
+                id: Date.now(),
+                name: name,
+                date: new Date().toLocaleDateString(),
+                data: data
+            });
+
+            localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+            alert("Embed salvo com sucesso!");
+        }
+
+        function openSavedModal() {
+            const list = document.getElementById('saved-list');
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            
+            document.getElementById('modal-saved').classList.add('active');
+
+            if(savedItems.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8;">Nenhum embed salvo.</div>';
+                return;
+            }
+
+            list.innerHTML = '';
+            // Ordem: Mais recente primeiro
+            savedItems.reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'saved-item';
+                div.innerHTML = `
+                    <div class="saved-info">
+                        <h4>${item.name}</h4>
+                        <span>${item.date}</span>
+                    </div>
+                    <div class="saved-actions">
+                        <button class="btn-mini load" title="Carregar" onclick="loadSavedItem(${item.id})">📂</button>
+                        <button class="btn-mini share" title="Copiar Link" onclick="shareSavedItem(${item.id})">🔗</button>
+                        <button class="btn-mini del" title="Excluir" onclick="deleteSavedItem(${item.id})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function closeSavedModal() {
+            document.getElementById('modal-saved').classList.remove('active');
+        }
+
+        function loadSavedItem(id) {
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            const item = savedItems.find(x => x.id === id);
+            if(item) {
+                // Envelopa em embeds[] para ser compatível com applyJSON
+                const jsonWrapper = JSON.stringify({ embeds: [item.data] });
+                applyJSONToInputs(jsonWrapper);
+                closeSavedModal();
+            }
+        }
+
+        function deleteSavedItem(id) {
+            if(!confirm("Excluir este item?")) return;
+            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            savedItems = savedItems.filter(x => x.id !== id);
+            localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+            openSavedModal(); // Recarrega a lista
+        }
+
+        function shareSavedItem(id) {
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            const item = savedItems.find(x => x.id === id);
+            if(item) {
+                const jsonString = JSON.stringify({ embeds: [item.data] });
+                const compressed = btoa(encodeURIComponent(jsonString));
+                const url = window.location.origin + window.location.pathname + '?data=' + compressed;
+                navigator.clipboard.writeText(url).then(() => {
+                    alert("🔗 Link do embed '" + item.name + "' copiado!");
+                });
+            }
+        }
+
+
+        // --- FUNÇÕES VISUAIS ---
         function updateColorPreview(color) {
             colorBtnVisual.style.backgroundColor = color;
         }
 
-        // --- LÓGICA DE ABAS ---
         function switchTab(mode) {
             document.getElementById('btn-visual').classList.toggle('active', mode === 'visual');
             document.getElementById('btn-json').classList.toggle('active', mode === 'json');
@@ -433,29 +565,22 @@
             }
         }
 
-        // --- ATUALIZAÇÃO DO JSON MANUALMENTE ---
         function updateFromJSONInput() {
             try {
                 const raw = jsonTextarea.value;
                 if (!raw.trim()) return;
-                
                 let data = JSON.parse(raw);
-                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
-                    data = data.embeds[0];
-                }
+                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) data = data.embeds[0];
                 renderPreviewFromData(data);
-            } catch (e) {
-                // Ignora erro enquanto digita
-            }
+            } catch (e) {}
         }
 
-        // --- MANIPULAÇÃO DE CAMPOS (FIELDS) ---
+        // --- MANIPULAÇÃO DE CAMPOS ---
         function addField(name = "", value = "", inline = false) {
             const id = Date.now() + Math.random();
             const div = document.createElement('div');
             div.className = 'field-item';
             div.dataset.id = id;
-
             div.innerHTML = `
                 <div class="field-header">
                     <span class="field-title">Campo</span>
@@ -463,10 +588,8 @@
                 </div>
                 <label>Título do Campo</label>
                 <input type="text" class="field-name-input" value="${name}" oninput="updatePreview()">
-                
                 <label style="margin-top: 8px; display:block;">Conteúdo</label>
                 <textarea class="field-value-input" oninput="updatePreview()">${value}</textarea>
-
                 <label class="inline-checkbox">
                     <input type="checkbox" class="field-inline-input" ${inline ? 'checked' : ''} onchange="updatePreview()">
                     Inline (Mesma linha)
@@ -485,17 +608,16 @@
         function clearAll() {
             if(!confirm("Deseja limpar todos os campos?")) return;
             document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
-            
-            // Reseta cor
             colorInput.value = '#00b0f4';
             updateColorPreview('#00b0f4');
-
             fieldsContainer.innerHTML = '';
             jsonTextarea.value = '';
+            // Remove parametro da URL sem recarregar para ficar limpo
+            window.history.pushState({}, document.title, window.location.pathname);
             updatePreview();
         }
 
-        // --- GERAÇÃO DE JSON E COPY ---
+        // --- GERAÇÃO E APLICAÇÃO DE DADOS ---
         function getDataFromInputs() {
             const fieldsData = [];
             document.querySelectorAll('.field-item').forEach(item => {
@@ -521,8 +643,8 @@
                 image: { url: document.getElementById('input-image').value },
                 thumbnail: { url: document.getElementById('input-thumb').value }
             };
-
-            // Limpa propriedades vazias
+            
+            // Clean empty
             if(!data.title) delete data.title;
             if(!data.description) delete data.description;
             if(data.fields.length === 0) delete data.fields;
@@ -535,35 +657,22 @@
         }
 
         function generateJSONString() {
-            const data = getDataFromInputs();
-            return JSON.stringify({ embeds: [data] }, null, 4);
+            return JSON.stringify({ embeds: [getDataFromInputs()] }, null, 4);
         }
 
         function copyJSON() {
-            // Se estiver na aba JSON, copia o texto do textarea, senão gera do visual
-            let textToCopy = "";
-            if (document.getElementById('content-json').classList.contains('active')) {
-                 textToCopy = jsonTextarea.value;
-            } else {
-                 textToCopy = generateJSONString();
-            }
-
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert("JSON copiado!");
-            });
+            const textToCopy = document.getElementById('content-json').classList.contains('active') ? jsonTextarea.value : generateJSONString();
+            navigator.clipboard.writeText(textToCopy).then(() => alert("JSON copiado!"));
         }
 
-        // --- APLICAÇÃO DE DADOS (JSON -> VISUAL) ---
         function applyJSONToInputs(jsonString) {
             try {
                 if(!jsonString.trim()) return;
                 let data = JSON.parse(jsonString);
-                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) {
-                    data = data.embeds[0];
-                }
+                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) data = data.embeds[0];
 
-                setVal('input-title', data.title);
-                setVal('input-desc', data.description);
+                document.getElementById('input-title').value = data.title || "";
+                document.getElementById('input-desc').value = data.description || "";
                 
                 if (data.color) {
                     const hex = '#' + data.color.toString(16).padStart(6, '0');
@@ -571,41 +680,37 @@
                     updateColorPreview(hex);
                 }
                 
-                setVal('input-author-name', data.author?.name);
-                setVal('input-author-icon', data.author?.icon_url);
-                setVal('input-footer-text', data.footer?.text);
-                setVal('input-footer-icon', data.footer?.icon_url);
-                setVal('input-image', data.image?.url);
-                setVal('input-thumb', data.thumbnail?.url);
+                document.getElementById('input-author-name').value = data.author?.name || "";
+                document.getElementById('input-author-icon').value = data.author?.icon_url || "";
+                document.getElementById('input-footer-text').value = data.footer?.text || "";
+                document.getElementById('input-footer-icon').value = data.footer?.icon_url || "";
+                document.getElementById('input-image').value = data.image?.url || "";
+                document.getElementById('input-thumb').value = data.thumbnail?.url || "";
 
                 fieldsContainer.innerHTML = '';
-                if (data.fields) {
-                    data.fields.forEach(f => addField(f.name, f.value, f.inline));
-                }
+                if (data.fields) data.fields.forEach(f => addField(f.name, f.value, f.inline));
 
                 updatePreview();
-            } catch(e) {
-                console.error("Erro no JSON", e);
-            }
+            } catch(e) { console.error("Erro JSON", e); }
         }
 
-        // --- RENDERIZAÇÃO DO PREVIEW ---
         function renderPreviewFromData(data) {
             const hexColor = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
             document.getElementById('embed-preview').style.borderLeftColor = hexColor;
-            
-            // Sincroniza o botão flutuante se a cor vier do JSON
             updateColorPreview(hexColor);
+
+            const setText = (id, val) => { const el = document.getElementById(id); el.innerText = val || ""; el.style.display = val ? 'block' : 'none'; };
+            const setImg = (id, val) => { const el = document.getElementById(id); if(val) { el.src = val; el.style.display = 'block'; } else { el.style.display = 'none'; } };
 
             setText('preview-title', data.title);
             setText('preview-desc', data.description);
             setText('preview-author-name', data.author?.name);
             setText('preview-footer-text', data.footer?.text);
 
-            setImage('preview-author-icon', data.author?.icon_url);
-            setImage('preview-image', data.image?.url);
-            setImage('preview-thumb', data.thumbnail?.url);
-            setImage('preview-footer-icon', data.footer?.icon_url);
+            setImg('preview-author-icon', data.author?.icon_url);
+            setImg('preview-image', data.image?.url);
+            setImg('preview-thumb', data.thumbnail?.url);
+            setImg('preview-footer-icon', data.footer?.icon_url);
 
             document.getElementById('preview-author').style.display = data.author?.name ? 'flex' : 'none';
             document.getElementById('preview-footer').style.display = data.footer?.text ? 'flex' : 'none';
@@ -613,35 +718,17 @@
             previewFieldsContainer.innerHTML = '';
             if (data.fields) {
                 data.fields.forEach(f => {
-                    const fieldDiv = document.createElement('div');
-                    fieldDiv.className = `embed-field ${f.inline ? 'inline' : ''}`;
-                    fieldDiv.innerHTML = `<div class="field-name">${f.name || ''}</div><div class="field-value">${f.value || ''}</div>`;
-                    previewFieldsContainer.appendChild(fieldDiv);
+                    const div = document.createElement('div');
+                    div.className = `embed-field ${f.inline ? 'inline' : ''}`;
+                    div.innerHTML = `<div class="field-name">${f.name || ''}</div><div class="field-value">${f.value || ''}</div>`;
+                    previewFieldsContainer.appendChild(div);
                 });
             }
         }
 
         function updatePreview() {
-            const data = getDataFromInputs();
-            renderPreviewFromData(data);
+            renderPreviewFromData(getDataFromInputs());
         }
-
-        // Helpers
-        function setVal(id, val) { document.getElementById(id).value = val || ""; }
-        function setText(pid, val) { 
-            const el = document.getElementById(pid); 
-            el.innerText = val || ""; 
-            el.style.display = val ? 'block' : 'none'; 
-        }
-        function setImage(pid, url) { 
-            const el = document.getElementById(pid); 
-            if(url) { el.src = url; el.style.display = 'block'; } 
-            else { el.style.display = 'none'; } 
-        }
-
-        // Inicializa
-        updatePreview();
-        updateColorPreview(colorInput.value);
     </script>
 </body>
 </html>
