@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelLog v16.2 - Chat Fix</title>
+    <title>PixelLog v16.3 - Hybrid Engine</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -240,9 +240,9 @@
 
 <script>
     /**
-     * PIXELLOG v16.2 - FINAL CUT
-     * - Fix Crítico: Detecção de Chat quando o módulo é [CHAT].
-     * - Fix: Força a exibição de "[CHAT]" no texto da mensagem.
+     * PIXELLOG v16.3 - HYBRID ENGINE (Format Fix)
+     * - Fix: Lê logs de Servidor (3 blocos) E logs de Cliente (2 blocos).
+     * - Fix: Detecta [CHAT] mesmo quando não há módulo explícito.
      */
 
     const TAG_DEFINITIONS = [
@@ -286,7 +286,7 @@
                 
                 let badges = '';
                 // Mod Badge
-                if(l.mod && !l.isChat && l.mod !== 'TIME') {
+                if(l.mod && !l.isChat && l.mod !== 'TIME' && l.mod !== 'SYS') {
                     let cls = 'bdg-mod';
                     if(l.mod === 'LuckPerms') cls = 'bdg-lp';
                     badges += `<span class="bdg ${cls}" onclick="App.selectModFilter('${l.mod}')">${l.mod}</span>`;
@@ -396,12 +396,16 @@
                     const total = lines.length;
                     const parsed = [];
                     
-                    const rxLog = /^\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]:\\s+(.*)$/;
+                    // REGEX 1: Padrão Servidor (3 blocos) -> [Time] [Level] [Mod]: Msg
+                    const rxV1 = /^\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]:\\s+(.*)$/;
+                    
+                    // REGEX 2: Padrão Cliente (2 blocos) -> [Time] [Thread/Level]: Msg (O SEU CASO)
+                    const rxV2 = /^\\[([^\\]]+)\\]\\s+\\[([^\\]]+)\\]:\\s+(.*)$/;
+
                     const rxLP = /^\\[LP\\]\\s+(.*)$/;
                     const rxTime = /^(\\d{2}:\\d{2}:\\d{2})$/;
                     
                     const tags = e.data.tags.map(t => ({ id: t.id, rx: new RegExp(t.pattern, 'i') }));
-                    
                     let lastTime = "--:--"; 
 
                     for(let i=0; i < total; i++) {
@@ -409,32 +413,48 @@
                         if(!line.trim()) continue;
 
                         let entry = null;
-                        const m = line.match(rxLog);
+                        
+                        // Tenta Regex de 3 Blocos (Servidor)
+                        let m = line.match(rxV1);
+                        let isV2 = false;
+
+                        // Se falhar, tenta Regex de 2 Blocos (Cliente)
+                        if (!m) {
+                            m = line.match(rxV2);
+                            isV2 = true;
+                        }
                         
                         if(m) {
+                            let time = m[1];
                             let lvl = 'INFO';
-                            if(m[2].includes('WARN')) lvl = 'WARN';
-                            else if(m[2].includes('ERROR') || m[2].includes('FATAL')) lvl = 'ERROR';
+                            let mod = 'SYS';
+                            let msg = '';
 
-                            // Captura o módulo e limpa barras
-                            const mod = m[3].replace(/\\/$/, '');
-                            let msg = m[4];
+                            if (isV2) {
+                                // Formato Cliente: [Time] [Thread/Lvl]: Msg
+                                const threadInfo = m[2];
+                                msg = m[3];
+                                mod = 'Client'; // Default mod name for client logs
+
+                                if(threadInfo.includes('WARN')) lvl = 'WARN';
+                                else if(threadInfo.includes('ERROR') || threadInfo.includes('FATAL')) lvl = 'ERROR';
+                            } else {
+                                // Formato Servidor: [Time] [Lvl] [Mod]: Msg
+                                if(m[2].includes('WARN')) lvl = 'WARN';
+                                else if(m[2].includes('ERROR')) lvl = 'ERROR';
+                                mod = m[3].replace(/\\/$/, '');
+                                msg = m[4];
+                            }
 
                             if (!msg || !msg.trim() || msg.trim() === '\\n') continue;
 
                             let isChat = false;
                             let chatType = '';
 
-                            // CORREÇÃO CRÍTICA:
-                            // Verifica se o módulo é 'CHAT' ou 'chat' (comum em servidores), ou se está na mensagem.
-                            if(msg.includes('[CHAT]') || mod === 'CHAT' || mod === 'chat' || mod.includes('NewChatGui')) {
+                            // Detecção de Chat Híbrida
+                            // Se tiver [CHAT] no texto OU se o módulo for CHAT
+                            if(msg.includes('[CHAT]') || mod === 'CHAT' || mod.includes('NewChatGui')) {
                                 lvl = 'CHAT'; isChat = true;
-                                
-                                // Se o sistema detectou como chat pelo módulo, mas o texto não tem '[CHAT]', adicionamos manualmente.
-                                if ((mod === 'CHAT' || mod === 'chat') && !msg.includes('[CHAT]')) {
-                                    msg = '[CHAT] ' + msg;
-                                }
-
                                 if(msg.includes('[!]')) chatType = 'ALERT';
                                 else if(msg.includes('?')) chatType = 'GLOBAL';
                                 else if(msg.includes('[+]')) chatType = 'JOIN';
@@ -442,30 +462,23 @@
                             }
 
                             entry = {
-                                id: i, time: m[1], timeShort: m[1].split(' ')[1] ? m[1].split(' ')[1].split('.')[0] : m[1],
-                                lvl: lvl, mod: mod, msg: msg, // Sem replace
+                                id: i, time: time, timeShort: time.split(' ')[1] ? time.split(' ')[1].split('.')[0] : time,
+                                lvl: lvl, mod: mod, msg: msg, 
                                 isChat: isChat, chatType: chatType, tags: []
                             };
                             lastTime = entry.timeShort;
                         
                         } else if (line.match(rxLP)) {
+                            // ... Lógica LuckPerms ...
                             const mLP = line.match(rxLP);
-                            entry = {
-                                id: i, time: lastTime, timeShort: lastTime,
-                                lvl: 'INFO', mod: 'LuckPerms', msg: mLP[1],
-                                isChat: false, chatType: '', tags: []
-                            };
-
+                            entry = { id: i, time: lastTime, timeShort: lastTime, lvl: 'INFO', mod: 'LuckPerms', msg: mLP[1], isChat: false, chatType: '', tags: [] };
                         } else if (line.match(rxTime)) {
+                            // ... Lógica Marco Temporal ...
                             const mTime = line.match(rxTime);
                             lastTime = mTime[1];
-                            entry = {
-                                id: i, time: lastTime, timeShort: lastTime,
-                                lvl: 'TIME', mod: 'TIME', msg: '--- Marco Temporal ---',
-                                isChat: false, chatType: '', tags: []
-                            };
-
+                            entry = { id: i, time: lastTime, timeShort: lastTime, lvl: 'TIME', mod: 'TIME', msg: '--- Marco Temporal ---', isChat: false, chatType: '', tags: [] };
                         } else {
+                            // ... Lógica Erro Genérico ...
                             if (!line || !line.trim()) continue;
                             entry = { id: i, time: '', timeShort: '', lvl: 'ERROR', mod: 'SYS', msg: line, isChat: false, tags: [] };
                             if(/exception|at /i.test(line)) entry.tags.push('t-ERROR');
