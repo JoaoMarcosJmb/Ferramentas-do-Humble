@@ -2,11 +2,11 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Horários Individuais</title>
+    <title>Humble Calendar - Título Cartoon</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
@@ -82,17 +82,30 @@
             overflow: hidden; 
         }
 
+        /* --- TÍTULO NOVO ESTILO CARTOON --- */
         #month-title {
             position: absolute;
-            top: 40px;
+            top: 35px; /* Subi um pouco */
             width: 100%;
             text-align: center;
-            font-size: 70px;
-            color: #E25D33;
+            font-size: 85px; /* Maior */
+            color: #ff6b35; /* Laranja vibrante */
             text-transform: uppercase;
-            font-weight: 800;
-            text-shadow: 3px 3px 0px #5c4033;
+            font-weight: 900; /* Extra Bold/Black */
             letter-spacing: -2px;
+            
+            /* TRUQUE: Cria uma borda branca grossa e depois a sombra marrom */
+            text-shadow: 
+                3px 3px 0 #fff,
+                -3px -3px 0 #fff,
+                3px -3px 0 #fff,
+                -3px 3px 0 #fff,
+                3px 0px 0 #fff,
+                -3px 0px 0 #fff,
+                0px 3px 0 #fff,
+                0px -3px 0 #fff,
+                8px 8px 0 #3f2e22; /* A sombra marrom projetada */
+            
             pointer-events: none;
             z-index: 5;
         }
@@ -108,7 +121,6 @@
             z-index: 5;
         }
 
-        /* Dias da Semana (Sem horário fixo) */
         .week-header {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -120,6 +132,8 @@
             font-size: 20px;
             font-weight: 700;
             text-transform: uppercase;
+            /* Leve contorno branco para leitura na areia */
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
         }
 
         /* --- GRID --- */
@@ -130,7 +144,6 @@
             gap: 12px;
             transition: gap 0.3s;
         }
-        /* Ajuste para 6 linhas (encolhe para caber) */
         .days-grid.six-rows { gap: 8px; }
 
         .day-cell {
@@ -145,7 +158,6 @@
             overflow: hidden;
         }
 
-        /* Número do dia */
         .day-num {
             position: absolute;
             top: 5px;
@@ -157,38 +169,34 @@
             line-height: 1;
         }
 
-        /* Horário Individual (Novo) */
         .day-time {
             position: absolute;
             top: 8px;
-            right: 8px; /* Fica no canto direito */
+            right: 8px; 
             font-size: 13px;
-            color: #d97706; /* Ouro escuro */
+            color: #d97706; 
             font-weight: 800;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9);
             padding: 2px 6px;
             border-radius: 6px;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
-        /* Texto do Evento */
         .day-text {
-            margin-top: 35px; /* Espaço para não bater no numero */
+            margin-top: 35px; 
             width: 92%;
             text-align: center;
             font-size: 13px;
             color: #3f2e22; 
             font-weight: 700;
             line-height: 1.1;
-            
-            /* --- LIMITADOR DE LINHAS (Segurança) --- */
             display: -webkit-box;
-            -webkit-line-clamp: 2; /* Máximo 2 linhas */
+            -webkit-line-clamp: 2; 
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
-        /* Ajuste fino quando tem 6 linhas */
         .days-grid.six-rows .day-text {
             margin-top: 30px;
             font-size: 12px;
@@ -264,7 +272,6 @@
                     <div class="wk-day">SEX</div>
                     <div class="wk-day">SÁB</div>
                 </div>
-
                 <div class="days-grid" id="days-grid"></div>
             </div>
         </div>
@@ -301,7 +308,6 @@
             const primeiroDia = new Date(ano, mesIndex, 1).getDay();
             const totalDias = new Date(ano, mesIndex + 1, 0).getDate();
 
-            // Grid Inteligente (5 ou 6 linhas)
             const totalCelulas = primeiroDia + totalDias;
             const numeroLinhas = Math.ceil(totalCelulas / 7);
 
@@ -313,14 +319,12 @@
                 grid.classList.remove('six-rows');
             }
 
-            // Vazios
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
                 grid.appendChild(div);
             }
 
-            // Dias
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
@@ -334,39 +338,31 @@
             processarEventos();
         }
 
-        // 3. Processar Eventos (COM SUPORTE A HORA)
+        // 3. Processar Eventos
         function processarEventos() {
-            // Limpa tudo antes
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
             document.querySelectorAll('.day-time').forEach(e => e.innerText = "");
 
             const lines = document.getElementById('eventInput').value.split('\n');
             
             lines.forEach(line => {
-                // Regex para capturar: Dia: (Opcional Hora -) Texto
-                // Ex: "4: 18h - Teste" ou "4: Teste"
-                // Grupo 1: Dia
-                // Grupo 2: Hora (opcional)
-                // Grupo 3: Texto
                 const regex = /^(\d+):\s*(?:(.*?)\s*-\s*)?(.*)/;
                 const match = line.match(regex);
 
                 if (match) {
                     const dia = match[1];
-                    const hora = match[2]; // Pode ser undefined
+                    const hora = match[2];
                     const texto = match[3];
 
-                    // Preenche Texto
                     const elTexto = document.getElementById(`evt-${dia}`);
                     if (elTexto) elTexto.innerText = texto;
 
-                    // Preenche Hora (se existir)
                     const elHora = document.getElementById(`time-${dia}`);
                     if (elHora && hora) {
                         elHora.innerText = hora;
                         elHora.style.display = 'block';
                     } else if (elHora) {
-                        elHora.style.display = 'none'; // Esconde se não tiver hora
+                        elHora.style.display = 'none';
                     }
                 }
             });
