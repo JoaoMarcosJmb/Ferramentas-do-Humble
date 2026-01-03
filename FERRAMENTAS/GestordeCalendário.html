@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Montserrat Edition</title>
+    <title>Calendário Humble - Estilo Pedras</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
 
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif; /* Interface lateral continua padrão */
+            font-family: 'Segoe UI', sans-serif;
             background-color: #1e293b;
             margin: 0;
             display: flex;
@@ -58,7 +58,7 @@
         .btn:hover { background: #15803d; }
         .btn-blue { background: #3b82f6; margin-top: 10px; }
 
-        /* --- ÁREA DE VISUALIZAÇÃO --- */
+        /* --- PREVIEW --- */
         .preview-area {
             flex: 1;
             background: #334155;
@@ -77,7 +77,6 @@
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            /* AQUI ESTÁ A FONTE NOVA PARA TODO O CALENDÁRIO */
             font-family: 'Montserrat', sans-serif;
         }
 
@@ -90,13 +89,13 @@
             font-size: 70px;
             color: #E25D33;
             text-transform: uppercase;
-            font-weight: 800; /* Extra Bold */
+            font-weight: 800;
             text-shadow: 3px 3px 0px #5c4033;
-            letter-spacing: -2px; /* Deixa mais juntinho, estilo moderno */
+            letter-spacing: -2px;
             pointer-events: none;
         }
 
-        /* --- O GRID VISUAL --- */
+        /* Container do Grid */
         .calendar-wrapper {
             position: absolute;
             top: 320px; 
@@ -107,7 +106,7 @@
             flex-direction: column;
         }
 
-        /* Cabeçalho dos dias da semana */
+        /* Dias da Semana */
         .week-header {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -117,7 +116,7 @@
         .wk-day {
             color: #d97706;
             font-size: 20px;
-            font-weight: 700; /* Bold */
+            font-weight: 700;
             text-transform: uppercase;
         }
         .wk-time {
@@ -128,20 +127,26 @@
             margin-bottom: 2px;
         }
 
-        /* O Grid de Dias */
+        /* --- O SEGREDO DAS PEDRINHAS ESTÁ AQUI --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            gap: 10px;
+            gap: 12px; /* Um pouco mais de espaço entre as pedras */
         }
 
         .day-cell {
             position: relative;
-            background: rgba(255, 255, 255, 0.25);
-            border: 2px dashed #d97706;
-            border-radius: 12px;
+            /* PEDRINHAS: Borda pontilhada grossa e cinza escuro */
+            border: 5px dotted #4b5563; 
+            
+            /* Arredondamento para as pedras fazerem a curva */
+            border-radius: 18px; 
+            
+            /* Fundo leve para separar o texto da areia de trás */
+            background: rgba(255, 248, 220, 0.15); 
+            
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -153,22 +158,22 @@
             top: 5px;
             left: 10px;
             font-size: 22px;
-            color: #8B1D1D;
-            font-weight: 800; /* Bem grosso para destacar */
+            color: #8B1D1D; /* Vermelho Humble */
+            font-weight: 800;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5); /* Contorno leve */
         }
 
         .day-text {
-            margin-top: 30px;
+            margin-top: 35px;
             width: 90%;
             text-align: center;
             font-size: 14px;
-            color: #3f2e22;
-            font-weight: 700; /* Bold para leitura fácil */
+            color: #3f2e22; /* Marrom escuro */
+            font-weight: 700;
             line-height: 1.2;
             white-space: pre-wrap;
         }
 
-        /* Dias vazios */
         .day-cell.empty {
             background: transparent;
             border: none;
@@ -179,10 +184,10 @@
 <body>
 
     <div class="sidebar">
-        <h2>📅 Humble Organizer</h2>
+        <h2>📅 Pedrinhas Edition</h2>
         
         <div style="margin-top:15px;">
-            <label>1. Carregue o fundo (Sem pedras)</label>
+            <label>1. Carregue o fundo LIMPO</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
 
@@ -212,7 +217,7 @@
 
         <div style="margin-top:15px;">
             <label>2. Lista de Eventos</label>
-            <textarea id="eventInput" placeholder="Ex:&#10;1: Final Humble&#10;4: Torneio OU">1: Final Humble League
+            <textarea id="eventInput" placeholder="1: Final Humble...">1: Final Humble League
 4: Qualify UU
 12: Semanal OU
 18: Qualify NatDex
@@ -226,7 +231,6 @@
     <div class="preview-area">
         <div id="art-container">
             <div id="month-title">JANEIRO</div>
-
             <div class="calendar-wrapper">
                 <div class="week-header">
                     <div class="wk-day"><span class="wk-time">18h</span>Dom</div>
@@ -237,9 +241,7 @@
                     <div class="wk-day"><span class="wk-time">19h</span>Sex</div>
                     <div class="wk-day"><span class="wk-time">18h</span>Sáb</div>
                 </div>
-
-                <div class="days-grid" id="days-grid">
-                    </div>
+                <div class="days-grid" id="days-grid"></div>
             </div>
         </div>
     </div>
@@ -248,7 +250,6 @@
         const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
         
-        // 1. Carregar Fundo
         bgInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -260,29 +261,24 @@
             }
         });
 
-        // 2. Gerar Grid Matemático
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
             grid.innerHTML = "";
-
             const mesIndex = parseInt(document.getElementById('mesNum').value);
             const ano = parseInt(document.getElementById('anoNum').value);
             
-            // Atualizar Título
             const nomeMes = document.getElementById('mesNum').options[mesIndex].text;
             document.getElementById('month-title').innerText = nomeMes;
 
-            const primeiroDia = new Date(ano, mesIndex, 1).getDay(); // 0 = Dom
+            const primeiroDia = new Date(ano, mesIndex, 1).getDay();
             const totalDias = new Date(ano, mesIndex + 1, 0).getDate();
 
-            // Células Vazias (Offset)
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
                 grid.appendChild(div);
             }
 
-            // Dias do Mês
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
@@ -295,10 +291,8 @@
             processarEventos();
         }
 
-        // 3. Inserir Textos
         function processarEventos() {
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
-            
             const lines = document.getElementById('eventInput').value.split('\n');
             lines.forEach(line => {
                 const parts = line.split(/[:|-]/);
@@ -306,21 +300,18 @@
                     const dia = parts[0].trim();
                     const texto = line.substring(line.indexOf(parts[0]) + parts[0].length + 1).trim();
                     const cleanText = texto.replace(/^[:|-]\s*/, "");
-                    
                     const el = document.getElementById(`evt-${dia}`);
                     if (el) el.innerText = cleanText;
                 }
             });
         }
 
-        // 4. Salvar
         function baixarImagem() {
             html2canvas(document.getElementById('art-container'), {
-                scale: 1,
-                useCORS: true
+                scale: 1, useCORS: true
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Humble_Calendario.png`;
+                link.download = `Humble_Pedrinhas.png`;
                 link.href = canvas.toDataURL();
                 link.click();
             });
