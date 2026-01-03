@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Organizador de Eventos - Humble League</title>
+
+    <style>
+        /* --- GERAL --- */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #e5e7eb;
+            background:
+                linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
+                url("../IMAGENS/Fundo.png"); /* Seu fundo */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid #1e293b;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .nav-brand img {
+            height: 40px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .nav-links a {
+            color: #94a3b8;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 5px 10px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        /* --- CONTEÚDO --- */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: rgba(22,26,35,0.95);
+            border: 1px solid #1f2933;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            width: 90%;
+            flex: 1;
+        }
+
+        .page-title {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            color: #fff;
+            text-align: center;
+        }
+
+        /* --- CONTROLES --- */
+        .controls-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 15px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        select, input[type="number"], input[type="text"] {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: #8B1D1D;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #a32424; }
+        
+        .btn-secondary { background: #1e293b; border: 1px solid #334155; }
+        .btn-secondary:hover { background: #2d3b52; }
+
+        /* --- GRID DO CALENDÁRIO --- */
+        .calendar-wrapper {
+            background: #0f172a;
+            padding: 2px; /* Borda externa fina */
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 10px 0;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            /* Gap cria as linhas divisórias */
+            gap: 1px; 
+            background: #334155; /* Cor das linhas da grade */
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            overflow: hidden;
+        }
+
+        .day-cell {
+            background: #121827; /* Cor de fundo da celula */
+            min-height: 120px;
+            padding: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .day-cell:hover {
+            background: #1a2236;
+        }
+
+        .day-number {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: right;
+        }
+
+        .day-content {
+            flex: 1;
+            font-size: 13px;
+            color: #e5e7eb;
+            white-space: pre-wrap;
+            outline: none;
+            border-radius: 4px;
+        }
+
+        .day-content:focus {
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 0 0 2px #8B1D1D;
+        }
+
+        /* Celula de outro mês (vazia) */
+        .day-cell.empty {
+            background: #0f172a;
+            pointer-events: none;
+        }
+
+        /* --- DISCORD --- */
+        .discord-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-family: 'Consolas', monospace;
+            resize: vertical;
+        }
+
+        /* --- RODAPÉ --- */
+        .footer-credits {
+            background: rgba(10, 15, 30, 0.95);
+            border-top: 1px solid #1e293b;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            margin-top: auto;
+        }
+        .footer-credits p { color: #94a3b8; font-size: 14px; margin: 0; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="../IMAGENS/Mascote.png" alt="Logo">
+            <span>Organizador de Eventos</span>
+        </div>
+        <div class="nav-links">
+            <a href="../index.html">⬅ Voltar ao Início</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <h1 class="page-title">📅 Planejador Mensal</h1>
+
+        <div class="controls-bar">
+            <select id="mesSelect" onchange="gerarCalendario()">
+                <option value="0">Janeiro</option>
+                <option value="1">Fevereiro</option>
+                <option value="2">Março</option>
+                <option value="3">Abril</option>
+                <option value="4">Maio</option>
+                <option value="5">Junho</option>
+                <option value="6">Julho</option>
+                <option value="7">Agosto</option>
+                <option value="8">Setembro</option>
+                <option value="9">Outubro</option>
+                <option value="10">Novembro</option>
+                <option value="11">Dezembro</option>
+            </select>
+            
+            <input type="number" id="anoInput" value="2025" style="width: 80px;" onchange="gerarCalendario()">
+
+            <button class="btn btn-secondary" onclick="limparEventos()">🗑️ Limpar Eventos</button>
+        </div>
+
+        <div class="calendar-wrapper">
+            <div class="weekdays">
+                <div>DOM</div>
+                <div>SEG</div>
+                <div>TER</div>
+                <div>QUA</div>
+                <div>QUI</div>
+                <div>SEX</div>
+                <div>SÁB</div>
+            </div>
+
+            <div class="days-grid" id="days-grid"></div>
+        </div>
+
+        <div class="discord-section">
+            <h3 style="color: #8B1D1D; margin: 0 0 10px 0;">Exportar para Discord</h3>
+            <button class="btn" style="background-color: #5865F2;" onclick="gerarTextoDiscord()">📑 Copiar Lista Formatada</button>
+            <textarea id="discord-output" readonly placeholder="Clique no botão acima para gerar a lista..."></textarea>
+        </div>
+    </div>
+
+    <footer class="footer-credits">
+        <div class="credits-content">
+            <p>© 2025 Humble Pixelmon - Ferramenta de Eventos.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializa com a data atual
+        const dateNow = new Date();
+        document.getElementById('mesSelect').value = dateNow.getMonth();
+        document.getElementById('anoInput').value = dateNow.getFullYear();
+
+        // Carrega o calendário ao abrir
+        window.onload = gerarCalendario;
+
+        function gerarCalendario() {
+            const mes = parseInt(document.getElementById('mesSelect').value);
+            const ano = parseInt(document.getElementById('anoInput').value);
+            const grid = document.getElementById('days-grid');
+            
+            grid.innerHTML = ""; // Limpa o calendário anterior
+
+            // LÓGICA DO CALENDÁRIO:
+            // 1. Descobrir qual dia da semana cai o dia 1 (0=Dom, 1=Seg, ..., 3=Qua)
+            const dataPrimeiroDia = new Date(ano, mes, 1);
+            const diaSemanaInicio = dataPrimeiroDia.getDay(); 
+
+            // 2. Descobrir quantos dias tem o mês
+            const ultimoDiaDoMes = new Date(ano, mes + 1, 0).getDate();
+
+            // 3. Criar espaços vazios antes do dia 1
+            for (let i = 0; i < diaSemanaInicio; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('day-cell', 'empty');
+                grid.appendChild(emptyCell);
+            }
+
+            // 4. Criar os dias reais
+            for (let dia = 1; dia <= ultimoDiaDoMes; dia++) {
+                const cell = document.createElement('div');
+                cell.classList.add('day-cell');
+                
+                cell.innerHTML = `
+                    <div class="day-number">${dia}</div>
+                    <div class="day-content" contenteditable="true" placeholder="Digite..."></div>
+                `;
+                
+                grid.appendChild(cell);
+            }
+            
+            // 5. Completar o grid visualmente até o fim da linha (opcional, para ficar quadrado perfeito)
+            const totalCelulas = diaSemanaInicio + ultimoDiaDoMes;
+            const resto = totalCelulas % 7;
+            if (resto !== 0) {
+                for (let i = 0; i < (7 - resto); i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('day-cell', 'empty');
+                    grid.appendChild(emptyCell);
+                }
+            }
+        }
+
+        function limparEventos() {
+            if(confirm("Apagar todos os eventos digitados?")) {
+                const contents = document.querySelectorAll('.day-content');
+                contents.forEach(div => div.innerText = "");
+            }
+        }
+
+        function gerarTextoDiscord() {
+            const mesNome = document.getElementById('mesSelect').options[document.getElementById('mesSelect').selectedIndex].text;
+            const ano = document.getElementById('anoInput').value;
+            
+            let resultado = `# 📅 Agenda: ${mesNome} / ${ano}\n\n`;
+            let temEventos = false;
+
+            const celulas = document.querySelectorAll('.day-cell:not(.empty)');
+            
+            celulas.forEach(cell => {
+                const dia = cell.querySelector('.day-number').innerText;
+                const texto = cell.querySelector('.day-content').innerText.trim();
+
+                if (texto) {
+                    temEventos = true;
+                    // Formatação para o Discord
+                    resultado += `> **Dia ${dia.padStart(2, '0')}:** ${texto}\n`;
+                }
+            });
+
+            if (!temEventos) {
+                resultado += "> *Nenhum evento registrado.*";
+            }
+
+            const output = document.getElementById('discord-output');
+            output.value = resultado;
+            output.select();
+        }
+    </script>
+
+</body>
+</html>
