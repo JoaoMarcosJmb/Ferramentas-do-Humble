@@ -2,248 +2,198 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Organizador de Eventos - Humble League</title>
+    <title>Gerador Visual Humble League</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
-        /* --- GERAL --- */
         body {
-            margin: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: #e5e7eb;
-            background:
-                linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
-                url("../IMAGENS/Fundo.png"); /* Seu fundo */
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- NAVBAR --- */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 40px;
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 1px solid #1e293b;
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        .nav-brand img {
-            height: 40px;
-            width: auto;
-            border-radius: 50%;
-        }
-
-        .nav-links a {
-            color: #94a3b8;
-            font-weight: 500;
-            text-decoration: none;
-            padding: 5px 10px;
-            transition: 0.2s;
-        }
-
-        .nav-links a:hover {
-            color: #fff;
-        }
-
-        /* --- CONTEÚDO --- */
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            background: rgba(22,26,35,0.95);
-            border: 1px solid #1f2933;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            width: 90%;
-            flex: 1;
-        }
-
-        .page-title {
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-size: 24px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-            color: #fff;
-            text-align: center;
-        }
-
-        /* --- CONTROLES --- */
-        .controls-bar {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            background: rgba(15, 23, 42, 0.5);
-            padding: 15px;
-            border-radius: 8px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        select, input[type="number"], input[type="text"] {
-            background: #0f172a;
-            border: 1px solid #334155;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1e293b;
             color: white;
-            padding: 10px;
-            border-radius: 6px;
-            outline: none;
-            font-size: 16px;
-        }
-
-        .btn {
-            background: #8B1D1D;
-            color: #fff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        .btn:hover { background: #a32424; }
-        
-        .btn-secondary { background: #1e293b; border: 1px solid #334155; }
-        .btn-secondary:hover { background: #2d3b52; }
-
-        /* --- GRID DO CALENDÁRIO --- */
-        .calendar-wrapper {
-            background: #0f172a;
-            padding: 2px; /* Borda externa fina */
-            border-radius: 8px;
-            border: 1px solid #334155;
-        }
-
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: bold;
-            background: #1e293b;
-            color: #94a3b8;
-            padding: 10px 0;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        .days-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            /* Gap cria as linhas divisórias */
-            gap: 1px; 
-            background: #334155; /* Cor das linhas da grade */
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
+            display: flex;
+            height: 100vh;
+            margin: 0;
             overflow: hidden;
         }
 
-        .day-cell {
-            background: #121827; /* Cor de fundo da celula */
-            min-height: 120px;
-            padding: 8px;
-            position: relative;
+        /* --- BARRA LATERAL (CONTROLES) --- */
+        .sidebar {
+            width: 350px;
+            background: #0f172a;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            gap: 15px;
+            border-right: 1px solid #334155;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            z-index: 10;
         }
 
-        .day-cell:hover {
-            background: #1a2236;
+        h2 { color: #fbbf24; margin: 0 0 10px 0; font-size: 20px; }
+        label { font-size: 14px; color: #94a3b8; margin-bottom: 5px; display: block; }
+        
+        input, select, textarea {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: monospace;
         }
 
-        .day-number {
-            font-size: 16px;
-            color: #64748b;
+        textarea { height: 200px; resize: vertical; }
+
+        .btn {
+            background: #8B1D1D;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
             font-weight: bold;
-            margin-bottom: 5px;
-            text-align: right;
+            transition: 0.2s;
         }
+        .btn:hover { background: #a32424; }
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #15803d; }
 
-        .day-content {
+        /* --- ÁREA DE VISUALIZAÇÃO --- */
+        .preview-area {
             flex: 1;
-            font-size: 13px;
-            color: #e5e7eb;
-            white-space: pre-wrap;
-            outline: none;
-            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #334155; /* Cor de fundo da área de trabalho */
+            padding: 20px;
+            overflow: auto;
         }
 
-        .day-content:focus {
-            background: rgba(255,255,255,0.05);
-            box-shadow: 0 0 0 2px #8B1D1D;
+        /* O CONTAINER DA ARTE */
+        #art-container {
+            position: relative;
+            width: 1000px;  /* Largura fixa para garantir qualidade */
+            height: 1000px; /* Altura fixa (quadrado) */
+            background-color: #fff;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            /* Fonte global da arte */
+            font-family: 'Fredoka', sans-serif; 
+            font-weight: 600;
         }
 
-        /* Celula de outro mês (vazia) */
-        .day-cell.empty {
-            background: #0f172a;
+        /* TÍTULO DO MÊS (Overlay) */
+        #overlay-title {
+            position: absolute;
+            top: 4%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 60px;
+            color: #E25D33; /* Cor laranja do exemplo */
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px #3e1b1b; /* Sombra cartunesca */
             pointer-events: none;
         }
 
-        /* --- DISCORD --- */
-        .discord-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #334155;
+        /* GRID DOS DIAS (Overlay) */
+        /* Ajustado "no olho" para bater com as pedras da imagem enviada */
+        .calendar-grid {
+            position: absolute;
+            top: 39%;     /* Onde começam as pedras */
+            left: 6%;     /* Margem esquerda */
+            width: 89%;   /* Largura total das pedras */
+            height: 52%;  /* Altura total das pedras */
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 1%;
         }
 
-        textarea {
-            width: 100%;
-            height: 150px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #e5e7eb;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-family: 'Consolas', monospace;
-            resize: vertical;
-        }
-
-        /* --- RODAPÉ --- */
-        .footer-credits {
-            background: rgba(10, 15, 30, 0.95);
-            border-top: 1px solid #1e293b;
-            padding: 20px;
+        .day-cell {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding-top: 10px;
             text-align: center;
-            width: 100%;
-            margin-top: auto;
+            /* Debug: descomente para ver as caixas */
+            /* border: 1px solid red; */
         }
-        .footer-credits p { color: #94a3b8; font-size: 14px; margin: 0; }
+
+        /* Número do dia */
+        .day-num {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 24px;
+            color: #5c4033; /* Marrom escuro */
+        }
+
+        /* Texto do evento */
+        .day-text {
+            font-size: 15px;
+            color: #5c4033;
+            line-height: 1.1;
+            margin-top: 5px;
+            width: 90%;
+            word-wrap: break-word;
+        }
+
+        /* CABEÇALHO DOS DIAS DA SEMANA (Horários) */
+        .week-header {
+            position: absolute;
+            top: 32%;
+            left: 6%;
+            width: 89%;
+            display: flex;
+            justify-content: space-between;
+            color: #d97706;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .week-col {
+            width: 14%;
+            text-align: center;
+        }
+        .time-label {
+            display: block;
+            font-size: 16px;
+            color: #8B1D1D;
+            margin-bottom: 2px;
+        }
+
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-brand">
-            <img src="../IMAGENS/Mascote.png" alt="Logo">
-            <span>Organizador de Eventos</span>
-        </div>
-        <div class="nav-links">
-            <a href="../index.html">⬅ Voltar ao Início</a>
-        </div>
-    </nav>
+    <div class="sidebar">
+        <h2>🛠️ Configurador</h2>
 
-    <div class="container">
-        
-        <h1 class="page-title">📅 Planejador Mensal</h1>
+        <div>
+            <label>1. Carregue a Imagem de Fundo</label>
+            <input type="file" id="bgInput" accept="image/*">
+        </div>
 
-        <div class="controls-bar">
-            <select id="mesSelect" onchange="gerarCalendario()">
+        <div style="display:flex; gap:10px;">
+            <div style="flex:1">
+                <label>Mês (Nome)</label>
+                <input type="text" id="mesNome" value="JANEIRO" oninput="atualizarArte()">
+            </div>
+            <div style="flex:1">
+                <label>Ano</label>
+                <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
+            </div>
+        </div>
+
+        <div>
+            <label>Mês (Número para cálculo)</label>
+            <select id="mesNum" onchange="gerarGrid()">
                 <option value="0">Janeiro</option>
                 <option value="1">Fevereiro</option>
                 <option value="2">Março</option>
@@ -257,131 +207,156 @@
                 <option value="10">Novembro</option>
                 <option value="11">Dezembro</option>
             </select>
-            
-            <input type="number" id="anoInput" value="2025" style="width: 80px;" onchange="gerarCalendario()">
-
-            <button class="btn btn-secondary" onclick="limparEventos()">🗑️ Limpar Eventos</button>
         </div>
 
-        <div class="calendar-wrapper">
-            <div class="weekdays">
-                <div>DOM</div>
-                <div>SEG</div>
-                <div>TER</div>
-                <div>QUA</div>
-                <div>QUI</div>
-                <div>SEX</div>
-                <div>SÁB</div>
+        <div>
+            <label>📝 Lista de Eventos (Importar)</label>
+            <div style="font-size: 11px; color: #ccc; margin-bottom: 5px;">
+                Formato: <b>Dia: Evento</b> (Um por linha)
             </div>
-
-            <div class="days-grid" id="days-grid"></div>
+            <textarea id="eventInput" placeholder="1: Final Humble League&#10;4: Qualify UU&#10;12: Semanal OU...">1: Final Humble League
+4: Qualify UU
+12: Semanal OU
+25: Qualify RU</textarea>
+            <button class="btn" style="margin-top:5px; width:100%;" onclick="processarEventos()">🔄 Atualizar Eventos</button>
         </div>
 
-        <div class="discord-section">
-            <h3 style="color: #8B1D1D; margin: 0 0 10px 0;">Exportar para Discord</h3>
-            <button class="btn" style="background-color: #5865F2;" onclick="gerarTextoDiscord()">📑 Copiar Lista Formatada</button>
-            <textarea id="discord-output" readonly placeholder="Clique no botão acima para gerar a lista..."></textarea>
+        <div style="margin-top: auto;">
+            <button class="btn btn-green" style="width:100%;" onclick="baixarImagem()">📸 Baixar Arte Final</button>
         </div>
     </div>
 
-    <footer class="footer-credits">
-        <div class="credits-content">
-            <p>© 2025 Humble Pixelmon - Ferramenta de Eventos.</p>
+    <div class="preview-area">
+        <div id="art-container">
+            <div id="overlay-title">JANEIRO</div>
+
+            <div class="week-header">
+                <div class="week-col"><span class="time-label">18h</span>Domingo</div>
+                <div class="week-col"><span class="time-label">19h</span>Segunda</div>
+                <div class="week-col"><span class="time-label">19h</span>Terça</div>
+                <div class="week-col"><span class="time-label">19h</span>Quarta</div>
+                <div class="week-col"><span class="time-label">19h</span>Quinta</div>
+                <div class="week-col"><span class="time-label">19h</span>Sexta</div>
+                <div class="week-col"><span class="time-label">18h</span>Sábado</div>
+            </div>
+
+            <div class="calendar-grid" id="grid-container">
+                </div>
         </div>
-    </footer>
+    </div>
 
     <script>
-        // Inicializa com a data atual
-        const dateNow = new Date();
-        document.getElementById('mesSelect').value = dateNow.getMonth();
-        document.getElementById('anoInput').value = dateNow.getFullYear();
+        // --- 1. CARREGAR IMAGEM DE FUNDO ---
+        const bgInput = document.getElementById('bgInput');
+        const artContainer = document.getElementById('art-container');
 
-        // Carrega o calendário ao abrir
-        window.onload = gerarCalendario;
-
-        function gerarCalendario() {
-            const mes = parseInt(document.getElementById('mesSelect').value);
-            const ano = parseInt(document.getElementById('anoInput').value);
-            const grid = document.getElementById('days-grid');
-            
-            grid.innerHTML = ""; // Limpa o calendário anterior
-
-            // LÓGICA DO CALENDÁRIO:
-            // 1. Descobrir qual dia da semana cai o dia 1 (0=Dom, 1=Seg, ..., 3=Qua)
-            const dataPrimeiroDia = new Date(ano, mes, 1);
-            const diaSemanaInicio = dataPrimeiroDia.getDay(); 
-
-            // 2. Descobrir quantos dias tem o mês
-            const ultimoDiaDoMes = new Date(ano, mes + 1, 0).getDate();
-
-            // 3. Criar espaços vazios antes do dia 1
-            for (let i = 0; i < diaSemanaInicio; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.classList.add('day-cell', 'empty');
-                grid.appendChild(emptyCell);
-            }
-
-            // 4. Criar os dias reais
-            for (let dia = 1; dia <= ultimoDiaDoMes; dia++) {
-                const cell = document.createElement('div');
-                cell.classList.add('day-cell');
-                
-                cell.innerHTML = `
-                    <div class="day-number">${dia}</div>
-                    <div class="day-content" contenteditable="true" placeholder="Digite..."></div>
-                `;
-                
-                grid.appendChild(cell);
-            }
-            
-            // 5. Completar o grid visualmente até o fim da linha (opcional, para ficar quadrado perfeito)
-            const totalCelulas = diaSemanaInicio + ultimoDiaDoMes;
-            const resto = totalCelulas % 7;
-            if (resto !== 0) {
-                for (let i = 0; i < (7 - resto); i++) {
-                    const emptyCell = document.createElement('div');
-                    emptyCell.classList.add('day-cell', 'empty');
-                    grid.appendChild(emptyCell);
+        bgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    artContainer.style.backgroundImage = `url(${event.target.result})`;
                 }
+                reader.readAsDataURL(file);
             }
+        });
+
+        // --- 2. ATUALIZAR TÍTULO ---
+        function atualizarArte() {
+            document.getElementById('overlay-title').innerText = document.getElementById('mesNome').value;
         }
 
-        function limparEventos() {
-            if(confirm("Apagar todos os eventos digitados?")) {
-                const contents = document.querySelectorAll('.day-content');
-                contents.forEach(div => div.innerText = "");
+        // --- 3. GERAR GRID MATEMÁTICO ---
+        function gerarGrid() {
+            const grid = document.getElementById('grid-container');
+            grid.innerHTML = ""; // Limpa
+
+            const mes = parseInt(document.getElementById('mesNum').value);
+            const ano = parseInt(document.getElementById('anoNum').value);
+
+            // Calcula dias
+            const primeiroDiaSemana = new Date(ano, mes, 1).getDay(); // 0 = Dom
+            const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+            // Células vazias antes do dia 1
+            for (let i = 0; i < primeiroDiaSemana; i++) {
+                const div = document.createElement('div');
+                div.className = 'day-cell'; 
+                grid.appendChild(div);
             }
+
+            // Dias do mês
+            for (let d = 1; d <= totalDias; d++) {
+                const div = document.createElement('div');
+                div.className = 'day-cell';
+                div.id = `cell-${d}`; // ID para encontrar fácil depois
+                
+                div.innerHTML = `
+                    <div class="day-text" id="text-${d}"></div>
+                    <div class="day-num">${d}</div>
+                `;
+                grid.appendChild(div);
+            }
+            
+            // Re-aplicar eventos se já tiverem sido escritos
+            processarEventos();
         }
 
-        function gerarTextoDiscord() {
-            const mesNome = document.getElementById('mesSelect').options[document.getElementById('mesSelect').selectedIndex].text;
-            const ano = document.getElementById('anoInput').value;
-            
-            let resultado = `# 📅 Agenda: ${mesNome} / ${ano}\n\n`;
-            let temEventos = false;
+        // --- 4. PROCESSAR TEXTO (IMPORTAR) ---
+        function processarEventos() {
+            // 1. Limpa todos os textos atuais
+            document.querySelectorAll('.day-text').forEach(el => el.innerText = '');
 
-            const celulas = document.querySelectorAll('.day-cell:not(.empty)');
-            
-            celulas.forEach(cell => {
-                const dia = cell.querySelector('.day-number').innerText;
-                const texto = cell.querySelector('.day-content').innerText.trim();
+            // 2. Pega o valor do textarea
+            const rawText = document.getElementById('eventInput').value;
+            const lines = rawText.split('\n');
 
-                if (texto) {
-                    temEventos = true;
-                    // Formatação para o Discord
-                    resultado += `> **Dia ${dia.padStart(2, '0')}:** ${texto}\n`;
+            // 3. Loop linha por linha
+            lines.forEach(line => {
+                // Regex simples: Procura numero no começo, dois pontos, e o resto
+                // Ex: "12: Evento Legal"
+                const match = line.match(/^(\d+)\s*[:|-]\s*(.*)/);
+                
+                if (match) {
+                    const dia = match[1];
+                    const evento = match[2].trim();
+
+                    // Acha a célula e escreve
+                    const targetDiv = document.getElementById(`text-${dia}`);
+                    if (targetDiv) {
+                        // Se já tem texto, adiciona quebra de linha
+                        if (targetDiv.innerText !== "") {
+                            targetDiv.innerHTML += "<br>" + evento;
+                        } else {
+                            targetDiv.innerText = evento;
+                        }
+                    }
                 }
             });
+        }
 
-            if (!temEventos) {
-                resultado += "> *Nenhum evento registrado.*";
+        // --- 5. BAIXAR IMAGEM ---
+        function baixarImagem() {
+            // Verifica se tem fundo carregado
+            if (artContainer.style.backgroundImage === "") {
+                alert("Por favor, carregue a imagem de fundo primeiro (Prancheta_1...jpg).");
+                return;
             }
 
-            const output = document.getElementById('discord-output');
-            output.value = resultado;
-            output.select();
+            html2canvas(document.getElementById('art-container'), {
+                scale: 1, // Tamanho real (1000px)
+                useCORS: true 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Calendario_Humble_League.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
         }
-    </script>
 
+        // Inicializa grid ao abrir
+        window.onload = gerarGrid;
+
+    </script>
 </body>
 </html>
