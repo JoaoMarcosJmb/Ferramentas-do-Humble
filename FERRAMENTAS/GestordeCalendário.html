@@ -2,19 +2,20 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Controle Total</title>
+    <title>Humble Calendar - Clean & Sharp</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
-        /* Variáveis CSS para controle dinâmico */
+        /* Variáveis de Controle */
         :root {
-            --title-top: 35px;
-            --title-size: 85px;
+            --title-top: 40px;
+            --title-size: 80px;
+            --event-weight: 700; /* Peso da fonte do evento */
         }
 
         body {
@@ -28,7 +29,7 @@
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 350px;
+            width: 340px;
             background: #0f172a;
             padding: 20px;
             display: flex;
@@ -38,21 +39,15 @@
             color: white;
             z-index: 10;
             box-shadow: 4px 0 20px rgba(0,0,0,0.5);
-            overflow-y: auto; /* Caso a tela seja pequena */
+            overflow-y: auto;
         }
 
-        h2 { color: #fbbf24; margin: 0; font-size: 20px; font-family: 'Montserrat', sans-serif; }
-        
+        h2 { color: #fbbf24; margin: 0; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: 600; }
         label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
         
-        /* Controles Deslizantes */
-        input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-            margin-bottom: 10px;
-        }
-
-        input[type="text"], textarea, select {
+        input[type="range"] { width: 100%; cursor: pointer; margin-bottom: 5px; }
+        
+        input, textarea, select {
             width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
@@ -96,30 +91,29 @@
             overflow: hidden; 
         }
 
-        /* --- TÍTULO AJUSTÁVEL --- */
+        /* --- TÍTULO LIMPO --- */
         #month-title {
             position: absolute;
-            
-            /* Usa as variáveis controladas pelos sliders */
-            top: var(--title-top); 
-            font-size: var(--title-size);
-            
+            top: var(--title-top);
             width: 100%;
             text-align: center;
-            color: #ff6b35; 
+            
+            font-size: var(--title-size);
+            color: #E25D33; /* Laranja Base */
+            
+            font-weight: 800; /* Bold limpo */
             text-transform: uppercase;
-            font-weight: 900; 
-            letter-spacing: -2px;
+            letter-spacing: -1px;
             
-            /* Estilo Cartoon */
-            text-shadow: 
-                3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff,
-                3px 0px 0 #fff, -3px 0px 0 #fff, 0px 3px 0 #fff, 0px -3px 0 #fff,
-                8px 8px 0 #3f2e22;
+            /* Contorno Nítido (Melhor que text-shadow) */
+            -webkit-text-stroke: 3px white; 
+            paint-order: stroke fill;
             
+            /* Sombra suave apenas para descolar do fundo */
+            filter: drop-shadow(4px 4px 0px rgba(63, 46, 34, 0.3));
+
             pointer-events: none;
             z-index: 5;
-            transition: top 0.1s, font-size 0.1s; /* Suavidade ao arrastar */
         }
 
         .calendar-wrapper {
@@ -144,7 +138,7 @@
             font-size: 20px;
             font-weight: 700;
             text-transform: uppercase;
-            text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+            text-shadow: 0px 0px 3px rgba(255,255,255,0.8); /* Glow leve para leitura */
         }
 
         /* --- GRID --- */
@@ -159,9 +153,9 @@
 
         .day-cell {
             position: relative;
-            border: 5px dotted #4b5563; 
-            border-radius: 18px; 
-            background: rgba(255, 248, 220, 0.15); 
+            border: 4px dotted #4b5563; /* Pedrinhas levemente menores */
+            border-radius: 16px; 
+            background: rgba(255, 248, 220, 0.2); /* Mais transparente */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -171,46 +165,46 @@
 
         .day-num {
             position: absolute;
-            top: 5px;
+            top: 4px;
             left: 8px;
-            font-size: 22px;
-            color: #8B1D1D;
+            font-size: 20px;
+            color: #b45309; /* Laranja mais escuro/sério */
             font-weight: 800;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
-            line-height: 1;
         }
 
         .day-time {
             position: absolute;
-            top: 8px;
-            right: 8px; 
-            font-size: 13px;
-            color: #d97706; 
-            font-weight: 800;
-            background: rgba(255,255,255,0.9);
+            top: 6px;
+            right: 6px; 
+            font-size: 12px;
+            color: #fff; 
+            font-weight: 700;
+            background: #d97706; /* Fundo laranja sólido para leitura */
             padding: 2px 6px;
-            border-radius: 6px;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            border-radius: 4px;
         }
 
         .day-text {
-            margin-top: 35px; 
-            width: 92%;
+            margin-top: 32px; 
+            width: 94%;
             text-align: center;
             font-size: 13px;
-            color: #3f2e22; 
-            font-weight: 700;
-            line-height: 1.1;
+            color: #1f2937; /* Quase preto para máxima leitura */
+            
+            /* Peso controlado pela sidebar */
+            font-weight: var(--event-weight); 
+            
+            line-height: 1.25;
             display: -webkit-box;
-            -webkit-line-clamp: 2; 
+            -webkit-line-clamp: 3; /* Permite até 3 linhas se a fonte for pequena */
             -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .days-grid.six-rows .day-text {
-            margin-top: 30px;
+            margin-top: 28px;
             font-size: 12px;
+            -webkit-line-clamp: 2;
         }
 
         .day-cell.empty {
@@ -223,62 +217,61 @@
 <body>
 
     <div class="sidebar">
-        <h2>📅 Humble Calendar</h2>
+        <h2>📅 Calendário Humble</h2>
         
-        <div style="margin-top:15px;">
-            <label style="color:#fbbf24; font-weight:bold;">1. Carregue o Fundo</label>
+        <div style="margin-top:10px;">
+            <label style="color:#fbbf24;">1. Imagem de Fundo</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
 
-        <div style="margin-top:15px; border-top: 1px solid #334155; padding-top:10px;">
-            <label style="color:#fbbf24; font-weight:bold;">2. Ajuste do Título</label>
+        <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
+            <label style="color:#fbbf24;">2. Ajustes Visuais</label>
             
-            <label>Posição Vertical (Cima/Baixo)</label>
-            <input type="range" min="0" max="300" value="35" oninput="ajustarTitulo('top', this.value + 'px')">
+            <label>Posição Título (Vertical)</label>
+            <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
             
-            <label>Tamanho da Fonte</label>
-            <input type="range" min="40" max="150" value="85" oninput="ajustarTitulo('size', this.value + 'px')">
+            <label>Tamanho Título</label>
+            <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
+
+            <label>Peso da Fonte (Texto)</label>
+            <input type="range" min="400" max="900" step="100" value="700" oninput="ajustarVar('--event-weight', this.value)">
+            <div style="font-size:10px; color:#64748b; text-align:right;">400=Fina ... 900=Grossa</div>
         </div>
 
-        <div style="margin-top:15px; border-top: 1px solid #334155; padding-top:10px;">
-            <div style="display:flex; gap:10px;">
-                <div style="flex:2">
-                    <label>Mês</label>
-                    <select id="mesNum" onchange="gerarGrid()">
-                        <option value="0">Janeiro</option>
-                        <option value="1">Fevereiro</option>
-                        <option value="2">Março</option>
-                        <option value="3">Abril</option>
-                        <option value="4">Maio</option>
-                        <option value="5">Junho</option>
-                        <option value="6">Julho</option>
-                        <option value="7">Agosto</option>
-                        <option value="8">Setembro</option>
-                        <option value="9">Outubro</option>
-                        <option value="10">Novembro</option>
-                        <option value="11">Dezembro</option>
-                    </select>
-                </div>
-                <div style="flex:1">
-                    <label>Ano</label>
-                    <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
-                </div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <div style="flex:2">
+                <label>Mês</label>
+                <select id="mesNum" onchange="gerarGrid()">
+                    <option value="0">Janeiro</option>
+                    <option value="1">Fevereiro</option>
+                    <option value="2">Março</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Maio</option>
+                    <option value="5">Junho</option>
+                    <option value="6">Julho</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Setembro</option>
+                    <option value="9">Outubro</option>
+                    <option value="10">Novembro</option>
+                    <option value="11">Dezembro</option>
+                </select>
+            </div>
+            <div style="flex:1">
+                <label>Ano</label>
+                <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
             </div>
         </div>
 
-        <div style="margin-top:15px;">
-            <label>3. Eventos (Dia: Hora - Evento)</label>
-            <div style="font-size:11px; color:#64748b; margin-bottom:5px;">
-                Exemplo: <b>4: 18h - Qualify UU</b>
-            </div>
-            <textarea id="eventInput" placeholder="1: 18h - Final Humble&#10;4: 19:30 - Qualify UU">1: 18h - Final Humble League
+        <div style="margin-top:10px;">
+            <label>3. Eventos</label>
+            <textarea id="eventInput" placeholder="Ex: 4: 18h - Final">1: 18h - Final Humble League
 4: 19h - Qualify UU
 12: 20h - Semanal OU
 18: 18h - Qualify NatDex
 25: 19h - Qualify RU</textarea>
         </div>
 
-        <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar Tudo</button>
+        <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar</button>
         <button class="btn" onclick="baixarImagem()">📸 Baixar PNG</button>
     </div>
 
@@ -304,6 +297,11 @@
         const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
+
+        // Ajuste Dinâmico CSS
+        function ajustarVar(variavel, valor) {
+            document.documentElement.style.setProperty(variavel, valor);
+        }
         
         // 1. Carregar Fundo
         bgInput.addEventListener('change', function(e) {
@@ -318,16 +316,7 @@
             }
         });
 
-        // 2. Função de Ajuste do Título (NOVO)
-        function ajustarTitulo(prop, valor) {
-            if (prop === 'top') {
-                document.documentElement.style.setProperty('--title-top', valor);
-            } else if (prop === 'size') {
-                document.documentElement.style.setProperty('--title-size', valor);
-            }
-        }
-
-        // 3. Gerar Grid
+        // 2. Gerar Grid
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
             grid.innerHTML = "";
@@ -370,13 +359,14 @@
             processarEventos();
         }
 
-        // 4. Processar Eventos
+        // 3. Processar Eventos
         function processarEventos() {
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
             document.querySelectorAll('.day-time').forEach(e => e.innerText = "");
+            // Esconde todas as tags de hora inicialmente
+            document.querySelectorAll('.day-time').forEach(e => e.style.display = 'none');
 
             const lines = document.getElementById('eventInput').value.split('\n');
-            
             lines.forEach(line => {
                 const regex = /^(\d+):\s*(?:(.*?)\s*-\s*)?(.*)/;
                 const match = line.match(regex);
@@ -393,33 +383,33 @@
                     if (elHora && hora) {
                         elHora.innerText = hora;
                         elHora.style.display = 'block';
-                    } else if (elHora) {
-                        elHora.style.display = 'none';
                     }
                 }
             });
         }
 
-        // 5. Baixar Imagem
+        // 4. Baixar Imagem (Alta Qualidade)
         function baixarImagem() {
-            if (!imagemCarregada) {
-                if(!confirm("Sem fundo carregado. Continuar?")) return;
-            }
-            const originalShadow = artContainer.style.boxShadow;
-            artContainer.style.boxShadow = "none";
+            if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
 
-            html2canvas(document.getElementById('art-container'), {
-                scale: 1, 
-                useCORS: true,
-                width: 1000, height: 1000,
-                scrollX: 0, scrollY: 0,
-                windowWidth: 1000, windowHeight: 1000
-            }).then(canvas => {
-                artContainer.style.boxShadow = originalShadow;
-                const link = document.createElement('a');
-                link.download = `Calendario_Humble.png`;
-                link.href = canvas.toDataURL();
-                link.click();
+            // Garante que as fontes carregaram
+            document.fonts.ready.then(function () {
+                const originalShadow = artContainer.style.boxShadow;
+                artContainer.style.boxShadow = "none";
+
+                html2canvas(document.getElementById('art-container'), {
+                    scale: 2, // 2x para garantir nitidez máxima no texto
+                    useCORS: true,
+                    width: 1000, height: 1000,
+                    scrollX: 0, scrollY: 0,
+                    windowWidth: 1000, windowHeight: 1000
+                }).then(canvas => {
+                    artContainer.style.boxShadow = originalShadow;
+                    const link = document.createElement('a');
+                    link.download = `Calendario_Humble.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
             });
         }
 
