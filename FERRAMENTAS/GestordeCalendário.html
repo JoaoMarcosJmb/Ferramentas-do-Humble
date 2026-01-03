@@ -2,13 +2,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Clean Grid</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Humble Calendar - Montserrat Edition</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', sans-serif; /* Interface lateral continua padrão */
             background-color: #1e293b;
             margin: 0;
             display: flex;
@@ -30,7 +34,7 @@
             box-shadow: 4px 0 20px rgba(0,0,0,0.5);
         }
 
-        h2 { color: #fbbf24; margin: 0; font-size: 18px; }
+        h2 { color: #fbbf24; margin: 0; font-size: 18px; font-family: 'Montserrat', sans-serif; }
         label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
         
         input, textarea, select {
@@ -49,7 +53,7 @@
         .btn {
             background: #16a34a; color: white; border: none; padding: 15px;
             border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;
-            width: 100%; margin-top: auto; transition: 0.2s;
+            width: 100%; margin-top: auto; transition: 0.2s; font-family: 'Montserrat', sans-serif;
         }
         .btn:hover { background: #15803d; }
         .btn-blue { background: #3b82f6; margin-top: 10px; }
@@ -70,31 +74,31 @@
             width: 1000px;
             height: 1000px;
             background-color: #fff;
-            /* SEU FUNDO LIMPO ENTRA AQUI */
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            font-family: 'Fredoka', sans-serif;
+            /* AQUI ESTÁ A FONTE NOVA PARA TODO O CALENDÁRIO */
+            font-family: 'Montserrat', sans-serif;
         }
 
-        /* Título do Mês (Gerado pelo código agora) */
+        /* Título do Mês */
         #month-title {
             position: absolute;
             top: 40px;
             width: 100%;
             text-align: center;
             font-size: 70px;
-            color: #E25D33; /* Laranja Título */
+            color: #E25D33;
             text-transform: uppercase;
-            font-weight: 600;
-            text-shadow: 4px 4px 0px #5c4033; /* Sombra estilo cartoon */
+            font-weight: 800; /* Extra Bold */
+            text-shadow: 3px 3px 0px #5c4033;
+            letter-spacing: -2px; /* Deixa mais juntinho, estilo moderno */
             pointer-events: none;
         }
 
         /* --- O GRID VISUAL --- */
         .calendar-wrapper {
             position: absolute;
-            /* Centralizado na área de areia */
             top: 320px; 
             left: 50px;
             width: 900px;
@@ -111,14 +115,16 @@
             margin-bottom: 10px;
         }
         .wk-day {
-            color: #d97706; /* Ouro escuro */
-            font-size: 22px;
-            font-weight: 600;
+            color: #d97706;
+            font-size: 20px;
+            font-weight: 700; /* Bold */
+            text-transform: uppercase;
         }
         .wk-time {
             display: block;
-            font-size: 16px;
-            color: #8B1D1D; /* Vermelho Humble */
+            font-size: 14px;
+            color: #8B1D1D;
+            font-weight: 800;
             margin-bottom: 2px;
         }
 
@@ -128,14 +134,14 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            gap: 10px; /* Espaço entre as caixinhas */
+            gap: 10px;
         }
 
         .day-cell {
             position: relative;
-            background: rgba(255, 255, 255, 0.25); /* Fundo "Vidro/Areia" */
-            border: 2px dashed #d97706; /* Borda pontilhada estilosa */
-            border-radius: 12px; /* Cantos arredondados */
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px dashed #d97706;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -145,24 +151,24 @@
         .day-num {
             position: absolute;
             top: 5px;
-            left: 8px;
-            font-size: 20px;
+            left: 10px;
+            font-size: 22px;
             color: #8B1D1D;
-            font-weight: 700;
+            font-weight: 800; /* Bem grosso para destacar */
         }
 
         .day-text {
-            margin-top: 25px; /* Espaço para não bater no número */
-            width: 95%;
+            margin-top: 30px;
+            width: 90%;
             text-align: center;
-            font-size: 15px;
-            color: #3f2e22; /* Marrom escuro para leitura */
-            font-weight: 600;
-            line-height: 1.1;
+            font-size: 14px;
+            color: #3f2e22;
+            font-weight: 700; /* Bold para leitura fácil */
+            line-height: 1.2;
             white-space: pre-wrap;
         }
 
-        /* Dias vazios (sem fundo/borda) */
+        /* Dias vazios */
         .day-cell.empty {
             background: transparent;
             border: none;
@@ -205,7 +211,7 @@
         </div>
 
         <div style="margin-top:15px;">
-            <label>2. Lista de Eventos (Dia: Texto)</label>
+            <label>2. Lista de Eventos</label>
             <textarea id="eventInput" placeholder="Ex:&#10;1: Final Humble&#10;4: Torneio OU">1: Final Humble League
 4: Qualify UU
 12: Semanal OU
@@ -291,7 +297,6 @@
 
         // 3. Inserir Textos
         function processarEventos() {
-            // Limpa
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
             
             const lines = document.getElementById('eventInput').value.split('\n');
@@ -300,7 +305,7 @@
                 if (parts.length >= 2) {
                     const dia = parts[0].trim();
                     const texto = line.substring(line.indexOf(parts[0]) + parts[0].length + 1).trim();
-                    const cleanText = texto.replace(/^[:|-]\s*/, ""); // Tira sobras
+                    const cleanText = texto.replace(/^[:|-]\s*/, "");
                     
                     const el = document.getElementById(`evt-${dia}`);
                     if (el) el.innerText = cleanText;
