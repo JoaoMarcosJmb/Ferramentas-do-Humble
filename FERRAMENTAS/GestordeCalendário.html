@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Calendário Humble League - Fixo</title>
+    <title>Calendário Humble - Versão Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
@@ -14,11 +14,12 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            user-select: none; /* Evita selecionar texto ao arrastar */
         }
 
-        /* --- BARRA LATERAL SIMPLES --- */
+        /* --- SIDEBAR --- */
         .sidebar {
-            width: 300px;
+            width: 320px;
             background: #0f172a;
             padding: 20px;
             display: flex;
@@ -26,11 +27,12 @@
             gap: 15px;
             border-right: 1px solid #334155;
             color: white;
-            z-index: 10;
+            z-index: 20;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
         }
 
-        h2 { color: #fbbf24; margin: 0; font-size: 18px; }
-        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
+        h2 { color: #fbbf24; margin: 0; font-size: 20px; }
+        label { font-size: 13px; color: #94a3b8; display: block; margin-bottom: 5px; }
         
         input, textarea, select {
             width: 100%;
@@ -41,95 +43,114 @@
             border-radius: 6px;
             box-sizing: border-box;
             font-family: sans-serif;
+            font-size: 14px;
         }
 
-        textarea { height: 250px; resize: none; font-family: monospace; }
+        textarea { height: 200px; resize: none; font-family: monospace; }
 
         .btn {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            width: 100%;
-            margin-top: auto;
-            transition: 0.2s;
+            background: #16a34a; color: white; border: none; padding: 15px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;
+            width: 100%; margin-top: auto; transition: 0.2s;
         }
         .btn:hover { background: #15803d; }
         .btn-blue { background: #3b82f6; margin-top: 10px; }
 
-        /* --- ÁREA DE VISUALIZAÇÃO --- */
+        /* --- ÁREA DO PREVIEW --- */
         .preview-area {
             flex: 1;
             background: #334155;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: auto;
-            padding: 20px;
+            overflow: hidden; /* Importante para o zoom */
+            position: relative;
         }
 
         #art-container {
             position: relative;
-            /* TAMANHO FIXO PARA GARANTIR ALINHAMENTO */
             width: 1000px;
             height: 1000px;
             background-color: #fff;
-            background-image: url('Prancheta_1_copia_2.jpg'); /* Tenta carregar direto */
+            background-image: url('Prancheta_1_copia_2.jpg'); 
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             font-family: 'Fredoka', sans-serif;
+            /* Escala para caber na tela se for pequena */
+            transform-origin: center center;
+            transform: scale(0.9); 
         }
 
-        /* --- GRID CONFIGURADO PARA "Prancheta_1_copia_2.jpg" --- */
-        .calendar-grid {
+        /* --- O GRID (Agora Arrastável) --- */
+        #draggable-grid {
             position: absolute;
+            cursor: move; /* Mostra a mãozinha */
+            
+            /* --- NOVAS COORDENADAS RECALCULADAS --- */
+            /* Mais centralizado para não bater nas bordas */
+            top: 40.5%;      
+            left: 7.0%;      
+            width: 86.0%;    
+            height: 46.5%;   
+            
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: repeat(5, 1fr);
             
-            /* COORDENADAS EXATAS DA IMAGEM */
-            top: 39.2%;      /* Onde começam as pedras superiores */
-            left: 6.2%;      /* Margem esquerda das pedras */
-            width: 87.6%;    /* Largura total da área das pedras */
-            height: 48.5%;   /* Altura total da área das pedras */
+            /* Gaps visuais */
+            column-gap: 0.3%;
+            row-gap: 0.3%;
             
-            /* Pequeno ajuste nos gaps para compensar o desenho manual */
-            column-gap: 0.2%; 
-            row-gap: 0.2%;
+            /* Borda transparente para ajudar a pegar com o mouse */
+            border: 2px solid transparent; 
+        }
+        
+        #draggable-grid:hover {
+            border: 2px dashed rgba(255, 255, 255, 0.3); /* Feedback visual */
         }
 
         .day-cell {
             position: relative;
-            /* debug: border: 1px solid red; */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .day-num {
             position: absolute;
-            bottom: 5px; /* Ajuste a altura do número aqui */
-            left: 5px;   /* Ajuste a posição lateral do número aqui */
+            bottom: 4px;
+            left: 6px;
             font-size: 20px;
-            color: #d97706; /* Laranja escuro */
+            color: #d97706; 
             font-weight: bold;
+            pointer-events: none; /* O clique passa direto para o grid */
         }
 
         .day-text {
-            position: absolute;
-            top: 5px;
-            left: 0;
-            width: 100%;
+            width: 95%;
             text-align: center;
-            font-size: 14px; /* Tamanho da fonte do evento */
-            color: #5c4033;  /* Marrom Humble */
+            font-size: 13px; /* Fonte levemente menor para caber melhor */
+            color: #5c4033;
             font-weight: 600;
             line-height: 1.1;
-            padding: 0 5px;
-            box-sizing: border-box;
+            margin-top: 6px;
             white-space: pre-wrap;
+            pointer-events: none;
+        }
+
+        /* Instrução flutuante */
+        .hint {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 100;
         }
 
     </style>
@@ -137,10 +158,10 @@
 <body>
 
     <div class="sidebar">
-        <h2>📅 Gerador Humble</h2>
+        <h2>📅 Humble League</h2>
         
         <div style="margin-top:15px;">
-            <label>Caso a imagem não apareça, selecione-a:</label>
+            <label>Imagem de Fundo</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
 
@@ -169,8 +190,8 @@
         </div>
 
         <div style="margin-top:15px;">
-            <label>Lista de Eventos (Dia: Evento)</label>
-            <textarea id="eventInput" placeholder="Exemplo:&#10;1: Final Humble&#10;4: Torneio OU&#10;12: Evento Especial">1: Final Humble League
+            <label>Eventos (Dia: Texto)</label>
+            <textarea id="eventInput">1: Final Humble League
 4: Qualify UU
 12: Semanal OU
 18: Qualify NatDex
@@ -182,14 +203,56 @@
     </div>
 
     <div class="preview-area">
+        <div class="hint">💡 Dica: Arraste os números para ajustar a posição!</div>
+        
         <div id="art-container">
-            <div class="calendar-grid" id="grid-container">
+            <div id="draggable-grid" onmousedown="startDrag(event)">
                 </div>
         </div>
     </div>
 
     <script>
-        // --- 1. CARREGAR IMAGEM (Backup) ---
+        // --- 1. LÓGICA DE ARRASTAR (DRAG & DROP) ---
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        function startDrag(e) {
+            isDragging = true;
+            const grid = document.getElementById('draggable-grid');
+            
+            // Posição inicial do mouse
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            // Posição inicial do elemento (convertido para pixels)
+            const style = window.getComputedStyle(grid);
+            initialLeft = parseInt(style.left);
+            initialTop = parseInt(style.top);
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            const grid = document.getElementById('draggable-grid');
+            
+            // Quanto o mouse andou (considerando o scale de 0.9 do container, ajustamos a sensibilidade)
+            const dx = (e.clientX - startX) / 0.9; 
+            const dy = (e.clientY - startY) / 0.9;
+
+            grid.style.left = `${initialLeft + dx}px`;
+            grid.style.top = `${initialTop + dy}px`;
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+
+        // --- 2. CARREGAR IMAGEM ---
         const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
         
@@ -204,26 +267,24 @@
             }
         });
 
-        // --- 2. GERAR GRID AUTOMÁTICO ---
+        // --- 3. GERAR CALENDÁRIO ---
         function gerarGrid() {
-            const grid = document.getElementById('grid-container');
-            grid.innerHTML = ""; // Limpa tudo
+            const grid = document.getElementById('draggable-grid');
+            grid.innerHTML = "";
 
             const mes = parseInt(document.getElementById('mesNum').value);
             const ano = parseInt(document.getElementById('anoNum').value);
-
-            // Cálculos de data
-            const primeiroDia = new Date(ano, mes, 1).getDay(); // 0 = Dom
+            const primeiroDia = new Date(ano, mes, 1).getDay();
             const totalDias = new Date(ano, mes + 1, 0).getDate();
 
-            // Células vazias (antes do dia 1)
+            // Vazios
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
-                div.className = 'day-cell empty';
+                div.className = 'day-cell';
                 grid.appendChild(div);
             }
 
-            // Dias Reais
+            // Dias
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
@@ -233,46 +294,37 @@
                 `;
                 grid.appendChild(div);
             }
-
-            // Atualiza os textos se já houver algo escrito
             processarEventos();
         }
 
-        // --- 3. PROCESSAR EVENTOS ---
+        // --- 4. ATUALIZAR TEXTO ---
         function processarEventos() {
-            // Limpa textos anteriores
             document.querySelectorAll('.day-text').forEach(el => el.innerText = "");
-
-            const rawText = document.getElementById('eventInput').value;
-            const lines = rawText.split('\n');
-
+            const lines = document.getElementById('eventInput').value.split('\n');
             lines.forEach(line => {
-                // Separa "Dia: Texto"
-                // Aceita "4: Evento" ou "04 - Evento"
                 const parts = line.split(/[:|-]/); 
-                
                 if (parts.length >= 2) {
-                    const dia = parts[0].trim(); // Pega o número
-                    // Junta o resto da string caso tenha mais dois pontos no texto
+                    const dia = parts[0].trim();
                     const texto = line.substring(line.indexOf(parts[0]) + parts[0].length + 1).trim();
-                    
-                    // Remove dois pontos ou traço do início do texto se sobrou
                     const textoLimpo = texto.replace(/^[:|-]\s*/, "");
-
                     const el = document.getElementById(`evt-${dia}`);
-                    if (el) {
-                        el.innerText = textoLimpo;
-                    }
+                    if (el) el.innerText = textoLimpo;
                 }
             });
         }
 
-        // --- 4. BAIXAR PNG ---
+        // --- 5. BAIXAR ---
         function baixarImagem() {
+            // Remove a borda pontilhada (hover) antes de salvar
+            const grid = document.getElementById('draggable-grid');
+            const originalBorder = grid.style.border;
+            grid.style.border = 'none';
+
             html2canvas(document.getElementById('art-container'), {
-                scale: 1, // Tamanho original 1000x1000
+                scale: 1, 
                 useCORS: true
             }).then(canvas => {
+                grid.style.border = originalBorder; // Restaura borda
                 const link = document.createElement('a');
                 link.download = 'Calendario_Humble.png';
                 link.href = canvas.toDataURL();
@@ -280,7 +332,6 @@
             });
         }
 
-        // Inicia ao abrir
         window.onload = gerarGrid;
     </script>
 </body>
