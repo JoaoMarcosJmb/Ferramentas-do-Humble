@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Calendário Humble - Grid Inteligente</title>
+    <title>Calendário Humble - Horários Editáveis</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 320px;
+            width: 340px; /* Levemente mais largo para caber tudo */
             background: #0f172a;
             padding: 20px;
             display: flex;
@@ -49,7 +49,7 @@
             font-family: sans-serif;
         }
         
-        textarea { height: 180px; resize: none; font-family: monospace; font-size: 13px; }
+        textarea { height: 160px; resize: none; font-family: monospace; font-size: 13px; }
 
         .btn {
             background: #16a34a; color: white; border: none; padding: 15px;
@@ -114,7 +114,6 @@
             display: flex;
             flex-direction: column;
             z-index: 5;
-            /* debug: border: 1px solid red; */
         }
 
         /* Dias da Semana */
@@ -138,31 +137,23 @@
             margin-bottom: 2px;
         }
 
-        /* --- GRID DE DIAS --- */
+        /* --- GRID --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            /* As linhas agora são definidas pelo JS (5 ou 6) */
+            /* Linhas definidas pelo JS */
             gap: 12px;
-            transition: gap 0.3s; /* Suavidade se mudar */
+            transition: gap 0.3s;
         }
 
-        /* Ajustes Específicos para quando tiver 6 linhas */
-        .days-grid.six-rows {
-            gap: 8px; /* Diminui um pouco o espaço para caber tudo */
-        }
-        .days-grid.six-rows .day-cell {
-            border-width: 4px; /* Borda levemente mais fina para ganhar espaço */
-        }
-        .days-grid.six-rows .day-text {
-            margin-top: 28px; /* Sobe um pouco o texto */
-            font-size: 13px;  /* Ajuste fino na fonte */
-        }
+        /* Ajustes para 6 linhas */
+        .days-grid.six-rows { gap: 8px; }
+        .days-grid.six-rows .day-cell { border-width: 4px; }
+        .days-grid.six-rows .day-text { margin-top: 28px; font-size: 13px; }
 
         .day-cell {
             position: relative;
-            /* Borda pontilhada cinza escuro (Pedras) */
             border: 5px dotted #4b5563; 
             border-radius: 18px; 
             background: rgba(255, 248, 220, 0.15); 
@@ -170,7 +161,7 @@
             flex-direction: column;
             align-items: center;
             padding-top: 5px;
-            overflow: hidden; /* Garante que texto gigante não vaze */
+            overflow: hidden;
         }
 
         .day-num {
@@ -206,12 +197,12 @@
     <div class="sidebar">
         <h2>📅 Calendário Humble</h2>
         
-        <div style="margin-top:15px;">
-            <label style="color:#fbbf24; font-weight:bold;">1. IMPORTANTE: Carregue o Fundo</label>
+        <div style="margin-top:10px;">
+            <label style="color:#fbbf24; font-weight:bold;">1. Carregue o Fundo</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:15px;">
+        <div style="display:flex; gap:10px; margin-top:10px;">
             <div style="flex:2">
                 <label>Mês</label>
                 <select id="mesNum" onchange="gerarGrid()">
@@ -235,8 +226,16 @@
             </div>
         </div>
 
-        <div style="margin-top:15px;">
-            <label>2. Lista de Eventos</label>
+        <div style="margin-top:10px;">
+            <label>2. Horários (Separe por vírgula: Dom, Seg... Sáb)</label>
+            <input type="text" id="horariosInput" 
+                   value="18h, 19h, 19h, 19h, 19h, 19h, 18h" 
+                   onkeyup="atualizarHorarios()"
+                   style="font-family: monospace; letter-spacing: -0.5px;">
+        </div>
+
+        <div style="margin-top:10px;">
+            <label>3. Lista de Eventos</label>
             <textarea id="eventInput" placeholder="1: Final Humble...">1: Final Humble League
 4: Qualify UU
 12: Semanal OU
@@ -244,7 +243,7 @@
 25: Qualify RU</textarea>
         </div>
 
-        <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar Grid</button>
+        <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar Tudo</button>
         <button class="btn" onclick="baixarImagem()">📸 Baixar PNG</button>
     </div>
 
@@ -252,15 +251,17 @@
         <div id="art-container">
             <div id="month-title">JANEIRO</div>
             <div class="calendar-wrapper">
+                
                 <div class="week-header">
-                    <div class="wk-day"><span class="wk-time">18h</span>Dom</div>
-                    <div class="wk-day"><span class="wk-time">19h</span>Seg</div>
-                    <div class="wk-day"><span class="wk-time">19h</span>Ter</div>
-                    <div class="wk-day"><span class="wk-time">19h</span>Qua</div>
-                    <div class="wk-day"><span class="wk-time">19h</span>Qui</div>
-                    <div class="wk-day"><span class="wk-time">19h</span>Sex</div>
-                    <div class="wk-day"><span class="wk-time">18h</span>Sáb</div>
+                    <div class="wk-day"><span class="wk-time" id="time-0">18h</span>DOM</div>
+                    <div class="wk-day"><span class="wk-time" id="time-1">19h</span>SEG</div>
+                    <div class="wk-day"><span class="wk-time" id="time-2">19h</span>TER</div>
+                    <div class="wk-day"><span class="wk-time" id="time-3">19h</span>QUA</div>
+                    <div class="wk-day"><span class="wk-time" id="time-4">19h</span>QUI</div>
+                    <div class="wk-day"><span class="wk-time" id="time-5">19h</span>SEX</div>
+                    <div class="wk-day"><span class="wk-time" id="time-6">18h</span>SÁB</div>
                 </div>
+
                 <div class="days-grid" id="days-grid"></div>
             </div>
         </div>
@@ -284,7 +285,22 @@
             }
         });
 
-        // 2. Gerar Grid
+        // 2. Atualizar Horários (NOVA FUNÇÃO)
+        function atualizarHorarios() {
+            const inputVal = document.getElementById('horariosInput').value;
+            // Separa por vírgula e remove espaços extras
+            const horarios = inputVal.split(',').map(h => h.trim());
+            
+            // Aplica aos 7 dias (se não tiver 7, deixa vazio ou o último)
+            for(let i = 0; i < 7; i++) {
+                const span = document.getElementById(`time-${i}`);
+                if(span) {
+                    span.innerText = horarios[i] || "";
+                }
+            }
+        }
+
+        // 3. Gerar Grid (Com suporte a 6 linhas)
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
             grid.innerHTML = "";
@@ -294,31 +310,29 @@
             const nomeMes = document.getElementById('mesNum').options[mesIndex].text;
             document.getElementById('month-title').innerText = nomeMes;
 
-            const primeiroDia = new Date(ano, mesIndex, 1).getDay(); // 0-6
-            const totalDias = new Date(ano, mesIndex + 1, 0).getDate(); // 28-31
+            const primeiroDia = new Date(ano, mesIndex, 1).getDay(); 
+            const totalDias = new Date(ano, mesIndex + 1, 0).getDate(); 
 
-            // --- LÓGICA INTELIGENTE DE LINHAS ---
-            // Calcula quantas células totais precisamos (offset + dias)
+            // Lógica 5 vs 6 Linhas
             const totalCelulas = primeiroDia + totalDias;
             const numeroLinhas = Math.ceil(totalCelulas / 7);
 
-            // Aplica estilo dinâmico
             if (numeroLinhas > 5) {
                 grid.style.gridTemplateRows = "repeat(6, 1fr)";
-                grid.classList.add('six-rows'); // Classe CSS para ajustes finos
+                grid.classList.add('six-rows');
             } else {
                 grid.style.gridTemplateRows = "repeat(5, 1fr)";
                 grid.classList.remove('six-rows');
             }
 
-            // Gera Células Vazias
+            // Vazios
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
                 grid.appendChild(div);
             }
 
-            // Gera Dias
+            // Dias
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
@@ -331,7 +345,7 @@
             processarEventos();
         }
 
-        // 3. Processar Textos
+        // 4. Processar Eventos
         function processarEventos() {
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
             const lines = document.getElementById('eventInput').value.split('\n');
@@ -345,14 +359,14 @@
                     if (el) el.innerText = cleanText;
                 }
             });
+            // Também garante que os horários estejam atualizados
+            atualizarHorarios();
         }
 
-        // 4. Baixar Imagem
+        // 5. Baixar Imagem
         function baixarImagem() {
             if (!imagemCarregada) {
-                if(!confirm("Atenção: Nenhuma imagem de fundo foi carregada! Deseja continuar?")) {
-                    return;
-                }
+                if(!confirm("Sem fundo carregado. Continuar?")) return;
             }
             const originalShadow = artContainer.style.boxShadow;
             artContainer.style.boxShadow = "none";
@@ -375,7 +389,11 @@
             });
         }
 
-        window.onload = gerarGrid;
+        // Iniciar
+        window.onload = function() {
+            gerarGrid();
+            atualizarHorarios();
+        };
     </script>
 </body>
 </html>
