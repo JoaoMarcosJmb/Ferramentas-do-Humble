@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Calendário Humble</title>
+    <title>Calendário Humble - Grid Inteligente</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,6 @@
             box-shadow: 4px 0 20px rgba(0,0,0,0.5);
         }
 
-        /* Título da Sidebar ajustado */
         h2 { color: #fbbf24; margin: 0; font-size: 20px; font-family: 'Montserrat', sans-serif; }
         
         label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
@@ -79,7 +78,7 @@
             height: 1000px;
             min-height: 1000px;
             
-            /* Fundo de segurança (Areia) */
+            /* Fundo de segurança */
             background-color: #fceeb5; 
             
             background-size: cover;
@@ -89,7 +88,7 @@
             overflow: hidden; 
         }
 
-        /* Título do Mês (Overlay) */
+        /* Título do Mês */
         #month-title {
             position: absolute;
             top: 40px;
@@ -115,6 +114,7 @@
             display: flex;
             flex-direction: column;
             z-index: 5;
+            /* debug: border: 1px solid red; */
         }
 
         /* Dias da Semana */
@@ -138,13 +138,26 @@
             margin-bottom: 2px;
         }
 
-        /* --- ESTILO PEDRINHAS --- */
+        /* --- GRID DE DIAS --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            grid-template-rows: repeat(5, 1fr);
+            /* As linhas agora são definidas pelo JS (5 ou 6) */
             gap: 12px;
+            transition: gap 0.3s; /* Suavidade se mudar */
+        }
+
+        /* Ajustes Específicos para quando tiver 6 linhas */
+        .days-grid.six-rows {
+            gap: 8px; /* Diminui um pouco o espaço para caber tudo */
+        }
+        .days-grid.six-rows .day-cell {
+            border-width: 4px; /* Borda levemente mais fina para ganhar espaço */
+        }
+        .days-grid.six-rows .day-text {
+            margin-top: 28px; /* Sobe um pouco o texto */
+            font-size: 13px;  /* Ajuste fino na fonte */
         }
 
         .day-cell {
@@ -157,6 +170,7 @@
             flex-direction: column;
             align-items: center;
             padding-top: 5px;
+            overflow: hidden; /* Garante que texto gigante não vaze */
         }
 
         .day-num {
@@ -280,15 +294,31 @@
             const nomeMes = document.getElementById('mesNum').options[mesIndex].text;
             document.getElementById('month-title').innerText = nomeMes;
 
-            const primeiroDia = new Date(ano, mesIndex, 1).getDay();
-            const totalDias = new Date(ano, mesIndex + 1, 0).getDate();
+            const primeiroDia = new Date(ano, mesIndex, 1).getDay(); // 0-6
+            const totalDias = new Date(ano, mesIndex + 1, 0).getDate(); // 28-31
 
+            // --- LÓGICA INTELIGENTE DE LINHAS ---
+            // Calcula quantas células totais precisamos (offset + dias)
+            const totalCelulas = primeiroDia + totalDias;
+            const numeroLinhas = Math.ceil(totalCelulas / 7);
+
+            // Aplica estilo dinâmico
+            if (numeroLinhas > 5) {
+                grid.style.gridTemplateRows = "repeat(6, 1fr)";
+                grid.classList.add('six-rows'); // Classe CSS para ajustes finos
+            } else {
+                grid.style.gridTemplateRows = "repeat(5, 1fr)";
+                grid.classList.remove('six-rows');
+            }
+
+            // Gera Células Vazias
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
                 grid.appendChild(div);
             }
 
+            // Gera Dias
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
@@ -317,15 +347,13 @@
             });
         }
 
-        // 4. BAIXAR IMAGEM (Anti-Bug de corte)
+        // 4. Baixar Imagem
         function baixarImagem() {
             if (!imagemCarregada) {
-                if(!confirm("Atenção: Nenhuma imagem de fundo foi carregada! O fundo sairá cor de areia. Deseja continuar?")) {
+                if(!confirm("Atenção: Nenhuma imagem de fundo foi carregada! Deseja continuar?")) {
                     return;
                 }
             }
-
-            // Remove sombra para o print
             const originalShadow = artContainer.style.boxShadow;
             artContainer.style.boxShadow = "none";
 
@@ -339,9 +367,7 @@
                 windowWidth: 1000,
                 windowHeight: 1000
             }).then(canvas => {
-                // Restaura sombra
                 artContainer.style.boxShadow = originalShadow;
-
                 const link = document.createElement('a');
                 link.download = `Calendario_Humble.png`;
                 link.href = canvas.toDataURL();
