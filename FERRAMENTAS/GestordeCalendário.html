@@ -2,18 +2,27 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Gerador Visual - Calibragem Manual</title>
+    <title>Humble League - Calibrador V3</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
+        /* Variáveis Globais de Controle */
         :root {
-            --grid-top: 38.5%;
-            --grid-left: 5.5%;
-            --grid-width: 89%;
-            --grid-height: 52%;
-            --text-color: #5c4033;
-            --num-color: #d97706;
+            /* Posição e Tamanho do Grid Inteiro */
+            --g-top: 38.8%;
+            --g-left: 5.8%;
+            --g-width: 88.5%;
+            --g-height: 52%;
+            
+            /* Espaçamentos (O SEGREDO DO ALINHAMENTO) */
+            --g-col-gap: 0.5%; /* Distância entre colunas */
+            --g-row-gap: 0.5%; /* Distância entre linhas */
+
+            /* Ajuste do Texto dentro da célula */
+            --txt-offset-y: 0px;
+            --txt-offset-x: 0px;
+            --txt-size: 14px;
         }
 
         body {
@@ -28,35 +37,38 @@
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 320px;
+            width: 340px;
             background: #0f172a;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
             border-right: 1px solid #334155;
             overflow-y: auto;
-            z-index: 10;
+            z-index: 100;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
         }
 
-        h2, h3 { color: #fbbf24; margin: 0 0 10px 0; }
-        h3 { font-size: 16px; margin-top: 15px; border-top: 1px solid #334155; padding-top: 10px; }
+        h3 { color: #fbbf24; margin: 15px 0 5px 0; font-size: 14px; text-transform: uppercase; border-bottom: 1px solid #334155; padding-bottom: 5px; }
         
-        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 3px; }
+        /* Controles Deslizantes */
+        .control-group { margin-bottom: 8px; }
+        .control-header { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
+        input[type="range"] { width: 100%; cursor: pointer; height: 6px; }
         
-        input[type="range"] { width: 100%; cursor: pointer; }
         input[type="text"], textarea, select {
             width: 100%; background: #1e293b; border: 1px solid #334155;
-            color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box;
+            color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box; font-size: 12px;
         }
-        textarea { height: 120px; resize: vertical; font-size: 12px; }
+        textarea { height: 100px; resize: vertical; font-family: monospace; }
 
         .btn {
             background: #8B1D1D; color: white; border: none; padding: 10px;
-            border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px;
+            border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 13px;
         }
         .btn:hover { background: #a32424; }
         .btn-green { background: #16a34a; }
+        .btn-blue { background: #3b82f6; }
 
         /* --- PREVIEW --- */
         .preview-area {
@@ -73,144 +85,192 @@
             position: relative;
             width: 1000px; 
             height: 1000px;
-            background-color: #fff; /* Fundo branco até carregar imagem */
+            background-color: #fff;
             background-size: cover;
             background-position: center;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
             font-family: 'Fredoka', sans-serif;
+            flex-shrink: 0; /* Impede encolhimento */
         }
 
-        /* --- GRID DINÂMICO --- */
+        /* --- O GRID MÁGICO --- */
         .calendar-grid {
             position: absolute;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: repeat(5, 1fr);
-            /* Variáveis controladas pelos sliders */
-            top: var(--grid-top);
-            left: var(--grid-left);
-            width: var(--grid-width);
-            height: var(--grid-height);
-            /* Debug: Borda pontilhada para ajudar a alinhar (pode desligar depois) */
-            outline: 2px dashed rgba(255, 0, 0, 0.3);
+            
+            /* Aplicando as variáveis */
+            top: var(--g-top);
+            left: var(--g-left);
+            width: var(--g-width);
+            height: var(--g-height);
+            column-gap: var(--g-col-gap);
+            row-gap: var(--g-row-gap);
+            
+            /* Debug visual (inicialmente desligado) */
+            /* outline: 2px solid cyan; */
         }
 
         .day-cell {
             position: relative;
-            /* Debug: Borda leve nas celulas para ver onde elas estao */
-            border: 1px dotted rgba(0, 0, 0, 0.1); 
+            /* Debug visual para as celulas */
+            border: 1px dashed rgba(255, 0, 0, 0.3);
+            display: flex;
+            justify-content: center; /* Centraliza horizontalmente */
+            align-items: flex-start; /* Alinha no topo para controlar com padding */
+        }
+
+        .day-content-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            /* Offset manual do texto */
+            transform: translate(var(--txt-offset-x), var(--txt-offset-y));
+            text-align: center;
         }
 
         .day-num {
             position: absolute;
-            bottom: 5px;
-            left: 8px;
-            font-size: 20px;
-            color: var(--num-color);
+            bottom: 2px;
+            left: 5px;
+            font-size: 18px;
+            color: #d97706; /* Cor do numero */
             font-weight: 600;
         }
 
         .day-text {
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            text-align: center;
-            font-size: 14px;
-            color: var(--text-color);
+            width: 100%;
+            font-size: var(--txt-size);
+            color: #5c4033; /* Cor do texto (Marrom Humble) */
             line-height: 1.1;
             font-weight: 600;
+            padding-top: 5px;
+            white-space: pre-wrap; /* Permite quebra de linha */
         }
 
-        /* Labels dos dias da semana (Fixos ou ajustáveis se quiser, mas deixei fixo relativo ao grid) */
-        .week-labels {
+        /* Header fixo dos dias (opcional, pode ser escondido) */
+        .week-header {
             position: absolute;
-            top: -40px; /* Logo acima do grid */
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            color: #d97706;
-            font-weight: bold;
-            font-size: 18px;
+            top: -35px; left: 0; width: 100%;
+            display: flex; justify-content: space-between;
             pointer-events: none;
         }
-        .wk-lbl { flex: 1; text-align: center; }
-        .time-sm { display: block; font-size: 14px; color: #8B1D1D; }
+        .wk-item { flex: 1; text-align: center; font-size: 14px; color: #d97706; font-weight: bold; }
 
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>1. Imagem e Dados</h2>
+        <h2 style="color:white; margin:0; font-size:18px;">🛠️ Calibrador V3</h2>
+        
+        <h3>1. Imagem de Fundo</h3>
         <input type="file" id="bgInput" accept="image/*">
         
-        <div style="display:flex; gap:5px; margin-top:10px;">
-            <select id="mesNum" onchange="gerarGrid()">
+        <h3>2. Dados do Calendário</h3>
+        <div style="display:flex; gap:5px;">
+            <select id="mesNum" onchange="gerarGrid()" style="flex:2">
                 <option value="0">Janeiro</option>
                 <option value="1">Fevereiro</option>
-                <option value="2">Março</option>
-                <option value="3">Abril</option>
-                <option value="4">Maio</option>
-                <option value="5">Junho</option>
-                <option value="6">Julho</option>
-                <option value="7">Agosto</option>
-                <option value="8">Setembro</option>
-                <option value="9">Outubro</option>
-                <option value="10">Novembro</option>
-                <option value="11">Dezembro</option>
-            </select>
-            <input type="number" id="anoNum" value="2025" style="width:70px;" onchange="gerarGrid()">
+                </select>
+            <input type="number" id="anoNum" value="2025" style="flex:1" onchange="gerarGrid()">
         </div>
 
-        <h3>2. Ajuste Fino do Grid (Alinhamento)</h3>
+        <h3>3. Geometria do Grid</h3>
         
-        <label>Posição Vertical (Topo/Baixo)</label>
-        <input type="range" min="0" max="100" step="0.1" value="38.5" oninput="ajustarGrid('top', this.value)">
-        
-        <label>Posição Horizontal (Esq/Dir)</label>
-        <input type="range" min="0" max="100" step="0.1" value="5.5" oninput="ajustarGrid('left', this.value)">
-        
-        <label>Largura Total</label>
-        <input type="range" min="50" max="100" step="0.1" value="89" oninput="ajustarGrid('width', this.value)">
-        
-        <label>Altura Total</label>
-        <input type="range" min="30" max="80" step="0.1" value="52" oninput="ajustarGrid('height', this.value)">
+        <div class="control-group">
+            <div class="control-header"><span>Topo (Vertical)</span> <span id="val-top">38.8%</span></div>
+            <input type="range" min="0" max="100" step="0.1" value="38.8" oninput="setVar('--g-top', this.value + '%', 'val-top')">
+        </div>
 
-        <button class="btn" onclick="toggleBordas()" style="background:#475569; margin-top:10px;">👁️ Ligar/Desligar Guias</button>
+        <div class="control-group">
+            <div class="control-header"><span>Esquerda (Horizontal)</span> <span id="val-left">5.8%</span></div>
+            <input type="range" min="0" max="100" step="0.1" value="5.8" oninput="setVar('--g-left', this.value + '%', 'val-left')">
+        </div>
 
-        <h3>3. Eventos</h3>
-        <textarea id="eventInput" placeholder="4: Qualify UU&#10;12: Semanal OU">4: Qualify UU
+        <div class="control-group">
+            <div class="control-header"><span>Largura Total</span> <span id="val-width">88.5%</span></div>
+            <input type="range" min="50" max="100" step="0.1" value="88.5" oninput="setVar('--g-width', this.value + '%', 'val-width')">
+        </div>
+
+        <div class="control-group">
+            <div class="control-header"><span>Altura Total</span> <span id="val-height">52%</span></div>
+            <input type="range" min="20" max="80" step="0.1" value="52" oninput="setVar('--g-height', this.value + '%', 'val-height')">
+        </div>
+
+        <div class="control-group">
+            <div class="control-header"><span>Espaço Colunas (Gap X)</span> <span id="val-cgap">0.5%</span></div>
+            <input type="range" min="0" max="5" step="0.1" value="0.5" oninput="setVar('--g-col-gap', this.value + '%', 'val-cgap')">
+        </div>
+
+        <div class="control-group">
+            <div class="control-header"><span>Espaço Linhas (Gap Y)</span> <span id="val-rgap">0.5%</span></div>
+            <input type="range" min="0" max="5" step="0.1" value="0.5" oninput="setVar('--g-row-gap', this.value + '%', 'val-rgap')">
+        </div>
+
+        <button class="btn btn-blue" onclick="toggleGuides()">👁️ Ligar/Desligar Linhas Guia</button>
+
+        <h3>4. Ajuste de Texto</h3>
+        
+        <div class="control-group">
+            <div class="control-header"><span>Mover Texto Vertical</span></div>
+            <input type="range" min="-50" max="50" value="0" oninput="setVar('--txt-offset-y', this.value + 'px', null)">
+        </div>
+        <div class="control-group">
+            <div class="control-header"><span>Tamanho Fonte</span></div>
+            <input type="range" min="8" max="24" value="14" oninput="setVar('--txt-size', this.value + 'px', null)">
+        </div>
+
+
+        <h3>5. Lista de Eventos</h3>
+        <textarea id="eventInput" placeholder="4: Qualify UU">4: Qualify UU
 12: Semanal OU
 18: Qualify NatDex
 25: Qualify RU</textarea>
-        <button class="btn" onclick="processarEventos()">🔄 Atualizar Texto</button>
+        <button class="btn" onclick="processarEventos()">🔄 Atualizar Eventos</button>
 
-        <div style="margin-top: auto;">
-            <button class="btn btn-green" onclick="baixarImagem()">📸 Baixar PNG</button>
+        <div style="margin-top:auto; padding-top:10px;">
+            <button class="btn btn-green" onclick="baixarImagem()">📸 Baixar PNG Final</button>
         </div>
     </div>
 
     <div class="preview-area">
         <div id="art-container">
             <div class="calendar-grid" id="grid-container">
-                <div class="week-labels">
-                    <div class="wk-lbl"><span class="time-sm">18h</span>Dom</div>
-                    <div class="wk-lbl"><span class="time-sm">19h</span>Seg</div>
-                    <div class="wk-lbl"><span class="time-sm">19h</span>Ter</div>
-                    <div class="wk-lbl"><span class="time-sm">19h</span>Qua</div>
-                    <div class="wk-lbl"><span class="time-sm">19h</span>Qui</div>
-                    <div class="wk-lbl"><span class="time-sm">19h</span>Sex</div>
-                    <div class="wk-lbl"><span class="time-sm">18h</span>Sáb</div>
+                <div class="week-header">
+                    <div class="wk-item">Dom</div><div class="wk-item">Seg</div><div class="wk-item">Ter</div>
+                    <div class="wk-item">Qua</div><div class="wk-item">Qui</div><div class="wk-item">Sex</div><div class="wk-item">Sáb</div>
                 </div>
                 </div>
         </div>
     </div>
 
     <script>
-        // Carregar Imagem
+        // --- FUNÇÕES DE CALIBRAGEM ---
+        function setVar(name, value, displayId) {
+            document.documentElement.style.setProperty(name, value);
+            if(displayId) {
+                document.getElementById(displayId).innerText = value;
+            }
+        }
+
+        let guidesOn = true;
+        function toggleGuides() {
+            guidesOn = !guidesOn;
+            const cells = document.querySelectorAll('.day-cell');
+            const grid = document.getElementById('grid-container');
+            
+            if(guidesOn) {
+                cells.forEach(c => c.style.border = "1px dashed rgba(255, 0, 0, 0.3)");
+                grid.style.outline = "2px solid cyan";
+            } else {
+                cells.forEach(c => c.style.border = "none");
+                grid.style.outline = "none";
+            }
+        }
+
+        // --- CARREGAMENTO DE IMAGEM ---
         const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
         
@@ -225,75 +285,52 @@
             }
         });
 
-        // Ajuste CSS em tempo real
-        function ajustarGrid(prop, val) {
-            document.documentElement.style.setProperty(`--grid-${prop}`, val + '%');
-        }
-
-        // Ligar/Desligar linhas guias
-        let bordasVisiveis = true;
-        function toggleBordas() {
-            bordasVisiveis = !bordasVisiveis;
-            const grid = document.getElementById('grid-container');
-            const cells = document.querySelectorAll('.day-cell');
-            
-            if(bordasVisiveis) {
-                grid.style.outline = "2px dashed rgba(255, 0, 0, 0.3)";
-                cells.forEach(c => c.style.border = "1px dotted rgba(0, 0, 0, 0.1)");
-            } else {
-                grid.style.outline = "none";
-                cells.forEach(c => c.style.border = "none");
-            }
-        }
-
-        // Gerar Calendario
+        // --- GERAÇÃO DO CALENDÁRIO ---
         function gerarGrid() {
             const grid = document.getElementById('grid-container');
-            // Salva o header (week-labels) para não apagar
-            const header = grid.querySelector('.week-labels');
-            grid.innerHTML = ""; 
+            // Remove células, mantém header
+            const header = grid.querySelector('.week-header');
+            grid.innerHTML = '';
             grid.appendChild(header);
 
             const mes = parseInt(document.getElementById('mesNum').value);
             const ano = parseInt(document.getElementById('anoNum').value);
-
-            const primeiroDia = new Date(ano, mes, 1).getDay(); // 0=Dom
+            const primeiroDia = new Date(ano, mes, 1).getDay(); 
             const totalDias = new Date(ano, mes + 1, 0).getDate();
 
-            // Espaços vazios antes do dia 1
+            // Células Vazias
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
+                if(guidesOn) div.style.border = "1px dashed rgba(255, 0, 0, 0.3)"; // Manter guia se ligado
                 grid.appendChild(div);
             }
 
-            // Dias
+            // Células Dias
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
-                div.innerHTML = `
-                    <div class="day-text" id="evt-${d}"></div>
-                    <div class="day-num">${d}</div>
-                `;
-                // Manter borda se a opção estiver ligada
-                if(!bordasVisiveis) div.style.border = "none";
+                if(!guidesOn) div.style.border = "none";
                 
+                div.innerHTML = `
+                    <div class="day-content-wrapper">
+                        <div class="day-text" id="evt-${d}"></div>
+                        <div class="day-num">${d}</div>
+                    </div>
+                `;
                 grid.appendChild(div);
             }
             processarEventos();
         }
 
         function processarEventos() {
-            // Limpa textos
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
-            
             const lines = document.getElementById('eventInput').value.split('\n');
             lines.forEach(line => {
                 const parts = line.split(':');
                 if(parts.length >= 2) {
                     const dia = parts[0].trim();
                     const texto = parts.slice(1).join(':').trim();
-                    
                     const el = document.getElementById(`evt-${dia}`);
                     if(el) el.innerText = texto;
                 }
@@ -301,26 +338,18 @@
         }
 
         function baixarImagem() {
-            // Desliga bordas temporariamente para a foto
-            const grid = document.getElementById('grid-container');
-            const cells = document.querySelectorAll('.day-cell');
-            const prevOutline = grid.style.outline;
-            
-            grid.style.outline = "none";
-            cells.forEach(c => c.style.border = "none");
+            // Desliga guias forçadamente
+            const wasOn = guidesOn;
+            if(wasOn) toggleGuides();
 
             html2canvas(document.getElementById('art-container'), {
-                scale: 1, // 1:1 tamanho real
-                useCORS: true
+                scale: 1, useCORS: true
             }).then(canvas => {
-                // Restaura bordas se estavam ligadas
-                if(bordasVisiveis) {
-                    grid.style.outline = prevOutline;
-                    cells.forEach(c => c.style.border = "1px dotted rgba(0, 0, 0, 0.1)");
-                }
-
+                // Restaura guias
+                if(wasOn) toggleGuides();
+                
                 const link = document.createElement('a');
-                link.download = 'Calendario_Humble.png';
+                link.download = 'Calendario_Humble_Final.png';
                 link.href = canvas.toDataURL();
                 link.click();
             });
