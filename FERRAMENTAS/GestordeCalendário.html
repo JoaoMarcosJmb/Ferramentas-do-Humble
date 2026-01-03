@@ -68,6 +68,26 @@
         .btn:hover { background: #15803d; }
         .btn-blue { background: #3b82f6; margin-top: 10px; }
 
+        /* Estilo do Botão Voltar */
+        .btn-back {
+            background: #334155;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            margin-bottom: 5px;
+            transition: 0.2s;
+        }
+        .btn-back:hover {
+            background: #475569;
+            color: white;
+        }
+
         /* --- PREVIEW --- */
         .preview-area {
             flex: 1;
@@ -217,6 +237,8 @@
 <body>
 
     <div class="sidebar">
+        <a href="index.html" class="btn-back">⬅ Voltar ao Index</a>
+
         <h2>📅 Calendário Humble</h2>
         
         <div style="margin-top:10px;">
