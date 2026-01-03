@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Calendário Humble - Horários Editáveis</title>
+    <title>Humble Calendar - Horários Individuais</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,7 @@
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 340px; /* Levemente mais largo para caber tudo */
+            width: 350px;
             background: #0f172a;
             padding: 20px;
             display: flex;
@@ -49,7 +49,7 @@
             font-family: sans-serif;
         }
         
-        textarea { height: 160px; resize: none; font-family: monospace; font-size: 13px; }
+        textarea { height: 250px; resize: none; font-family: monospace; font-size: 13px; line-height: 1.4; }
 
         .btn {
             background: #16a34a; color: white; border: none; padding: 15px;
@@ -72,15 +72,9 @@
 
         #art-container {
             position: relative;
-            /* Tamanho FIXO de 1000x1000 */
-            width: 1000px;
-            min-width: 1000px;
-            height: 1000px;
-            min-height: 1000px;
-            
-            /* Fundo de segurança */
+            width: 1000px; min-width: 1000px;
+            height: 1000px; min-height: 1000px;
             background-color: #fceeb5; 
-            
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
@@ -88,7 +82,6 @@
             overflow: hidden; 
         }
 
-        /* Título do Mês */
         #month-title {
             position: absolute;
             top: 40px;
@@ -104,7 +97,6 @@
             z-index: 5;
         }
 
-        /* Container do Grid */
         .calendar-wrapper {
             position: absolute;
             top: 320px; 
@@ -116,7 +108,7 @@
             z-index: 5;
         }
 
-        /* Dias da Semana */
+        /* Dias da Semana (Sem horário fixo) */
         .week-header {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -129,28 +121,17 @@
             font-weight: 700;
             text-transform: uppercase;
         }
-        .wk-time {
-            display: block;
-            font-size: 14px;
-            color: #8B1D1D;
-            font-weight: 800;
-            margin-bottom: 2px;
-        }
 
         /* --- GRID --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            /* Linhas definidas pelo JS */
             gap: 12px;
             transition: gap 0.3s;
         }
-
-        /* Ajustes para 6 linhas */
+        /* Ajuste para 6 linhas (encolhe para caber) */
         .days-grid.six-rows { gap: 8px; }
-        .days-grid.six-rows .day-cell { border-width: 4px; }
-        .days-grid.six-rows .day-text { margin-top: 28px; font-size: 13px; }
 
         .day-cell {
             position: relative;
@@ -164,25 +145,53 @@
             overflow: hidden;
         }
 
+        /* Número do dia */
         .day-num {
             position: absolute;
             top: 5px;
-            left: 10px;
+            left: 8px;
             font-size: 22px;
             color: #8B1D1D;
             font-weight: 800;
             text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            line-height: 1;
         }
 
+        /* Horário Individual (Novo) */
+        .day-time {
+            position: absolute;
+            top: 8px;
+            right: 8px; /* Fica no canto direito */
+            font-size: 13px;
+            color: #d97706; /* Ouro escuro */
+            font-weight: 800;
+            background: rgba(255,255,255,0.8);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        /* Texto do Evento */
         .day-text {
-            margin-top: 35px;
-            width: 90%;
+            margin-top: 35px; /* Espaço para não bater no numero */
+            width: 92%;
             text-align: center;
-            font-size: 14px;
+            font-size: 13px;
             color: #3f2e22; 
             font-weight: 700;
-            line-height: 1.2;
-            white-space: pre-wrap;
+            line-height: 1.1;
+            
+            /* --- LIMITADOR DE LINHAS (Segurança) --- */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Máximo 2 linhas */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Ajuste fino quando tem 6 linhas */
+        .days-grid.six-rows .day-text {
+            margin-top: 30px;
+            font-size: 12px;
         }
 
         .day-cell.empty {
@@ -197,12 +206,12 @@
     <div class="sidebar">
         <h2>📅 Calendário Humble</h2>
         
-        <div style="margin-top:10px;">
+        <div style="margin-top:15px;">
             <label style="color:#fbbf24; font-weight:bold;">1. Carregue o Fundo</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:10px;">
+        <div style="display:flex; gap:10px; margin-top:15px;">
             <div style="flex:2">
                 <label>Mês</label>
                 <select id="mesNum" onchange="gerarGrid()">
@@ -226,21 +235,16 @@
             </div>
         </div>
 
-        <div style="margin-top:10px;">
-            <label>2. Horários (Separe por vírgula: Dom, Seg... Sáb)</label>
-            <input type="text" id="horariosInput" 
-                   value="18h, 19h, 19h, 19h, 19h, 19h, 18h" 
-                   onkeyup="atualizarHorarios()"
-                   style="font-family: monospace; letter-spacing: -0.5px;">
-        </div>
-
-        <div style="margin-top:10px;">
-            <label>3. Lista de Eventos</label>
-            <textarea id="eventInput" placeholder="1: Final Humble...">1: Final Humble League
-4: Qualify UU
-12: Semanal OU
-18: Qualify NatDex
-25: Qualify RU</textarea>
+        <div style="margin-top:15px;">
+            <label>2. Eventos (Dia: Hora - Evento)</label>
+            <div style="font-size:11px; color:#64748b; margin-bottom:5px;">
+                Exemplo: <b>4: 18h - Qualify UU</b>
+            </div>
+            <textarea id="eventInput" placeholder="1: 18h - Final Humble&#10;4: 19:30 - Qualify UU&#10;12: Folga - Semanal OU">1: 18h - Final Humble League
+4: 19h - Qualify UU
+12: 20h - Semanal OU
+18: 18h - Qualify NatDex
+25: 19h - Qualify RU</textarea>
         </div>
 
         <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar Tudo</button>
@@ -251,15 +255,14 @@
         <div id="art-container">
             <div id="month-title">JANEIRO</div>
             <div class="calendar-wrapper">
-                
                 <div class="week-header">
-                    <div class="wk-day"><span class="wk-time" id="time-0">18h</span>DOM</div>
-                    <div class="wk-day"><span class="wk-time" id="time-1">19h</span>SEG</div>
-                    <div class="wk-day"><span class="wk-time" id="time-2">19h</span>TER</div>
-                    <div class="wk-day"><span class="wk-time" id="time-3">19h</span>QUA</div>
-                    <div class="wk-day"><span class="wk-time" id="time-4">19h</span>QUI</div>
-                    <div class="wk-day"><span class="wk-time" id="time-5">19h</span>SEX</div>
-                    <div class="wk-day"><span class="wk-time" id="time-6">18h</span>SÁB</div>
+                    <div class="wk-day">DOM</div>
+                    <div class="wk-day">SEG</div>
+                    <div class="wk-day">TER</div>
+                    <div class="wk-day">QUA</div>
+                    <div class="wk-day">QUI</div>
+                    <div class="wk-day">SEX</div>
+                    <div class="wk-day">SÁB</div>
                 </div>
 
                 <div class="days-grid" id="days-grid"></div>
@@ -285,22 +288,7 @@
             }
         });
 
-        // 2. Atualizar Horários (NOVA FUNÇÃO)
-        function atualizarHorarios() {
-            const inputVal = document.getElementById('horariosInput').value;
-            // Separa por vírgula e remove espaços extras
-            const horarios = inputVal.split(',').map(h => h.trim());
-            
-            // Aplica aos 7 dias (se não tiver 7, deixa vazio ou o último)
-            for(let i = 0; i < 7; i++) {
-                const span = document.getElementById(`time-${i}`);
-                if(span) {
-                    span.innerText = horarios[i] || "";
-                }
-            }
-        }
-
-        // 3. Gerar Grid (Com suporte a 6 linhas)
+        // 2. Gerar Grid
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
             grid.innerHTML = "";
@@ -310,10 +298,10 @@
             const nomeMes = document.getElementById('mesNum').options[mesIndex].text;
             document.getElementById('month-title').innerText = nomeMes;
 
-            const primeiroDia = new Date(ano, mesIndex, 1).getDay(); 
-            const totalDias = new Date(ano, mesIndex + 1, 0).getDate(); 
+            const primeiroDia = new Date(ano, mesIndex, 1).getDay();
+            const totalDias = new Date(ano, mesIndex + 1, 0).getDate();
 
-            // Lógica 5 vs 6 Linhas
+            // Grid Inteligente (5 ou 6 linhas)
             const totalCelulas = primeiroDia + totalDias;
             const numeroLinhas = Math.ceil(totalCelulas / 7);
 
@@ -338,6 +326,7 @@
                 div.className = 'day-cell';
                 div.innerHTML = `
                     <div class="day-num">${d}</div>
+                    <div class="day-time" id="time-${d}"></div>
                     <div class="day-text" id="evt-${d}"></div>
                 `;
                 grid.appendChild(div);
@@ -345,25 +334,45 @@
             processarEventos();
         }
 
-        // 4. Processar Eventos
+        // 3. Processar Eventos (COM SUPORTE A HORA)
         function processarEventos() {
+            // Limpa tudo antes
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
+            document.querySelectorAll('.day-time').forEach(e => e.innerText = "");
+
             const lines = document.getElementById('eventInput').value.split('\n');
+            
             lines.forEach(line => {
-                const parts = line.split(/[:|-]/);
-                if (parts.length >= 2) {
-                    const dia = parts[0].trim();
-                    const texto = line.substring(line.indexOf(parts[0]) + parts[0].length + 1).trim();
-                    const cleanText = texto.replace(/^[:|-]\s*/, "");
-                    const el = document.getElementById(`evt-${dia}`);
-                    if (el) el.innerText = cleanText;
+                // Regex para capturar: Dia: (Opcional Hora -) Texto
+                // Ex: "4: 18h - Teste" ou "4: Teste"
+                // Grupo 1: Dia
+                // Grupo 2: Hora (opcional)
+                // Grupo 3: Texto
+                const regex = /^(\d+):\s*(?:(.*?)\s*-\s*)?(.*)/;
+                const match = line.match(regex);
+
+                if (match) {
+                    const dia = match[1];
+                    const hora = match[2]; // Pode ser undefined
+                    const texto = match[3];
+
+                    // Preenche Texto
+                    const elTexto = document.getElementById(`evt-${dia}`);
+                    if (elTexto) elTexto.innerText = texto;
+
+                    // Preenche Hora (se existir)
+                    const elHora = document.getElementById(`time-${dia}`);
+                    if (elHora && hora) {
+                        elHora.innerText = hora;
+                        elHora.style.display = 'block';
+                    } else if (elHora) {
+                        elHora.style.display = 'none'; // Esconde se não tiver hora
+                    }
                 }
             });
-            // Também garante que os horários estejam atualizados
-            atualizarHorarios();
         }
 
-        // 5. Baixar Imagem
+        // 4. Baixar Imagem
         function baixarImagem() {
             if (!imagemCarregada) {
                 if(!confirm("Sem fundo carregado. Continuar?")) return;
@@ -374,12 +383,9 @@
             html2canvas(document.getElementById('art-container'), {
                 scale: 1, 
                 useCORS: true,
-                width: 1000,
-                height: 1000,
-                scrollX: 0,
-                scrollY: 0,
-                windowWidth: 1000,
-                windowHeight: 1000
+                width: 1000, height: 1000,
+                scrollX: 0, scrollY: 0,
+                windowWidth: 1000, windowHeight: 1000
             }).then(canvas => {
                 artContainer.style.boxShadow = originalShadow;
                 const link = document.createElement('a');
@@ -389,11 +395,7 @@
             });
         }
 
-        // Iniciar
-        window.onload = function() {
-            gerarGrid();
-            atualizarHorarios();
-        };
+        window.onload = gerarGrid;
     </script>
 </body>
 </html>
