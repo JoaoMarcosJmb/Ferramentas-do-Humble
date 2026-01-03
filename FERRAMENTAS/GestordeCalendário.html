@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Título Cartoon</title>
+    <title>Humble Calendar - Controle Total</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,6 +11,12 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
+        /* Variáveis CSS para controle dinâmico */
+        :root {
+            --title-top: 35px;
+            --title-size: 85px;
+        }
+
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #1e293b;
@@ -32,13 +38,21 @@
             color: white;
             z-index: 10;
             box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+            overflow-y: auto; /* Caso a tela seja pequena */
         }
 
         h2 { color: #fbbf24; margin: 0; font-size: 20px; font-family: 'Montserrat', sans-serif; }
         
         label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
         
-        input, textarea, select {
+        /* Controles Deslizantes */
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"], textarea, select {
             width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
@@ -49,7 +63,7 @@
             font-family: sans-serif;
         }
         
-        textarea { height: 250px; resize: none; font-family: monospace; font-size: 13px; line-height: 1.4; }
+        textarea { height: 200px; resize: none; font-family: monospace; font-size: 13px; line-height: 1.4; }
 
         .btn {
             background: #16a34a; color: white; border: none; padding: 15px;
@@ -82,32 +96,30 @@
             overflow: hidden; 
         }
 
-        /* --- TÍTULO NOVO ESTILO CARTOON --- */
+        /* --- TÍTULO AJUSTÁVEL --- */
         #month-title {
             position: absolute;
-            top: 35px; /* Subi um pouco */
+            
+            /* Usa as variáveis controladas pelos sliders */
+            top: var(--title-top); 
+            font-size: var(--title-size);
+            
             width: 100%;
             text-align: center;
-            font-size: 85px; /* Maior */
-            color: #ff6b35; /* Laranja vibrante */
+            color: #ff6b35; 
             text-transform: uppercase;
-            font-weight: 900; /* Extra Bold/Black */
+            font-weight: 900; 
             letter-spacing: -2px;
             
-            /* TRUQUE: Cria uma borda branca grossa e depois a sombra marrom */
+            /* Estilo Cartoon */
             text-shadow: 
-                3px 3px 0 #fff,
-                -3px -3px 0 #fff,
-                3px -3px 0 #fff,
-                -3px 3px 0 #fff,
-                3px 0px 0 #fff,
-                -3px 0px 0 #fff,
-                0px 3px 0 #fff,
-                0px -3px 0 #fff,
-                8px 8px 0 #3f2e22; /* A sombra marrom projetada */
+                3px 3px 0 #fff, -3px -3px 0 #fff, 3px -3px 0 #fff, -3px 3px 0 #fff,
+                3px 0px 0 #fff, -3px 0px 0 #fff, 0px 3px 0 #fff, 0px -3px 0 #fff,
+                8px 8px 0 #3f2e22;
             
             pointer-events: none;
             z-index: 5;
+            transition: top 0.1s, font-size 0.1s; /* Suavidade ao arrastar */
         }
 
         .calendar-wrapper {
@@ -132,7 +144,6 @@
             font-size: 20px;
             font-weight: 700;
             text-transform: uppercase;
-            /* Leve contorno branco para leitura na areia */
             text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
         }
 
@@ -212,43 +223,55 @@
 <body>
 
     <div class="sidebar">
-        <h2>📅 Calendário Humble</h2>
+        <h2>📅 Humble Calendar</h2>
         
         <div style="margin-top:15px;">
             <label style="color:#fbbf24; font-weight:bold;">1. Carregue o Fundo</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
 
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <div style="flex:2">
-                <label>Mês</label>
-                <select id="mesNum" onchange="gerarGrid()">
-                    <option value="0">Janeiro</option>
-                    <option value="1">Fevereiro</option>
-                    <option value="2">Março</option>
-                    <option value="3">Abril</option>
-                    <option value="4">Maio</option>
-                    <option value="5">Junho</option>
-                    <option value="6">Julho</option>
-                    <option value="7">Agosto</option>
-                    <option value="8">Setembro</option>
-                    <option value="9">Outubro</option>
-                    <option value="10">Novembro</option>
-                    <option value="11">Dezembro</option>
-                </select>
-            </div>
-            <div style="flex:1">
-                <label>Ano</label>
-                <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
+        <div style="margin-top:15px; border-top: 1px solid #334155; padding-top:10px;">
+            <label style="color:#fbbf24; font-weight:bold;">2. Ajuste do Título</label>
+            
+            <label>Posição Vertical (Cima/Baixo)</label>
+            <input type="range" min="0" max="300" value="35" oninput="ajustarTitulo('top', this.value + 'px')">
+            
+            <label>Tamanho da Fonte</label>
+            <input type="range" min="40" max="150" value="85" oninput="ajustarTitulo('size', this.value + 'px')">
+        </div>
+
+        <div style="margin-top:15px; border-top: 1px solid #334155; padding-top:10px;">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:2">
+                    <label>Mês</label>
+                    <select id="mesNum" onchange="gerarGrid()">
+                        <option value="0">Janeiro</option>
+                        <option value="1">Fevereiro</option>
+                        <option value="2">Março</option>
+                        <option value="3">Abril</option>
+                        <option value="4">Maio</option>
+                        <option value="5">Junho</option>
+                        <option value="6">Julho</option>
+                        <option value="7">Agosto</option>
+                        <option value="8">Setembro</option>
+                        <option value="9">Outubro</option>
+                        <option value="10">Novembro</option>
+                        <option value="11">Dezembro</option>
+                    </select>
+                </div>
+                <div style="flex:1">
+                    <label>Ano</label>
+                    <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
+                </div>
             </div>
         </div>
 
         <div style="margin-top:15px;">
-            <label>2. Eventos (Dia: Hora - Evento)</label>
+            <label>3. Eventos (Dia: Hora - Evento)</label>
             <div style="font-size:11px; color:#64748b; margin-bottom:5px;">
                 Exemplo: <b>4: 18h - Qualify UU</b>
             </div>
-            <textarea id="eventInput" placeholder="1: 18h - Final Humble&#10;4: 19:30 - Qualify UU&#10;12: Folga - Semanal OU">1: 18h - Final Humble League
+            <textarea id="eventInput" placeholder="1: 18h - Final Humble&#10;4: 19:30 - Qualify UU">1: 18h - Final Humble League
 4: 19h - Qualify UU
 12: 20h - Semanal OU
 18: 18h - Qualify NatDex
@@ -295,7 +318,16 @@
             }
         });
 
-        // 2. Gerar Grid
+        // 2. Função de Ajuste do Título (NOVO)
+        function ajustarTitulo(prop, valor) {
+            if (prop === 'top') {
+                document.documentElement.style.setProperty('--title-top', valor);
+            } else if (prop === 'size') {
+                document.documentElement.style.setProperty('--title-size', valor);
+            }
+        }
+
+        // 3. Gerar Grid
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
             grid.innerHTML = "";
@@ -338,7 +370,7 @@
             processarEventos();
         }
 
-        // 3. Processar Eventos
+        // 4. Processar Eventos
         function processarEventos() {
             document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
             document.querySelectorAll('.day-time').forEach(e => e.innerText = "");
@@ -368,7 +400,7 @@
             });
         }
 
-        // 4. Baixar Imagem
+        // 5. Baixar Imagem
         function baixarImagem() {
             if (!imagemCarregada) {
                 if(!confirm("Sem fundo carregado. Continuar?")) return;
