@@ -2,75 +2,66 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble League - Calibrador V3</title>
+    <title>Calendário Humble League - Fixo</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <style>
-        /* Variáveis Globais de Controle */
-        :root {
-            /* Posição e Tamanho do Grid Inteiro */
-            --g-top: 38.8%;
-            --g-left: 5.8%;
-            --g-width: 88.5%;
-            --g-height: 52%;
-            
-            /* Espaçamentos (O SEGREDO DO ALINHAMENTO) */
-            --g-col-gap: 0.5%; /* Distância entre colunas */
-            --g-row-gap: 0.5%; /* Distância entre linhas */
-
-            /* Ajuste do Texto dentro da célula */
-            --txt-offset-y: 0px;
-            --txt-offset-x: 0px;
-            --txt-size: 14px;
-        }
-
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #1e293b;
-            color: white;
+            margin: 0;
             display: flex;
             height: 100vh;
-            margin: 0;
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- BARRA LATERAL SIMPLES --- */
         .sidebar {
-            width: 340px;
+            width: 300px;
             background: #0f172a;
-            padding: 15px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
             border-right: 1px solid #334155;
-            overflow-y: auto;
-            z-index: 100;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            color: white;
+            z-index: 10;
         }
 
-        h3 { color: #fbbf24; margin: 15px 0 5px 0; font-size: 14px; text-transform: uppercase; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+        h2 { color: #fbbf24; margin: 0; font-size: 18px; }
+        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
         
-        /* Controles Deslizantes */
-        .control-group { margin-bottom: 8px; }
-        .control-header { display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
-        input[type="range"] { width: 100%; cursor: pointer; height: 6px; }
-        
-        input[type="text"], textarea, select {
-            width: 100%; background: #1e293b; border: 1px solid #334155;
-            color: #fff; padding: 8px; border-radius: 4px; box-sizing: border-box; font-size: 12px;
+        input, textarea, select {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: sans-serif;
         }
-        textarea { height: 100px; resize: vertical; font-family: monospace; }
+
+        textarea { height: 250px; resize: none; font-family: monospace; }
 
         .btn {
-            background: #8B1D1D; color: white; border: none; padding: 10px;
-            border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 13px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            margin-top: auto;
+            transition: 0.2s;
         }
-        .btn:hover { background: #a32424; }
-        .btn-green { background: #16a34a; }
-        .btn-blue { background: #3b82f6; }
+        .btn:hover { background: #15803d; }
+        .btn-blue { background: #3b82f6; margin-top: 10px; }
 
-        /* --- PREVIEW --- */
+        /* --- ÁREA DE VISUALIZAÇÃO --- */
         .preview-area {
             flex: 1;
             background: #334155;
@@ -83,194 +74,122 @@
 
         #art-container {
             position: relative;
-            width: 1000px; 
+            /* TAMANHO FIXO PARA GARANTIR ALINHAMENTO */
+            width: 1000px;
             height: 1000px;
             background-color: #fff;
+            background-image: url('Prancheta_1_copia_2.jpg'); /* Tenta carregar direto */
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             font-family: 'Fredoka', sans-serif;
-            flex-shrink: 0; /* Impede encolhimento */
         }
 
-        /* --- O GRID MÁGICO --- */
+        /* --- GRID CONFIGURADO PARA "Prancheta_1_copia_2.jpg" --- */
         .calendar-grid {
             position: absolute;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: repeat(5, 1fr);
             
-            /* Aplicando as variáveis */
-            top: var(--g-top);
-            left: var(--g-left);
-            width: var(--g-width);
-            height: var(--g-height);
-            column-gap: var(--g-col-gap);
-            row-gap: var(--g-row-gap);
+            /* COORDENADAS EXATAS DA IMAGEM */
+            top: 39.2%;      /* Onde começam as pedras superiores */
+            left: 6.2%;      /* Margem esquerda das pedras */
+            width: 87.6%;    /* Largura total da área das pedras */
+            height: 48.5%;   /* Altura total da área das pedras */
             
-            /* Debug visual (inicialmente desligado) */
-            /* outline: 2px solid cyan; */
+            /* Pequeno ajuste nos gaps para compensar o desenho manual */
+            column-gap: 0.2%; 
+            row-gap: 0.2%;
         }
 
         .day-cell {
             position: relative;
-            /* Debug visual para as celulas */
-            border: 1px dashed rgba(255, 0, 0, 0.3);
-            display: flex;
-            justify-content: center; /* Centraliza horizontalmente */
-            align-items: flex-start; /* Alinha no topo para controlar com padding */
-        }
-
-        .day-content-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            /* Offset manual do texto */
-            transform: translate(var(--txt-offset-x), var(--txt-offset-y));
-            text-align: center;
+            /* debug: border: 1px solid red; */
         }
 
         .day-num {
             position: absolute;
-            bottom: 2px;
-            left: 5px;
-            font-size: 18px;
-            color: #d97706; /* Cor do numero */
-            font-weight: 600;
+            bottom: 5px; /* Ajuste a altura do número aqui */
+            left: 5px;   /* Ajuste a posição lateral do número aqui */
+            font-size: 20px;
+            color: #d97706; /* Laranja escuro */
+            font-weight: bold;
         }
 
         .day-text {
-            width: 100%;
-            font-size: var(--txt-size);
-            color: #5c4033; /* Cor do texto (Marrom Humble) */
-            line-height: 1.1;
-            font-weight: 600;
-            padding-top: 5px;
-            white-space: pre-wrap; /* Permite quebra de linha */
-        }
-
-        /* Header fixo dos dias (opcional, pode ser escondido) */
-        .week-header {
             position: absolute;
-            top: -35px; left: 0; width: 100%;
-            display: flex; justify-content: space-between;
-            pointer-events: none;
+            top: 5px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 14px; /* Tamanho da fonte do evento */
+            color: #5c4033;  /* Marrom Humble */
+            font-weight: 600;
+            line-height: 1.1;
+            padding: 0 5px;
+            box-sizing: border-box;
+            white-space: pre-wrap;
         }
-        .wk-item { flex: 1; text-align: center; font-size: 14px; color: #d97706; font-weight: bold; }
 
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2 style="color:white; margin:0; font-size:18px;">🛠️ Calibrador V3</h2>
+        <h2>📅 Gerador Humble</h2>
         
-        <h3>1. Imagem de Fundo</h3>
-        <input type="file" id="bgInput" accept="image/*">
-        
-        <h3>2. Dados do Calendário</h3>
-        <div style="display:flex; gap:5px;">
-            <select id="mesNum" onchange="gerarGrid()" style="flex:2">
-                <option value="0">Janeiro</option>
-                <option value="1">Fevereiro</option>
+        <div style="margin-top:15px;">
+            <label>Caso a imagem não apareça, selecione-a:</label>
+            <input type="file" id="bgInput" accept="image/*">
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <div style="flex:2">
+                <label>Mês</label>
+                <select id="mesNum" onchange="gerarGrid()">
+                    <option value="0">Janeiro</option>
+                    <option value="1">Fevereiro</option>
+                    <option value="2">Março</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Maio</option>
+                    <option value="5">Junho</option>
+                    <option value="6">Julho</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Setembro</option>
+                    <option value="9">Outubro</option>
+                    <option value="10">Novembro</option>
+                    <option value="11">Dezembro</option>
                 </select>
-            <input type="number" id="anoNum" value="2025" style="flex:1" onchange="gerarGrid()">
+            </div>
+            <div style="flex:1">
+                <label>Ano</label>
+                <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
+            </div>
         </div>
 
-        <h3>3. Geometria do Grid</h3>
-        
-        <div class="control-group">
-            <div class="control-header"><span>Topo (Vertical)</span> <span id="val-top">38.8%</span></div>
-            <input type="range" min="0" max="100" step="0.1" value="38.8" oninput="setVar('--g-top', this.value + '%', 'val-top')">
-        </div>
-
-        <div class="control-group">
-            <div class="control-header"><span>Esquerda (Horizontal)</span> <span id="val-left">5.8%</span></div>
-            <input type="range" min="0" max="100" step="0.1" value="5.8" oninput="setVar('--g-left', this.value + '%', 'val-left')">
-        </div>
-
-        <div class="control-group">
-            <div class="control-header"><span>Largura Total</span> <span id="val-width">88.5%</span></div>
-            <input type="range" min="50" max="100" step="0.1" value="88.5" oninput="setVar('--g-width', this.value + '%', 'val-width')">
-        </div>
-
-        <div class="control-group">
-            <div class="control-header"><span>Altura Total</span> <span id="val-height">52%</span></div>
-            <input type="range" min="20" max="80" step="0.1" value="52" oninput="setVar('--g-height', this.value + '%', 'val-height')">
-        </div>
-
-        <div class="control-group">
-            <div class="control-header"><span>Espaço Colunas (Gap X)</span> <span id="val-cgap">0.5%</span></div>
-            <input type="range" min="0" max="5" step="0.1" value="0.5" oninput="setVar('--g-col-gap', this.value + '%', 'val-cgap')">
-        </div>
-
-        <div class="control-group">
-            <div class="control-header"><span>Espaço Linhas (Gap Y)</span> <span id="val-rgap">0.5%</span></div>
-            <input type="range" min="0" max="5" step="0.1" value="0.5" oninput="setVar('--g-row-gap', this.value + '%', 'val-rgap')">
-        </div>
-
-        <button class="btn btn-blue" onclick="toggleGuides()">👁️ Ligar/Desligar Linhas Guia</button>
-
-        <h3>4. Ajuste de Texto</h3>
-        
-        <div class="control-group">
-            <div class="control-header"><span>Mover Texto Vertical</span></div>
-            <input type="range" min="-50" max="50" value="0" oninput="setVar('--txt-offset-y', this.value + 'px', null)">
-        </div>
-        <div class="control-group">
-            <div class="control-header"><span>Tamanho Fonte</span></div>
-            <input type="range" min="8" max="24" value="14" oninput="setVar('--txt-size', this.value + 'px', null)">
-        </div>
-
-
-        <h3>5. Lista de Eventos</h3>
-        <textarea id="eventInput" placeholder="4: Qualify UU">4: Qualify UU
+        <div style="margin-top:15px;">
+            <label>Lista de Eventos (Dia: Evento)</label>
+            <textarea id="eventInput" placeholder="Exemplo:&#10;1: Final Humble&#10;4: Torneio OU&#10;12: Evento Especial">1: Final Humble League
+4: Qualify UU
 12: Semanal OU
 18: Qualify NatDex
 25: Qualify RU</textarea>
-        <button class="btn" onclick="processarEventos()">🔄 Atualizar Eventos</button>
-
-        <div style="margin-top:auto; padding-top:10px;">
-            <button class="btn btn-green" onclick="baixarImagem()">📸 Baixar PNG Final</button>
         </div>
+
+        <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar Texto</button>
+        <button class="btn" onclick="baixarImagem()">📸 Baixar Imagem</button>
     </div>
 
     <div class="preview-area">
         <div id="art-container">
             <div class="calendar-grid" id="grid-container">
-                <div class="week-header">
-                    <div class="wk-item">Dom</div><div class="wk-item">Seg</div><div class="wk-item">Ter</div>
-                    <div class="wk-item">Qua</div><div class="wk-item">Qui</div><div class="wk-item">Sex</div><div class="wk-item">Sáb</div>
-                </div>
                 </div>
         </div>
     </div>
 
     <script>
-        // --- FUNÇÕES DE CALIBRAGEM ---
-        function setVar(name, value, displayId) {
-            document.documentElement.style.setProperty(name, value);
-            if(displayId) {
-                document.getElementById(displayId).innerText = value;
-            }
-        }
-
-        let guidesOn = true;
-        function toggleGuides() {
-            guidesOn = !guidesOn;
-            const cells = document.querySelectorAll('.day-cell');
-            const grid = document.getElementById('grid-container');
-            
-            if(guidesOn) {
-                cells.forEach(c => c.style.border = "1px dashed rgba(255, 0, 0, 0.3)");
-                grid.style.outline = "2px solid cyan";
-            } else {
-                cells.forEach(c => c.style.border = "none");
-                grid.style.outline = "none";
-            }
-        }
-
-        // --- CARREGAMENTO DE IMAGEM ---
+        // --- 1. CARREGAR IMAGEM (Backup) ---
         const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
         
@@ -285,76 +204,83 @@
             }
         });
 
-        // --- GERAÇÃO DO CALENDÁRIO ---
+        // --- 2. GERAR GRID AUTOMÁTICO ---
         function gerarGrid() {
             const grid = document.getElementById('grid-container');
-            // Remove células, mantém header
-            const header = grid.querySelector('.week-header');
-            grid.innerHTML = '';
-            grid.appendChild(header);
+            grid.innerHTML = ""; // Limpa tudo
 
             const mes = parseInt(document.getElementById('mesNum').value);
             const ano = parseInt(document.getElementById('anoNum').value);
-            const primeiroDia = new Date(ano, mes, 1).getDay(); 
+
+            // Cálculos de data
+            const primeiroDia = new Date(ano, mes, 1).getDay(); // 0 = Dom
             const totalDias = new Date(ano, mes + 1, 0).getDate();
 
-            // Células Vazias
+            // Células vazias (antes do dia 1)
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
-                if(guidesOn) div.style.border = "1px dashed rgba(255, 0, 0, 0.3)"; // Manter guia se ligado
                 grid.appendChild(div);
             }
 
-            // Células Dias
+            // Dias Reais
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
-                if(!guidesOn) div.style.border = "none";
-                
                 div.innerHTML = `
-                    <div class="day-content-wrapper">
-                        <div class="day-text" id="evt-${d}"></div>
-                        <div class="day-num">${d}</div>
-                    </div>
+                    <div class="day-text" id="evt-${d}"></div>
+                    <div class="day-num">${d}</div>
                 `;
                 grid.appendChild(div);
             }
+
+            // Atualiza os textos se já houver algo escrito
             processarEventos();
         }
 
+        // --- 3. PROCESSAR EVENTOS ---
         function processarEventos() {
-            document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
-            const lines = document.getElementById('eventInput').value.split('\n');
+            // Limpa textos anteriores
+            document.querySelectorAll('.day-text').forEach(el => el.innerText = "");
+
+            const rawText = document.getElementById('eventInput').value;
+            const lines = rawText.split('\n');
+
             lines.forEach(line => {
-                const parts = line.split(':');
-                if(parts.length >= 2) {
-                    const dia = parts[0].trim();
-                    const texto = parts.slice(1).join(':').trim();
+                // Separa "Dia: Texto"
+                // Aceita "4: Evento" ou "04 - Evento"
+                const parts = line.split(/[:|-]/); 
+                
+                if (parts.length >= 2) {
+                    const dia = parts[0].trim(); // Pega o número
+                    // Junta o resto da string caso tenha mais dois pontos no texto
+                    const texto = line.substring(line.indexOf(parts[0]) + parts[0].length + 1).trim();
+                    
+                    // Remove dois pontos ou traço do início do texto se sobrou
+                    const textoLimpo = texto.replace(/^[:|-]\s*/, "");
+
                     const el = document.getElementById(`evt-${dia}`);
-                    if(el) el.innerText = texto;
+                    if (el) {
+                        el.innerText = textoLimpo;
+                    }
                 }
             });
         }
 
+        // --- 4. BAIXAR PNG ---
         function baixarImagem() {
-            // Desliga guias forçadamente
-            const wasOn = guidesOn;
-            if(wasOn) toggleGuides();
-
             html2canvas(document.getElementById('art-container'), {
-                scale: 1, useCORS: true
+                scale: 1, // Tamanho original 1000x1000
+                useCORS: true
             }).then(canvas => {
-                // Restaura guias
-                if(wasOn) toggleGuides();
-                
                 const link = document.createElement('a');
-                link.download = 'Calendario_Humble_Final.png';
+                link.download = 'Calendario_Humble.png';
                 link.href = canvas.toDataURL();
                 link.click();
             });
         }
 
+        // Inicia ao abrir
         window.onload = gerarGrid;
     </script>
 </body>
