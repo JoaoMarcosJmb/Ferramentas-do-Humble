@@ -160,38 +160,47 @@
             text-transform: uppercase;
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8); /* Glow leve para leitura */
         }
-
 /* --- GRID (Container) --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; /* Remove vãos para as linhas se tocarem */
+            gap: 0; 
             
-            /* Bordas de Pedra (Topo e Esquerda) */
+            /* TOPO e ESQUERDA da Grade inteira */
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
-            background-position: top left, top left;
-            background-size: 12px; /* Reduzi para 12px para criar mais respiro */
             
-            padding-top: 6px; /* Ajuste fino para alinhar */
-            padding-left: 6px;
+            /* Ajuste da Posição: */
+            background-position: top left, top left;
+            
+            /* PULO DO GATO: Pedra menor (10px) cria mais espaço vazio entre elas */
+            background-size: 10px; 
+            
+            /* Padding maior para não cortar as pedras da borda */
+            padding-top: 5px; 
+            padding-left: 5px;
         }
 
         .days-grid.six-rows { gap: 0; }
 
         /* --- CÉLULA (Dias) --- */
         .day-cell {
-            position: relative; /* Essencial para o dia/hora irem para os cantos */
+            position: relative;
             background: rgba(255, 248, 220, 0.2);
             
-            /* Bordas de Pedra (Baixo e Direita) */
+            /* BAIXO e DIREITA de cada célula */
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
-            background-position: bottom left, top right;
-            background-size: 12px; /* Igual ao grid */
             
-            /* Organização Interna */
+            /* Ajuste nas quinas:
+               A linha da direita (2ª img) começa 10px abaixo do topo (0 10px) 
+               para não bater na quina de cima */
+            background-position: bottom left, right 10px top; 
+            
+            background-size: 10px; /* Mantém consistente com a grade */
+            
+            /* Organização */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -199,57 +208,57 @@
             overflow: hidden;
         }
 
-        /* --- RESTAURAÇÃO DA ORGANIZAÇÃO (O que estava faltando) --- */
+        /* --- CORREÇÃO DOS TEXTOS E HORÁRIOS --- */
         
-        /* Número no canto esquerdo */
+        /* Número do dia - Empurrado mais para dentro */
         .day-num {
             position: absolute;
-            top: 5px;
-            left: 8px;
+            top: 8px;  /* Antes era 5px (Batia na pedra) */
+            left: 10px; /* Antes era 8px */
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
-            z-index: 2; /* Garante que fique acima de qualquer fundo */
+            z-index: 5;
         }
 
-        /* Hora no canto direito (com fundo laranja) */
+        /* Hora - Empurrado para longe da borda direita */
         .day-time {
             position: absolute;
-            top: 6px;
-            right: 6px; 
+            top: 14px; /* Mais para baixo para fugir da quina */
+            right: 12px; /* Mais para esquerda para sair de cima da pedra */
+            
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
             background: #d97706;
             padding: 2px 6px;
             border-radius: 4px;
-            z-index: 2;
+            z-index: 5;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Leve sombra para destacar */
         }
 
-        /* Texto do evento (Centralizado e empurrado para baixo) */
+        /* Texto do evento */
         .day-text {
-            margin-top: 35px; /* Empurra o texto para não bater no número */
-            width: 90%;
+            margin-top: 40px; /* Mais espaço para não encostar no número */
+            width: 85%; /* Menos largura para não encostar nas pedras laterais */
             text-align: center;
             font-size: 13px;
             color: #1f2937;
             font-weight: var(--event-weight); 
             line-height: 1.2;
             
-            /* Limite de linhas */
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
         
-        /* Célula Vazia (Mantém o desenho da grade) */
         .day-cell.empty {
             background: transparent;
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
-            background-position: bottom left, top right;
-            background-size: 12px;
+            background-position: bottom left, right 10px top;
+            background-size: 10px;
         }
     </style>
 </head>
