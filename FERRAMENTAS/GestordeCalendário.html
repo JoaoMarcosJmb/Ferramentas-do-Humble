@@ -167,27 +167,23 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
             
-            /* --- BORDAS EXTERNAS (Topo e Esquerda) --- */
+            /* --- BORDAS DA GRADE (Topo e Esquerda) --- */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* 1. Linha Vertical (Esquerda) */
-                url('../IMAGENS/pedra.png'); /* 2. Linha Horizontal (Topo) */
+                url('../IMAGENS/pedra.png'), /* Topo */
+                url('../IMAGENS/pedra.png'); /* Esquerda */
             
             background-repeat: 
-                no-repeat space, /* Vert: Não repete lado, Espalha altura */
-                space no-repeat; /* Horz: Espalha lado, Não repete altura */
+                repeat-x, /* Topo: Repete na horizontal */
+                repeat-y; /* Esq: Repete na vertical */
             
-            /* POSIÇÃO ESTRATÉGICA PARA NÃO SOBREPOR */
-            background-position: 
-                left top,   /* Vertical: Começa no canto exato */
-                center top; /* Horizontal: Centralizada no topo */
+            /* Posiciona nos cantos */
+            background-position: top left, top left;
             
-            /* TAMANHO CALCULADO (O SEGREDO) */
-            background-size: 
-                10px 100%,             /* Vert: 10px largura, Altura total (desenha a quina) */
-                calc(100% - 20px) 10px; /* Horz: Largura total MENOS as quinas (20px), 10px altura */
+            /* CORREÇÃO CRÍTICA: Tamanho FIXO e QUADRADO (sem %) */
+            background-size: 14px 14px; 
             
-            padding-top: 5px;
-            padding-left: 5px;
+            padding-top: 7px;
+            padding-left: 7px;
         }
 
         .days-grid.six-rows { gap: 0; }
@@ -197,24 +193,19 @@
             position: relative;
             background: rgba(255, 248, 220, 0.2);
             
-            /* --- BORDAS INTERNAS (Direita e Baixo) --- */
+            /* --- BORDAS DA CÉLULA (Baixo e Direita) --- */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* 1. Linha Vertical (Direita) */
-                url('../IMAGENS/pedra.png'); /* 2. Linha Horizontal (Baixo) */
+                url('../IMAGENS/pedra.png'), /* Baixo */
+                url('../IMAGENS/pedra.png'); /* Direita */
             
-            background-repeat: 
-                no-repeat space, /* Vert: Espalha na altura */
-                space no-repeat; /* Horz: Espalha na largura */
+            /* 'space' garante que o navegador coloque espaços entre as pedras */
+            background-repeat: space, space; 
             
-            /* POSIÇÃO OFFSET */
-            background-position: 
-                right top,     /* Vertical: Cobre toda a lateral direita (incluindo quinas) */
-                center bottom; /* Horizontal: Só o miolo de baixo */
+            /* Posiciona nas bordas opostas */
+            background-position: bottom left, top right;
             
-            /* TAMANHO CALCULADO */
-            background-size: 
-                10px 100%,              /* Vert: Altura total */
-                calc(100% - 20px) 10px; /* Horz: Largura total MENOS 20px (espaço das quinas) */
+            /* Tamanho FIXO (Pedras quadradas) */
+            background-size: 14px 14px; 
             
             /* Organização */
             display: flex;
@@ -224,34 +215,31 @@
             overflow: hidden;
         }
 
-        /* --- CÉLULA VAZIA (Mantém o desenho da grade) --- */
+        /* --- CÉLULA VAZIA --- */
         .day-cell.empty {
             background: transparent;
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
-            background-repeat: no-repeat space, space no-repeat;
-            background-position: right top, center bottom;
-            background-size: 10px 100%, calc(100% - 20px) 10px;
+            background-repeat: space, space;
+            background-position: bottom left, top right;
+            background-size: 14px 14px;
         }
 
         /* --- TEXTOS E POSICIONAMENTO --- */
         
-        /* Número do dia */
         .day-num {
             position: absolute;
-            top: 10px;  /* Mais afastado do topo para não tocar na pedra */
-            left: 12px; /* Mais afastado da esquerda */
+            top: 8px;
+            left: 10px;
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
             z-index: 5;
         }
 
-        /* Hora (Etiqueta Laranja) */
         .day-time {
             position: absolute;
             top: 10px; 
-            right: 12px; /* Afastado da borda de pedra */
-            
+            right: 12px;
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -262,16 +250,14 @@
             box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Texto do Evento */
         .day-text {
-            margin-top: 45px; /* Empurra bem para baixo */
-            width: 85%; 
+            margin-top: 40px; 
+            width: 90%; 
             text-align: center;
             font-size: 13px;
             color: #1f2937;
             font-weight: var(--event-weight); 
             line-height: 1.2;
-            
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
