@@ -162,91 +162,110 @@
         }
 
         /* --- GRID --- */
+/* --- GRID (Container) --- */
+        /* Agora a grade desenha a borda Externa Superior e Esquerda */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 12px;
-            transition: gap 0.3s;
-        }
-        .days-grid.six-rows { gap: 8px; }
-
-.day-cell {
-            position: relative;
             
-            /* 1. Define o espaço reservado para as pedras (borda invisível) */
-            border: 12px solid transparent; 
-
-            /* 2. Cor de fundo da célula (amarelo transparente) */
-            background-color: rgba(255, 248, 220, 0.2);
-
-            /* 3. O TRUQUE: Desenhamos a pedra 4 vezes (Topo, Baixo, Esq, Dir) */
+            /* REMOVE O ESPAÇO para as linhas se tocarem */
+            gap: 0; 
+            
+            /* Desenha pedras no TOPO e na ESQUERDA da grade inteira */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* Linha de Cima */
-                url('../IMAGENS/pedra.png'), /* Linha de Baixo */
-                url('../IMAGENS/pedra.png'), /* Linha da Esquerda */
-                url('../IMAGENS/pedra.png'); /* Linha da Direita */
+                url('../IMAGENS/pedra.png'), /* Linha Topo */
+                url('../IMAGENS/pedra.png'); /* Linha Esquerda */
+            background-repeat: repeat-x, repeat-y;
+            background-position: top left, top left;
+            background-size: 14px; /* Tamanho da pedra */
+            
+            /* Ajuste de padding para não cortar as pedras da borda */
+            padding-top: 7px; 
+            padding-left: 7px;
+        }
 
-            /* 4. Repetir as pedras (Horizontal no topo/baixo, Vertical nos lados) */
-            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+        /* Ajuste para 6 linhas se necessário */
+        .days-grid.six-rows { 
+            /* gap mantido em 0 */
+        }
 
-            /* 5. Posicionar as pedras nas extremidades */
-            background-position: top left, bottom left, top left, top right;
-
-            /* 6. Define o tamanho exato da pedrinha (Ajuste aqui se ficar grande/pequena) */
-            background-size: 12px; 
-
-            /* 7. Garante que as pedras fiquem na área da borda */
-            background-origin: border-box;
-
-            /* Configurações visuais extras */
-            border-radius: 12px; 
+        /* --- CÉLULA (Dias) --- */
+        /* Cada dia desenha apenas a borda Direita e Inferior */
+        .day-cell {
+            position: relative;
+            background: rgba(255, 248, 220, 0.2); /* Fundo sutil */
+            
+            /* Desenha pedras EMBAIXO e na DIREITA de cada célula */
+            background-image: 
+                url('../IMAGENS/pedra.png'), /* Linha Baixo */
+                url('../IMAGENS/pedra.png'); /* Linha Direita */
+            background-repeat: repeat-x, repeat-y;
+            background-position: bottom left, top right;
+            background-size: 14px; /* Mesmo tamanho da grade */
+            
+            /* Restaurando organização interna */
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 5px;
             overflow: hidden;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2); /* Sombra interna leve para contraste */
+            
+            /* Altura mínima para garantir o formato da grade */
+            min-height: 100px; 
         }
 
+        /* --- RESTAURANDO O VISUAL DOS TEXTOS (Original) --- */
+        
+        /* Número do dia no canto superior esquerdo */
+        .day-num {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            font-size: 20px;
+            color: #b45309; 
+            font-weight: 800;
+            z-index: 2;
+        }
+
+        /* Hora no canto superior direito */
         .day-time {
             position: absolute;
             top: 6px;
             right: 6px; 
-            font-size: 12px;
+            font-size: 11px;
             color: #fff; 
             font-weight: 700;
-            background: #d97706; /* Fundo laranja sólido para leitura */
+            background: #d97706;
             padding: 2px 6px;
             border-radius: 4px;
+            z-index: 2;
         }
 
+        /* Texto do evento centralizado */
         .day-text {
-            margin-top: 32px; 
-            width: 94%;
+            margin-top: 35px; /* Empurra para baixo para não bater no número */
+            width: 90%;
             text-align: center;
             font-size: 13px;
-            color: #1f2937; /* Quase preto para máxima leitura */
-            
-            /* Peso controlado pela sidebar */
+            color: #1f2937;
             font-weight: var(--event-weight); 
+            line-height: 1.2;
             
-            line-height: 1.25;
             display: -webkit-box;
-            -webkit-line-clamp: 3; /* Permite até 3 linhas se a fonte for pequena */
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
         
-        .days-grid.six-rows .day-text {
-            margin-top: 28px;
-            font-size: 12px;
-            -webkit-line-clamp: 2;
-        }
-
         .day-cell.empty {
             background: transparent;
-            border: none;
+            /* Células vazias também precisam das linhas da grade para manter o desenho */
+            background-image: 
+                url('../IMAGENS/pedra.png'),
+                url('../IMAGENS/pedra.png');
+            background-repeat: repeat-x, repeat-y;
+            background-position: bottom left, top right;
+            background-size: 14px;
         }
 
     </style>
