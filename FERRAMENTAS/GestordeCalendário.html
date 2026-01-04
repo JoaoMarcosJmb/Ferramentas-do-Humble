@@ -160,7 +160,8 @@
             text-transform: uppercase;
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8); /* Glow leve para leitura */
         }
-/* --- GRID (Container Principal) --- */
+
+        /* --- GRID (Container Principal) --- */
         .days-grid {
             flex: 1;
             display: grid;
@@ -170,12 +171,14 @@
             /* --- BORDAS (Topo e Esquerda) --- */
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
-            background-position: top center, left center; /* Centraliza para equilibrar os vãos */
             
-            /* TAMANHO: 13px (Ímpar ajuda a forçar espaçamento matemático) */
-            background-size: 13px 13px; 
+            /* CENTRALIZAR: Isso ajuda a equilibrar o espaço nas pontas */
+            background-position: top center, left center;
             
-            padding: 6px 0 0 6px; 
+            /* TAMANHO: 12px geralmente funciona melhor que 13px para criar vãos */
+            background-size: 12px 12px; 
+            
+            padding: 5px 0 0 5px; 
         }
 
         .days-grid.six-rows { gap: 0; }
@@ -189,9 +192,11 @@
             /* --- BORDAS (Baixo e Direita) --- */
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
+            
+            /* CENTRALIZAR */
             background-position: bottom center, right center;
             
-            background-size: 13px 13px; 
+            background-size: 12px 12px; 
             
             display: flex;
             flex-direction: column;
@@ -206,7 +211,7 @@
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
             background-position: bottom center, right center;
-            background-size: 13px 13px;
+            background-size: 12px 12px;
         }
 
         /* --- Ajuste dos Textos --- */
