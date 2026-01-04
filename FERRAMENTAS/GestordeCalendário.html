@@ -13,8 +13,16 @@
     <style>
         /* Variáveis de Controle */
         :root {
+            /* Título */
             --title-top: 40px;
             --title-size: 80px;
+            
+            /* Posição da Grade (Novas Variáveis) */
+            --grid-top: 320px;
+            --grid-left: 50px;
+            --grid-width: 900px;
+            --grid-height: 600px;
+
             --event-weight: 700;
             --stone-bg: url('../IMAGENS/pedra.png'); 
         }
@@ -125,15 +133,20 @@
             z-index: 5;
         }
 
+        /* Container da Grade (Agora controlável) */
         .calendar-wrapper {
             position: absolute;
-            top: 320px; 
-            left: 50px;
-            width: 900px;
-            height: 600px;
+            
+            /* Usando as variáveis para controlar a posição */
+            top: var(--grid-top);
+            left: var(--grid-left);
+            width: var(--grid-width);
+            height: var(--grid-height);
+            
             display: flex;
             flex-direction: column;
             z-index: 5;
+            /* border: 1px solid red;  <-- Descomente se quiser ver a caixa para debugar */
         }
 
         .week-header {
@@ -194,11 +207,12 @@
             background-size: 18px 18px;
         }
 
-        /* --- TEXTOS --- */
+        /* --- TEXTOS (Alinhados) --- */
         .day-num {
             position: absolute;
-            top: 8px;
-            left: 10px;
+            top: 10px; 
+            left: 15px; /* Alinhado simetricamente com o horário */
+            
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
@@ -208,9 +222,7 @@
         .day-time {
             position: absolute;
             top: 10px; 
-            
-            /* CORREÇÃO: 15px aproxima mais da borda sem "enterrar" na pedra */
-            right: 17px; 
+            right: 15px; /* Alinhado próximo à borda de pedra */
             
             font-size: 11px;
             color: #fff; 
@@ -246,16 +258,15 @@
         
         .days-grid.six-rows .day-cell .day-num {
             font-size: 16px; 
-            top: 5px;
-            left: 6px;
+            top: 6px;
+            left: 14px;
         }
         
         .days-grid.six-rows .day-cell .day-time {
             font-size: 9px; 
             padding: 1px 4px;
             top: 6px;
-            /* Proporcional para 6 linhas */
-            right: 17px; 
+            right: 14px; 
         }
     </style>
 </head>
@@ -279,6 +290,19 @@
             <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
             <label>Peso da Fonte (Texto)</label>
             <input type="range" min="400" max="900" step="100" value="700" oninput="ajustarVar('--event-weight', this.value)">
+        </div>
+
+        <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
+            <label style="color:#fbbf24;">3. Mover Grade (Ajuste Fino)</label>
+            
+            <label>↕️ Vertical (Topo)</label>
+            <input type="range" min="0" max="800" value="320" oninput="ajustarVar('--grid-top', this.value + 'px')">
+            
+            <label>↔️ Horizontal (Esquerda)</label>
+            <input type="range" min="0" max="200" value="50" oninput="ajustarVar('--grid-left', this.value + 'px')">
+            
+            <label>📏 Largura da Grade</label>
+            <input type="range" min="800" max="1000" value="900" oninput="ajustarVar('--grid-width', this.value + 'px')">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -306,7 +330,7 @@
         </div>
 
         <div style="margin-top:10px;">
-            <label>3. Eventos</label>
+            <label>4. Eventos</label>
             <textarea id="eventInput" placeholder="Ex: 4: 18h - Final">1: 18h - Final Humble League
 4: 19h - Qualify UU
 12: 20h - Semanal OU
