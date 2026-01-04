@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
-   <style>
+    <style>
         /* Variáveis de Controle */
         :root {
             --title-top: 40px;
@@ -150,41 +150,32 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- GRID (Container Principal) --- */
+        /* --- GRID --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
-            
-            /* Bordas Topo/Esq */
             background-image: var(--stone-bg), var(--stone-bg);
             background-repeat: round no-repeat, no-repeat round;
             background-position: top left, top left;
             background-size: 18px 18px; 
-            
-            /* Padding ajustado para não cortar borda */
             padding: 8px 0 0 8px; 
         }
 
         .days-grid.six-rows { gap: 0; }
 
-        /* --- CÉLULA (Dias Individuais) --- */
+        /* --- CÉLULA --- */
         .day-cell {
             position: relative;
             background: rgba(255, 248, 220, 0.2);
             border-radius: 0;
             
-            /* Bordas Baixo/Dir */
             background-image: var(--stone-bg), var(--stone-bg);
             background-repeat: round no-repeat, no-repeat round;
             background-position: bottom left, top right;
             background-size: 18px 18px; 
             
-            /* Padding de Segurança:
-               Topo: 0 (Margem do texto cuida disso)
-               Laterais: 14px (Garante que o texto não encoste nas pedras)
-               Baixo: 5px */
             padding: 0 14px 5px 14px;
             
             display: flex;
@@ -192,7 +183,7 @@
             align-items: center;
             min-height: 100px;
             overflow: visible;
-            box-sizing: border-box; /* Importante para o padding funcionar */
+            box-sizing: border-box; 
         }
 
         .day-cell.empty {
@@ -203,8 +194,7 @@
             background-size: 18px 18px;
         }
 
-        /* --- TEXTOS AJUSTADOS --- */
-        
+        /* --- TEXTOS --- */
         .day-num {
             position: absolute;
             top: 8px;
@@ -230,41 +220,34 @@
         }
 
         .day-text {
-            /* Empurra o texto para baixo do número (38px é seguro) */
             margin-top: 38px; 
-            
-            /* Ocupa 100% da área segura (definida pelo padding da célula) */
             width: 100%; 
-            
             text-align: center;
             font-size: 13px;
             color: #1f2937;
             font-weight: var(--event-weight); 
             line-height: 1.2;
-            
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            word-wrap: break-word; /* Quebra palavras longas se precisar */
+            word-wrap: break-word; 
         }
 
-        /* --- AJUSTE AUTOMÁTICO PARA 6 LINHAS --- */
-        /* Quando o mês for grande e as células ficarem apertadas: */
         .days-grid.six-rows .day-cell .day-text {
-            margin-top: 30px; /* Sobe o texto */
-            font-size: 11px;  /* Diminui a fonte */
-            -webkit-line-clamp: 2; /* Limita a 2 linhas para não cortar */
+            margin-top: 30px; 
+            font-size: 11px;  
+            -webkit-line-clamp: 2; 
         }
         
         .days-grid.six-rows .day-cell .day-num {
-            font-size: 16px; /* Diminui o número do dia */
+            font-size: 16px; 
             top: 5px;
             left: 6px;
         }
         
         .days-grid.six-rows .day-cell .day-time {
-            font-size: 9px; /* Diminui a etiqueta de hora */
+            font-size: 9px; 
             padding: 1px 4px;
             top: 6px;
             right: 6px;
@@ -353,21 +336,19 @@
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
 
-        // --- SCRIPT DE ESPAÇAMENTO INTELIGENTE ---
+        // --- SCRIPT DE ESPAÇAMENTO AUTOMÁTICO ---
         const stoneSrc = '../IMAGENS/pedra.png';
-        const gap = 14; // Tamanho do espaço transparente extra (Aumente se quiser mais longe)
+        const gap = 14; 
 
         const imgStone = new Image();
         imgStone.src = stoneSrc;
         imgStone.onload = () => {
             const canvas = document.createElement('canvas');
-            // Cria um canvas maior que a pedra para ter espaço transparente
             canvas.width = imgStone.width + gap;
             canvas.height = imgStone.height + gap;
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = false;
             
-            // Desenha a pedra no centro desse espaço
             const x = (canvas.width - imgStone.width) / 2;
             const y = (canvas.height - imgStone.height) / 2;
             ctx.drawImage(imgStone, x, y);
@@ -456,25 +437,27 @@
             });
         }
 
+        // --- NOVA FUNÇÃO DE DOWNLOAD (USANDO HTML-TO-IMAGE) ---
         function baixarImagem() {
             if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
-            document.fonts.ready.then(function () {
-                const originalShadow = artContainer.style.boxShadow;
-                artContainer.style.boxShadow = "none";
-                html2canvas(document.getElementById('art-container'), {
-                    scale: 2,
-                    useCORS: true,
-                    width: 1000, height: 1000,
-                    scrollX: 0, scrollY: 0,
-                    windowWidth: 1000, windowHeight: 1000
-                }).then(canvas => {
-                    artContainer.style.boxShadow = originalShadow;
-                    const link = document.createElement('a');
-                    link.download = `Calendario_Humble.png`;
-                    link.href = canvas.toDataURL();
+
+            const node = document.getElementById('art-container');
+            const originalShadow = node.style.boxShadow;
+            node.style.boxShadow = "none";
+
+            // htmlToImage entende CSS moderno melhor que html2canvas
+            htmlToImage.toPng(node, { pixelRatio: 2 })
+                .then(function (dataUrl) {
+                    node.style.boxShadow = originalShadow;
+                    var link = document.createElement('a');
+                    link.download = 'Calendario_Humble.png';
+                    link.href = dataUrl;
                     link.click();
+                })
+                .catch(function (error) {
+                    console.error('oops, something went wrong!', error);
+                    alert('Erro ao gerar imagem. Tente novamente.');
                 });
-            });
         }
 
         window.onload = gerarGrid;
