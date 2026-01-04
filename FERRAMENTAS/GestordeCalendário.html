@@ -10,13 +10,12 @@
     
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
-    <style>
+   <style>
         /* Variáveis de Controle */
         :root {
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
-            /* Variável da Pedra (O Script vai atualizar isso) */
             --stone-bg: url('../IMAGENS/pedra.png'); 
         }
 
@@ -158,19 +157,14 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
             
-            /* BORDAS EXTERNAS (Topo e Esquerda) */
+            /* Bordas Topo/Esq */
             background-image: var(--stone-bg), var(--stone-bg);
-            
-            /* 'round' força a imagem a caber inteira no espaço, ajustando o espaçamento transparente */
             background-repeat: round no-repeat, no-repeat round;
-            
-            /* Começa no 0,0 para garantir quina perfeita */
             background-position: top left, top left;
-            
-            /* Tamanho base da pedra + espaço (O navegador ajusta levemente isso para caber) */
             background-size: 18px 18px; 
             
-            padding: 8px 0 0 8px; /* Padding igual metade do tamanho da pedra para alinhar conteúdo */
+            /* Padding ajustado para não cortar borda */
+            padding: 8px 0 0 8px; 
         }
 
         .days-grid.six-rows { gap: 0; }
@@ -181,22 +175,24 @@
             background: rgba(255, 248, 220, 0.2);
             border-radius: 0;
             
-            /* BORDAS INTERNAS (Baixo e Direita) */
+            /* Bordas Baixo/Dir */
             background-image: var(--stone-bg), var(--stone-bg);
-            
-            /* 'round' garante linha contínua de ponta a ponta */
             background-repeat: round no-repeat, no-repeat round;
-            
-            /* Alinha ao final da célula */
             background-position: bottom left, top right;
-            
             background-size: 18px 18px; 
+            
+            /* Padding de Segurança:
+               Topo: 0 (Margem do texto cuida disso)
+               Laterais: 14px (Garante que o texto não encoste nas pedras)
+               Baixo: 5px */
+            padding: 0 14px 5px 14px;
             
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100px;
-            overflow: visible; /* Garante que nada corte a pedra da borda */
+            overflow: visible;
+            box-sizing: border-box; /* Importante para o padding funcionar */
         }
 
         .day-cell.empty {
@@ -207,7 +203,8 @@
             background-size: 18px 18px;
         }
 
-        /* --- Textos --- */
+        /* --- TEXTOS AJUSTADOS --- */
+        
         .day-num {
             position: absolute;
             top: 8px;
@@ -233,17 +230,44 @@
         }
 
         .day-text {
-            margin-top: 40px; 
-            width: 85%; 
+            /* Empurra o texto para baixo do número (38px é seguro) */
+            margin-top: 38px; 
+            
+            /* Ocupa 100% da área segura (definida pelo padding da célula) */
+            width: 100%; 
+            
             text-align: center;
             font-size: 13px;
             color: #1f2937;
             font-weight: var(--event-weight); 
             line-height: 1.2;
+            
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            word-wrap: break-word; /* Quebra palavras longas se precisar */
+        }
+
+        /* --- AJUSTE AUTOMÁTICO PARA 6 LINHAS --- */
+        /* Quando o mês for grande e as células ficarem apertadas: */
+        .days-grid.six-rows .day-cell .day-text {
+            margin-top: 30px; /* Sobe o texto */
+            font-size: 11px;  /* Diminui a fonte */
+            -webkit-line-clamp: 2; /* Limita a 2 linhas para não cortar */
+        }
+        
+        .days-grid.six-rows .day-cell .day-num {
+            font-size: 16px; /* Diminui o número do dia */
+            top: 5px;
+            left: 6px;
+        }
+        
+        .days-grid.six-rows .day-cell .day-time {
+            font-size: 9px; /* Diminui a etiqueta de hora */
+            padding: 1px 4px;
+            top: 6px;
+            right: 6px;
         }
     </style>
 </head>
