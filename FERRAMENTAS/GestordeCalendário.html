@@ -161,25 +161,26 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8); /* Glow leve para leitura */
         }
 /* --- GRID (Container) --- */
+ /* --- GRID (Container) --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0;
+            gap: 0; /* Gruda as células para as bordas se tocarem */
             
-            /* --- BORDAS DA GRADE (Topo e Esquerda) --- */
+            /* --- DESENHO DAS BORDAS (Topo e Esquerda) --- */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* Topo */
-                url('../IMAGENS/pedra.png'); /* Esquerda */
+                url('../IMAGENS/pedra.png'), /* Imagem 1: Topo */
+                url('../IMAGENS/pedra.png'); /* Imagem 2: Esquerda */
             
+            /* AQUI ESTAVA O ERRO ANTES. AGORA CORRIGIDO: */
             background-repeat: 
-                repeat-x, /* Topo: Repete na horizontal */
-                repeat-y; /* Esq: Repete na vertical */
+                space no-repeat, /* Topo: Espalha horizontal (space), NÃO repete vertical */
+                no-repeat space; /* Esq: NÃO repete horizontal, Espalha vertical (space) */
             
-            /* Posiciona nos cantos */
             background-position: top left, top left;
             
-            /* CORREÇÃO CRÍTICA: Tamanho FIXO e QUADRADO (sem %) */
+            /* TAMANHO FIXO (Para não esticar/virar agulha) */
             background-size: 14px 14px; 
             
             padding-top: 7px;
@@ -193,18 +194,18 @@
             position: relative;
             background: rgba(255, 248, 220, 0.2);
             
-            /* --- BORDAS DA CÉLULA (Baixo e Direita) --- */
+            /* --- DESENHO DAS BORDAS (Baixo e Direita) --- */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* Baixo */
-                url('../IMAGENS/pedra.png'); /* Direita */
+                url('../IMAGENS/pedra.png'), /* Imagem 1: Baixo */
+                url('../IMAGENS/pedra.png'); /* Imagem 2: Direita */
             
-            /* 'space' garante que o navegador coloque espaços entre as pedras */
-            background-repeat: space, space; 
+            background-repeat: 
+                space no-repeat, /* Baixo: Espalha horizontal, NÃO repete vertical */
+                no-repeat space; /* Dir: NÃO repete horizontal, Espalha vertical */
             
-            /* Posiciona nas bordas opostas */
             background-position: bottom left, top right;
             
-            /* Tamanho FIXO (Pedras quadradas) */
+            /* TAMANHO FIXO */
             background-size: 14px 14px; 
             
             /* Organização */
@@ -215,16 +216,16 @@
             overflow: hidden;
         }
 
-        /* --- CÉLULA VAZIA --- */
+        /* --- CÉLULA VAZIA (Mantém o desenho da grade) --- */
         .day-cell.empty {
             background: transparent;
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
-            background-repeat: space, space;
+            background-repeat: space no-repeat, no-repeat space;
             background-position: bottom left, top right;
             background-size: 14px 14px;
         }
 
-        /* --- TEXTOS E POSICIONAMENTO --- */
+        /* --- TEXTOS (Posição Restaurada) --- */
         
         .day-num {
             position: absolute;
