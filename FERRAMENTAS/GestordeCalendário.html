@@ -171,30 +171,7 @@
         }
         .days-grid.six-rows { gap: 8px; }
 
-.day-cell {
-            position: relative;
-            
-            /* --- ALTERAÇÃO AQUI --- */
-            /* Removemos a borda pontilhada antiga */
-            /* border: 4px dotted #4b5563; */
-            
-            /* Adicionamos a borda de imagem */
-            border: 10px solid transparent; /* Define a grossura da borda/pedra */
-            border-image-source: url('../IMAGENS/pedra.png');
-            border-image-slice: 33%; /* Divide a imagem para criar os cantos e lados */
-            border-image-repeat: round; /* Repete as pedras ajustando para não cortar */
-            /* ----------------------- */
-
-            /* border-radius é mantido para o fundo, mas a imagem da borda ficará quadrada (limitação do CSS) */
-            border-radius: 16px; 
-            
-            background: rgba(255, 248, 220, 0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 5px;
-            overflow: hidden;
-        }
+.day-cell
 
         .day-num {
             position: absolute;
