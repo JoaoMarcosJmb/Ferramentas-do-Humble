@@ -206,17 +206,25 @@
         }
 
         /* --- TEXTOS --- */
+/* --- NÚMERO PADRONIZADO (Fixo) --- */
         .day-num {
             position: absolute;
             
-            /* USA AS VARIÁVEIS DOS SLIDERS */
-            top: var(--num-top); 
-            left: var(--num-left);
+            /* Posição Fixa e Simétrica */
+            top: 10px;  /* Mesma altura do relógio */
+            left: 15px; /* Distância segura da borda de pedra */
             
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
             z-index: 5;
+        }
+
+        /* --- Ajuste automático para meses de 6 linhas --- */
+        .days-grid.six-rows .day-cell .day-num {
+            font-size: 16px; 
+            top: 6px;     /* Sobe um pouco */
+            left: 14px;   /* Ajuste fino para grade menor */
         }
 
         .day-time {
@@ -253,14 +261,6 @@
             margin-top: 30px; 
             font-size: 11px;  
             -webkit-line-clamp: 2; 
-        }
-        
-        .days-grid.six-rows .day-cell .day-num {
-            font-size: 16px; 
-            /* Se quiser que o slider afete o de 6 linhas proporcionalmente, 
-               poderíamos usar calc(), mas fixo é mais seguro por enquanto */
-            top: 6px;
-            left: 14px;
         }
         
         .days-grid.six-rows .day-cell .day-time {
