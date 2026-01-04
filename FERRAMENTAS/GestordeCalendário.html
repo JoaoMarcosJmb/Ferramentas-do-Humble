@@ -16,8 +16,7 @@
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
-            
-            /* Variável da Pedra (O Script vai atualizar isso automaticamente com espaçamento) */
+            /* Variável da Pedra (O Script vai atualizar isso) */
             --stone-bg: url('../IMAGENS/pedra.png'); 
         }
 
@@ -159,19 +158,19 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
             
-            /* Usa a variável --stone-bg que o Script lá embaixo vai criar */
+            /* BORDAS EXTERNAS (Topo e Esquerda) */
             background-image: var(--stone-bg), var(--stone-bg);
             
-            /* 'round' garante que as pedras se encaixem perfeitamente nas pontas */
+            /* 'round' força a imagem a caber inteira no espaço, ajustando o espaçamento transparente */
             background-repeat: round no-repeat, no-repeat round;
             
-            background-position: top center, left center;
+            /* Começa no 0,0 para garantir quina perfeita */
+            background-position: top left, top left;
             
-            /* Tamanho visual da pedra no grid (pode ajustar aqui) */
-            /* 16px fica ótimo com o espaçamento automático */
-            background-size: 16px 16px; 
+            /* Tamanho base da pedra + espaço (O navegador ajusta levemente isso para caber) */
+            background-size: 18px 18px; 
             
-            padding: 8px 0 0 8px; /* Ajuste fino para alinhar */
+            padding: 8px 0 0 8px; /* Padding igual metade do tamanho da pedra para alinhar conteúdo */
         }
 
         .days-grid.six-rows { gap: 0; }
@@ -182,26 +181,30 @@
             background: rgba(255, 248, 220, 0.2);
             border-radius: 0;
             
-            /* Usa a mesma variável com espaçamento */
+            /* BORDAS INTERNAS (Baixo e Direita) */
             background-image: var(--stone-bg), var(--stone-bg);
-            background-repeat: round no-repeat, no-repeat round;
-            background-position: bottom center, right center;
             
-            background-size: 16px 16px; 
+            /* 'round' garante linha contínua de ponta a ponta */
+            background-repeat: round no-repeat, no-repeat round;
+            
+            /* Alinha ao final da célula */
+            background-position: bottom left, top right;
+            
+            background-size: 18px 18px; 
             
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100px;
-            overflow: visible;
+            overflow: visible; /* Garante que nada corte a pedra da borda */
         }
 
         .day-cell.empty {
             background: transparent;
             background-image: var(--stone-bg), var(--stone-bg);
             background-repeat: round no-repeat, no-repeat round;
-            background-position: bottom center, right center;
-            background-size: 16px 16px; 
+            background-position: bottom left, top right;
+            background-size: 18px 18px;
         }
 
         /* --- Textos --- */
@@ -326,32 +329,27 @@
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
 
-        // --- HACK DO ESPAÇAMENTO AUTOMÁTICO ---
-        // Esse código cria o espaço transparente em volta da pedra sozinho
+        // --- SCRIPT DE ESPAÇAMENTO INTELIGENTE ---
         const stoneSrc = '../IMAGENS/pedra.png';
-        const gap = 12; // AUMENTAR AQUI SE QUISER MAIS ESPAÇO (pixels)
+        const gap = 14; // Tamanho do espaço transparente extra (Aumente se quiser mais longe)
 
         const imgStone = new Image();
         imgStone.src = stoneSrc;
         imgStone.onload = () => {
             const canvas = document.createElement('canvas');
-            // Tamanho final = Tamanho da pedra + gap
+            // Cria um canvas maior que a pedra para ter espaço transparente
             canvas.width = imgStone.width + gap;
             canvas.height = imgStone.height + gap;
             const ctx = canvas.getContext('2d');
-            
-            // Mantém pixel art nítido
             ctx.imageSmoothingEnabled = false;
             
-            // Centraliza a pedra
+            // Desenha a pedra no centro desse espaço
             const x = (canvas.width - imgStone.width) / 2;
             const y = (canvas.height - imgStone.height) / 2;
             ctx.drawImage(imgStone, x, y);
             
-            // Aplica no CSS
             document.documentElement.style.setProperty('--stone-bg', `url(${canvas.toDataURL()})`);
         };
-        // ----------------------------------------
 
         function ajustarVar(variavel, valor) {
             document.documentElement.style.setProperty(variavel, valor);
