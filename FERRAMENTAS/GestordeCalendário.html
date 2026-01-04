@@ -160,77 +160,80 @@
             text-transform: uppercase;
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8); /* Glow leve para leitura */
         }
-/* --- GRID (Container) --- */
- /* --- GRID (Container) --- */
+/* --- GRID (Container Principal) --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; /* Gruda as células para as bordas se tocarem */
+            gap: 0; /* Sem gap, as bordas se tocam */
             
-            /* --- DESENHO DAS BORDAS (Topo e Esquerda) --- */
+            /* BORDAS EXTERNAS (Topo e Esquerda da grade inteira) */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* Imagem 1: Topo */
-                url('../IMAGENS/pedra.png'); /* Imagem 2: Esquerda */
+                url('../IMAGENS/pedra.png'), /* Linha Horizontal (Topo) */
+                url('../IMAGENS/pedra.png'); /* Linha Vertical (Esquerda) */
             
-            /* AQUI ESTAVA O ERRO ANTES. AGORA CORRIGIDO: */
+            /* space = Espalha as pedras garantindo que tenha uma em cada ponta */
             background-repeat: 
-                space no-repeat, /* Topo: Espalha horizontal (space), NÃO repete vertical */
-                no-repeat space; /* Esq: NÃO repete horizontal, Espalha vertical (space) */
+                space no-repeat, 
+                no-repeat space;
             
-            background-position: top left, top left;
+            background-position: top center, left center;
             
-            /* TAMANHO FIXO (Para não esticar/virar agulha) */
-            background-size: 14px 14px; 
+            /* TAMANHO: 12px cria pedras pequenas com bom espaço entre elas */
+            background-size: 12px 12px; 
             
-            padding-top: 7px;
-            padding-left: 7px;
+            /* Padding interno da grade */
+            padding: 5px 0 0 5px; 
         }
 
         .days-grid.six-rows { gap: 0; }
 
-        /* --- CÉLULA (Dias) --- */
+        /* --- CÉLULA (Dias Individuais) --- */
         .day-cell {
             position: relative;
             background: rgba(255, 248, 220, 0.2);
             
-            /* --- DESENHO DAS BORDAS (Baixo e Direita) --- */
+            /* IMPORTANTE: Remove arredondamento para não cortar as pedras das quinas */
+            border-radius: 0; 
+            
+            /* BORDAS INTERNAS (Baixo e Direita de cada célula) */
             background-image: 
-                url('../IMAGENS/pedra.png'), /* Imagem 1: Baixo */
-                url('../IMAGENS/pedra.png'); /* Imagem 2: Direita */
+                url('../IMAGENS/pedra.png'), /* Linha Horizontal (Baixo) */
+                url('../IMAGENS/pedra.png'); /* Linha Vertical (Direita) */
             
             background-repeat: 
-                space no-repeat, /* Baixo: Espalha horizontal, NÃO repete vertical */
-                no-repeat space; /* Dir: NÃO repete horizontal, Espalha vertical */
+                space no-repeat, 
+                no-repeat space;
             
-            background-position: bottom left, top right;
+            /* Alinhamento preciso */
+            background-position: bottom center, right center;
             
-            /* TAMANHO FIXO */
-            background-size: 14px 14px; 
+            /* Mesmo tamanho da grade para casar perfeito */
+            background-size: 12px 12px; 
             
-            /* Organização */
+            /* Organização do conteúdo */
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100px;
-            overflow: hidden;
+            overflow: visible; /* Permite que a pedra da borda apareça inteira */
         }
 
-        /* --- CÉLULA VAZIA (Mantém o desenho da grade) --- */
+        /* Mantém o visual da célula vazia */
         .day-cell.empty {
             background: transparent;
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
-            background-position: bottom left, top right;
-            background-size: 14px 14px;
+            background-position: bottom center, right center;
+            background-size: 12px 12px;
         }
 
-        /* --- TEXTOS (Posição Restaurada) --- */
+        /* --- AJUSTE DE TEXTOS PARA NÃO TOCAR NAS PEDRAS --- */
         
         .day-num {
             position: absolute;
-            top: 8px;
-            left: 10px;
+            top: 6px;
+            left: 8px;
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
@@ -239,8 +242,8 @@
 
         .day-time {
             position: absolute;
-            top: 10px; 
-            right: 12px;
+            top: 8px; 
+            right: 10px;
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
