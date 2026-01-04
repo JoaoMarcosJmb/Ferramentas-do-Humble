@@ -166,68 +166,91 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; /* Sem espaço entre células, as pedras controlam o visual */
+            gap: 0; /* Remove vãos para as linhas se tocarem */
             
-            /* -- CONFIGURAÇÃO DAS BORDAS EXTERNAS (Topo e Esquerda) -- */
-            background-image: 
-                url('../IMAGENS/pedra.png'), /* 1. Linha Topo */
-                url('../IMAGENS/pedra.png'); /* 2. Linha Esquerda */
-            
-            /* A MÁGICA DO ESPAÇO: 'space' distribui as pedras sem cortar */
-            /* Sintaxe: horizontal vertical */
-            background-repeat: 
-                space no-repeat, /* 1. Topo: Espalha horizontal, não repete vertical */
-                no-repeat space; /* 2. Esq: Não repete horizontal, Espalha vertical */
-            
+            /* Bordas de Pedra (Topo e Esquerda) */
+            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
+            background-repeat: space no-repeat, no-repeat space;
             background-position: top left, top left;
+            background-size: 12px; /* Reduzi para 12px para criar mais respiro */
             
-            /* Tamanho da pedra: Se quiser pedras menores e mais espaçadas, diminua (ex: 12px) */
-            /* Se quiser pedras maiores e mais juntas, aumente (ex: 18px) */
-            background-size: 15px; 
-            
-            padding-top: 8px; /* Espaço para não cobrir o texto */
-            padding-left: 8px;
+            padding-top: 6px; /* Ajuste fino para alinhar */
+            padding-left: 6px;
         }
 
         .days-grid.six-rows { gap: 0; }
 
         /* --- CÉLULA (Dias) --- */
         .day-cell {
-            position: relative;
+            position: relative; /* Essencial para o dia/hora irem para os cantos */
             background: rgba(255, 248, 220, 0.2);
             
-            /* -- CONFIGURAÇÃO DAS BORDAS INTERNAS (Baixo e Direita) -- */
-            background-image: 
-                url('../IMAGENS/pedra.png'), /* 1. Linha Baixo */
-                url('../IMAGENS/pedra.png'); /* 2. Linha Direita */
-                
-            background-repeat: 
-                space no-repeat, /* 1. Baixo: Espalha horizontal */
-                no-repeat space; /* 2. Dir: Espalha vertical */
-                
+            /* Bordas de Pedra (Baixo e Direita) */
+            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
+            background-repeat: space no-repeat, no-repeat space;
             background-position: bottom left, top right;
-            background-size: 15px; /* Mantenha igual ao grid */
+            background-size: 12px; /* Igual ao grid */
             
-            /* Organização do conteúdo */
+            /* Organização Interna */
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100px;
             overflow: hidden;
-            min-height: 100px; 
         }
 
-        /* --- Células Vazias --- */
-        /* Elas precisam manter as linhas da grade para o desenho não "furar" */
+        /* --- RESTAURAÇÃO DA ORGANIZAÇÃO (O que estava faltando) --- */
+        
+        /* Número no canto esquerdo */
+        .day-num {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            font-size: 20px;
+            color: #b45309; 
+            font-weight: 800;
+            z-index: 2; /* Garante que fique acima de qualquer fundo */
+        }
+
+        /* Hora no canto direito (com fundo laranja) */
+        .day-time {
+            position: absolute;
+            top: 6px;
+            right: 6px; 
+            font-size: 11px;
+            color: #fff; 
+            font-weight: 700;
+            background: #d97706;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        /* Texto do evento (Centralizado e empurrado para baixo) */
+        .day-text {
+            margin-top: 35px; /* Empurra o texto para não bater no número */
+            width: 90%;
+            text-align: center;
+            font-size: 13px;
+            color: #1f2937;
+            font-weight: var(--event-weight); 
+            line-height: 1.2;
+            
+            /* Limite de linhas */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Célula Vazia (Mantém o desenho da grade) */
         .day-cell.empty {
             background: transparent;
-            background-image: 
-                url('../IMAGENS/pedra.png'),
-                url('../IMAGENS/pedra.png');
+            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
             background-position: bottom left, top right;
-            background-size: 15px;
+            background-size: 12px;
         }
-
     </style>
 </head>
 <body>
