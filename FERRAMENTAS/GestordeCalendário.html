@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Clean & Sharp</title>
+    <title>Humble Calendar</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -206,13 +206,12 @@
         }
 
         /* --- TEXTOS --- */
-/* --- NÚMERO PADRONIZADO (Fixo) --- */
         .day-num {
             position: absolute;
             
-            /* Posição Fixa e Simétrica */
-            top: 10px;  /* Mesma altura do relógio */
-            left: 15px; /* Distância segura da borda de pedra */
+            /* USA AS VARIÁVEIS DOS SLIDERS */
+            top: var(--num-top); 
+            left: var(--num-left);
             
             font-size: 20px;
             color: #b45309; 
@@ -220,17 +219,10 @@
             z-index: 5;
         }
 
-        /* --- Ajuste automático para meses de 6 linhas --- */
-        .days-grid.six-rows .day-cell .day-num {
-            font-size: 16px; 
-            top: 6px;     /* Sobe um pouco */
-            left: 14px;   /* Ajuste fino para grade menor */
-        }
-
         .day-time {
             position: absolute;
             top: 10px; 
-            right: 15px; 
+            right: 17px; 
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -263,11 +255,19 @@
             -webkit-line-clamp: 2; 
         }
         
+        .days-grid.six-rows .day-cell .day-num {
+            font-size: 16px; 
+            /* Se quiser que o slider afete o de 6 linhas proporcionalmente, 
+               poderíamos usar calc(), mas fixo é mais seguro por enquanto */
+            top: 6px;
+            left: 14px;
+        }
+        
         .days-grid.six-rows .day-cell .day-time {
             font-size: 9px; 
             padding: 1px 4px;
             top: 6px;
-            right: 14px; 
+            right: 17px; 
         }
     </style>
 </head>
