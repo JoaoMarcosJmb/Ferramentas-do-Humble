@@ -165,20 +165,28 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; 
+            gap: 0;
             
-            /* TOPO e ESQUERDA da Grade inteira */
-            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
-            background-repeat: space no-repeat, no-repeat space;
+            /* --- BORDAS EXTERNAS (Topo e Esquerda) --- */
+            background-image: 
+                url('../IMAGENS/pedra.png'), /* 1. Linha Vertical (Esquerda) */
+                url('../IMAGENS/pedra.png'); /* 2. Linha Horizontal (Topo) */
             
-            /* Ajuste da Posição: */
-            background-position: top left, top left;
+            background-repeat: 
+                no-repeat space, /* Vert: Não repete lado, Espalha altura */
+                space no-repeat; /* Horz: Espalha lado, Não repete altura */
             
-            /* PULO DO GATO: Pedra menor (10px) cria mais espaço vazio entre elas */
-            background-size: 10px; 
+            /* POSIÇÃO ESTRATÉGICA PARA NÃO SOBREPOR */
+            background-position: 
+                left top,   /* Vertical: Começa no canto exato */
+                center top; /* Horizontal: Centralizada no topo */
             
-            /* Padding maior para não cortar as pedras da borda */
-            padding-top: 5px; 
+            /* TAMANHO CALCULADO (O SEGREDO) */
+            background-size: 
+                10px 100%,             /* Vert: 10px largura, Altura total (desenha a quina) */
+                calc(100% - 20px) 10px; /* Horz: Largura total MENOS as quinas (20px), 10px altura */
+            
+            padding-top: 5px;
             padding-left: 5px;
         }
 
@@ -189,16 +197,24 @@
             position: relative;
             background: rgba(255, 248, 220, 0.2);
             
-            /* BAIXO e DIREITA de cada célula */
-            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
-            background-repeat: space no-repeat, no-repeat space;
+            /* --- BORDAS INTERNAS (Direita e Baixo) --- */
+            background-image: 
+                url('../IMAGENS/pedra.png'), /* 1. Linha Vertical (Direita) */
+                url('../IMAGENS/pedra.png'); /* 2. Linha Horizontal (Baixo) */
             
-            /* Ajuste nas quinas:
-               A linha da direita (2ª img) começa 10px abaixo do topo (0 10px) 
-               para não bater na quina de cima */
-            background-position: bottom left, right 10px top; 
+            background-repeat: 
+                no-repeat space, /* Vert: Espalha na altura */
+                space no-repeat; /* Horz: Espalha na largura */
             
-            background-size: 10px; /* Mantém consistente com a grade */
+            /* POSIÇÃO OFFSET */
+            background-position: 
+                right top,     /* Vertical: Cobre toda a lateral direita (incluindo quinas) */
+                center bottom; /* Horizontal: Só o miolo de baixo */
+            
+            /* TAMANHO CALCULADO */
+            background-size: 
+                10px 100%,              /* Vert: Altura total */
+                calc(100% - 20px) 10px; /* Horz: Largura total MENOS 20px (espaço das quinas) */
             
             /* Organização */
             display: flex;
@@ -208,24 +224,33 @@
             overflow: hidden;
         }
 
-        /* --- CORREÇÃO DOS TEXTOS E HORÁRIOS --- */
+        /* --- CÉLULA VAZIA (Mantém o desenho da grade) --- */
+        .day-cell.empty {
+            background: transparent;
+            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
+            background-repeat: no-repeat space, space no-repeat;
+            background-position: right top, center bottom;
+            background-size: 10px 100%, calc(100% - 20px) 10px;
+        }
+
+        /* --- TEXTOS E POSICIONAMENTO --- */
         
-        /* Número do dia - Empurrado mais para dentro */
+        /* Número do dia */
         .day-num {
             position: absolute;
-            top: 8px;  /* Antes era 5px (Batia na pedra) */
-            left: 10px; /* Antes era 8px */
+            top: 10px;  /* Mais afastado do topo para não tocar na pedra */
+            left: 12px; /* Mais afastado da esquerda */
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
             z-index: 5;
         }
 
-        /* Hora - Empurrado para longe da borda direita */
+        /* Hora (Etiqueta Laranja) */
         .day-time {
             position: absolute;
-            top: 14px; /* Mais para baixo para fugir da quina */
-            right: 12px; /* Mais para esquerda para sair de cima da pedra */
+            top: 10px; 
+            right: 12px; /* Afastado da borda de pedra */
             
             font-size: 11px;
             color: #fff; 
@@ -234,13 +259,13 @@
             padding: 2px 6px;
             border-radius: 4px;
             z-index: 5;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Leve sombra para destacar */
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Texto do evento */
+        /* Texto do Evento */
         .day-text {
-            margin-top: 40px; /* Mais espaço para não encostar no número */
-            width: 85%; /* Menos largura para não encostar nas pedras laterais */
+            margin-top: 45px; /* Empurra bem para baixo */
+            width: 85%; 
             text-align: center;
             font-size: 13px;
             color: #1f2937;
@@ -251,14 +276,6 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
-        }
-        
-        .day-cell.empty {
-            background: transparent;
-            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
-            background-repeat: space no-repeat, no-repeat space;
-            background-position: bottom left, right 10px top;
-            background-size: 10px;
         }
     </style>
 </head>
