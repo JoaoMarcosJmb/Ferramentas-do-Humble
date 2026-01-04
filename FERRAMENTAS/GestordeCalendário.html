@@ -13,15 +13,18 @@
     <style>
         /* Variáveis de Controle */
         :root {
-            /* Título */
             --title-top: 40px;
             --title-size: 80px;
             
-            /* Posição da Grade (Novas Variáveis) */
+            /* Posição da Grade */
             --grid-top: 320px;
             --grid-left: 50px;
             --grid-width: 900px;
             --grid-height: 600px;
+
+            /* Posição do NÚMERO (Novas Variáveis) */
+            --num-top: 10px;
+            --num-left: 15px;
 
             --event-weight: 700;
             --stone-bg: url('../IMAGENS/pedra.png'); 
@@ -133,20 +136,15 @@
             z-index: 5;
         }
 
-        /* Container da Grade (Agora controlável) */
         .calendar-wrapper {
             position: absolute;
-            
-            /* Usando as variáveis para controlar a posição */
             top: var(--grid-top);
             left: var(--grid-left);
             width: var(--grid-width);
             height: var(--grid-height);
-            
             display: flex;
             flex-direction: column;
             z-index: 5;
-            /* border: 1px solid red;  <-- Descomente se quiser ver a caixa para debugar */
         }
 
         .week-header {
@@ -207,11 +205,13 @@
             background-size: 18px 18px;
         }
 
-        /* --- TEXTOS (Alinhados) --- */
+        /* --- TEXTOS --- */
         .day-num {
             position: absolute;
-            top: 10px; 
-            left: 15px; /* Alinhado simetricamente com o horário */
+            
+            /* USA AS VARIÁVEIS DOS SLIDERS */
+            top: var(--num-top); 
+            left: var(--num-left);
             
             font-size: 20px;
             color: #b45309; 
@@ -222,8 +222,7 @@
         .day-time {
             position: absolute;
             top: 10px; 
-            right: 15px; /* Alinhado próximo à borda de pedra */
-            
+            right: 15px; 
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -258,6 +257,8 @@
         
         .days-grid.six-rows .day-cell .day-num {
             font-size: 16px; 
+            /* Se quiser que o slider afete o de 6 linhas proporcionalmente, 
+               poderíamos usar calc(), mas fixo é mais seguro por enquanto */
             top: 6px;
             left: 14px;
         }
@@ -293,16 +294,21 @@
         </div>
 
         <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
-            <label style="color:#fbbf24;">3. Mover Grade (Ajuste Fino)</label>
+            <label style="color:#fbbf24;">3. Ajustes de Posição</label>
             
-            <label>↕️ Vertical (Topo)</label>
+            <label style="color:#60a5fa; font-weight:bold; margin-top:5px;">🔲 Mover Grade</label>
+            <label>↕️ Vertical</label>
             <input type="range" min="0" max="800" value="320" oninput="ajustarVar('--grid-top', this.value + 'px')">
-            
-            <label>↔️ Horizontal (Esquerda)</label>
+            <label>↔️ Horizontal</label>
             <input type="range" min="0" max="200" value="50" oninput="ajustarVar('--grid-left', this.value + 'px')">
-            
-            <label>📏 Largura da Grade</label>
+            <label>📏 Largura</label>
             <input type="range" min="800" max="1000" value="900" oninput="ajustarVar('--grid-width', this.value + 'px')">
+
+            <label style="color:#60a5fa; font-weight:bold; margin-top:10px;">1️⃣ Mover Número do Dia</label>
+            <label>↕️ Topo (Vertical)</label>
+            <input type="range" min="0" max="40" value="10" oninput="ajustarVar('--num-top', this.value + 'px')">
+            <label>↔️ Esquerda (Horizontal)</label>
+            <input type="range" min="0" max="40" value="15" oninput="ajustarVar('--num-left', this.value + 'px')">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
