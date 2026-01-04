@@ -171,15 +171,42 @@
         }
         .days-grid.six-rows { gap: 8px; }
 
-.day-cell
+.day-cell {
+            position: relative;
+            
+            /* 1. Define o espaço reservado para as pedras (borda invisível) */
+            border: 12px solid transparent; 
 
-        .day-num {
-            position: absolute;
-            top: 4px;
-            left: 8px;
-            font-size: 20px;
-            color: #b45309; /* Laranja mais escuro/sério */
-            font-weight: 800;
+            /* 2. Cor de fundo da célula (amarelo transparente) */
+            background-color: rgba(255, 248, 220, 0.2);
+
+            /* 3. O TRUQUE: Desenhamos a pedra 4 vezes (Topo, Baixo, Esq, Dir) */
+            background-image: 
+                url('../IMAGENS/pedra.png'), /* Linha de Cima */
+                url('../IMAGENS/pedra.png'), /* Linha de Baixo */
+                url('../IMAGENS/pedra.png'), /* Linha da Esquerda */
+                url('../IMAGENS/pedra.png'); /* Linha da Direita */
+
+            /* 4. Repetir as pedras (Horizontal no topo/baixo, Vertical nos lados) */
+            background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+
+            /* 5. Posicionar as pedras nas extremidades */
+            background-position: top left, bottom left, top left, top right;
+
+            /* 6. Define o tamanho exato da pedrinha (Ajuste aqui se ficar grande/pequena) */
+            background-size: 12px; 
+
+            /* 7. Garante que as pedras fiquem na área da borda */
+            background-origin: border-box;
+
+            /* Configurações visuais extras */
+            border-radius: 12px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2); /* Sombra interna leve para contraste */
         }
 
         .day-time {
