@@ -167,22 +167,15 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
             
-            /* --- BORDAS DA GRADE (Topo e Esquerda) --- */
-            background-image: 
-                url('../IMAGENS/pedra.png'), /* Topo */
-                url('../IMAGENS/pedra.png'); /* Esquerda */
-            
-            /* 'space' calcula o espaçamento automático */
+            /* --- BORDAS (Topo e Esquerda) --- */
+            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
+            background-position: top center, left center; /* Centraliza para equilibrar os vãos */
             
-            /* Âncoras: Garante que comece exatamente no canto */
-            background-position: top left, top left;
+            /* TAMANHO: 13px (Ímpar ajuda a forçar espaçamento matemático) */
+            background-size: 13px 13px; 
             
-            /* TRUQUE: Tamanho 10px deixa a pedra menor, fazendo o espaço parecer maior */
-            background-size: 10px 10px; 
-            
-            /* Padding leve para o texto não colar na borda */
-            padding: 5px 0 0 5px; 
+            padding: 6px 0 0 6px; 
         }
 
         .days-grid.six-rows { gap: 0; }
@@ -191,29 +184,20 @@
         .day-cell {
             position: relative;
             background: rgba(255, 248, 220, 0.2);
+            border-radius: 0; /* Quinas retas para a pedra aparecer inteira */
             
-            /* SOLUÇÃO DOS BURACOS: Retirar arredondamento */
-            border-radius: 0; 
-            
-            /* --- BORDAS DA CÉLULA (Baixo e Direita) --- */
-            background-image: 
-                url('../IMAGENS/pedra.png'), /* Baixo */
-                url('../IMAGENS/pedra.png'); /* Direita */
-            
+            /* --- BORDAS (Baixo e Direita) --- */
+            background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
+            background-position: bottom center, right center;
             
-            /* Âncoras: Garante que termine exatamente no canto */
-            background-position: bottom left, top right;
+            background-size: 13px 13px; 
             
-            /* Tamanho 10px (Pedra menor = Mais respiro) */
-            background-size: 10px 10px; 
-            
-            /* Organização */
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100px;
-            overflow: visible; /* Garante que a pedra da quina apareça inteira */
+            overflow: visible;
         }
 
         /* --- Célula Vazia --- */
@@ -221,11 +205,11 @@
             background: transparent;
             background-image: url('../IMAGENS/pedra.png'), url('../IMAGENS/pedra.png');
             background-repeat: space no-repeat, no-repeat space;
-            background-position: bottom left, top right;
-            background-size: 10px 10px;
+            background-position: bottom center, right center;
+            background-size: 13px 13px;
         }
 
-        /* --- Ajuste dos Textos (Longe da borda 10px) --- */
+        /* --- Ajuste dos Textos --- */
         .day-num {
             position: absolute;
             top: 6px;
@@ -252,7 +236,7 @@
 
         .day-text {
             margin-top: 40px; 
-            width: 90%; 
+            width: 85%; 
             text-align: center;
             font-size: 13px;
             color: #1f2937;
