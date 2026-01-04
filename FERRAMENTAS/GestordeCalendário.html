@@ -208,7 +208,11 @@
         .day-time {
             position: absolute;
             top: 10px; 
-            right: 12px;
+            
+            /* CORREÇÃO AQUI: */
+            /* Pedra = 18px | Respiro = 6px | Total = 24px */
+            right: 24px; 
+            
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -234,6 +238,7 @@
             word-wrap: break-word; 
         }
 
+        /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
             margin-top: 30px; 
             font-size: 11px;  
@@ -250,7 +255,8 @@
             font-size: 9px; 
             padding: 1px 4px;
             top: 6px;
-            right: 6px;
+            /* Mantém a distância de segurança */
+            right: 22px; 
         }
     </style>
 </head>
@@ -437,7 +443,7 @@
             });
         }
 
-        // --- NOVA FUNÇÃO DE DOWNLOAD (USANDO HTML-TO-IMAGE) ---
+        // --- FUNÇÃO DE DOWNLOAD (Moderno) ---
         function baixarImagem() {
             if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
 
@@ -445,7 +451,6 @@
             const originalShadow = node.style.boxShadow;
             node.style.boxShadow = "none";
 
-            // htmlToImage entende CSS moderno melhor que html2canvas
             htmlToImage.toPng(node, { pixelRatio: 2 })
                 .then(function (dataUrl) {
                     node.style.boxShadow = originalShadow;
