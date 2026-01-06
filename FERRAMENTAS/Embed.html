@@ -77,13 +77,37 @@
         /* --- CABEÇALHO DO EDITOR --- */
         .editor-header {
             display: flex;
+            flex-direction: column; /* Alterado para comportar a barra de status */
+            background: rgba(15, 23, 42, 0.5);
+            border-bottom: 1px solid #334155;
+        }
+
+        .editor-toolbar {
+            display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px 20px;
-            border-bottom: 1px solid #334155;
-            background: rgba(15, 23, 42, 0.5);
             flex-wrap: wrap; gap: 10px;
         }
+
+        /* BARRA DE STATUS DE EDIÇÃO (NOVO) */
+        .edit-status-bar {
+            background: rgba(234, 179, 8, 0.15); /* Amarelo sutil */
+            border-bottom: 1px solid rgba(234, 179, 8, 0.3);
+            padding: 8px 20px;
+            display: none; /* Escondido por padrão */
+            justify-content: space-between;
+            align-items: center;
+            color: #fef08a;
+            font-size: 13px;
+        }
+        .edit-status-bar.active { display: flex; }
+        
+        .btn-exit-edit {
+            background: transparent; border: 1px solid rgba(234, 179, 8, 0.5); color: #fef08a;
+            padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
+        }
+        .btn-exit-edit:hover { background: rgba(234, 179, 8, 0.2); }
 
         .tabs-area { display: flex; gap: 10px; }
 
@@ -210,110 +234,52 @@
             pointer-events: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* --- FORM ELEMENTS (CORRIGIDO) --- */
+        /* --- FORM ELEMENTS --- */
         details { background: #1e293b; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #334155; }
         summary { padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         summary::after { content: "+"; font-size: 16px; }
         details[open] summary::after { content: "-"; }
         
-        .control-group { 
-            padding: 15px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px; 
-        }
+        .control-group { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         
-        /* Labels e Inputs Corrigidos */
-        label { 
-            font-size: 11px; 
-            color: #94a3b8; 
-            text-transform: uppercase; 
-            font-weight: bold; 
-            margin-bottom: 5px; 
-            margin-top: 10px; 
-            display: block; 
-        }
+        label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; margin-top: 10px; display: block; }
         .control-group > label:first-child { margin-top: 0; }
 
         input:not([type="checkbox"]), textarea, select { 
-            box-sizing: border-box; /* CRUCIAL: Corrige o tamanho estourado */
-            background: #0b1120;    /* Mais escuro que o container */
-            border: 1px solid #334155; 
-            color: #e2e8f0; 
-            padding: 10px 12px;     
-            border-radius: 4px; 
-            width: 100%; 
-            font-family: inherit; 
-            font-size: 13px; 
-            line-height: 1.5;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-            display: block;
+            box-sizing: border-box; background: #0b1120; border: 1px solid #334155; 
+            color: #e2e8f0; padding: 10px 12px; border-radius: 4px; width: 100%; 
+            font-family: inherit; font-size: 13px; line-height: 1.5; outline: none;
+            transition: border-color 0.2s, background 0.2s; display: block;
         }
 
         input:not([type="checkbox"]):focus, textarea:focus, select:focus {
-            border-color: #00b0f4;
-            background: #111827;
-            box-shadow: 0 0 0 1px rgba(0, 176, 244, 0.2);
+            border-color: #00b0f4; background: #111827; box-shadow: 0 0 0 1px rgba(0, 176, 244, 0.2);
         }
 
         textarea { resize: vertical; min-height: 80px; }
 
-        /* Fields Items Corrigidos */
         .field-item { 
-            background: #1e293b; 
-            border: 1px solid #334155; 
-            padding: 15px;       
-            border-radius: 6px; 
-            margin-bottom: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            background: #1e293b; border: 1px solid #334155; padding: 15px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
         }
         
         .field-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 12px; 
-            padding-bottom: 8px;
-            border-bottom: 1px solid #334155;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155;
         }
         
         .field-title { font-weight: bold; font-size: 12px; color: #fbbf24; }
         
         .btn-remove-field { 
-            background: #ef4444; 
-            color: white; 
-            border: none; 
-            padding: 4px 10px; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 11px;
-            font-weight: 600;
-            transition: 0.2s;
+            background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s;
         }
         .btn-remove-field:hover { background: #dc2626; }
 
         .btn-add-field { 
-            background: #2d3b52; 
-            color: #fff; 
-            border: 1px dashed #64748b; 
-            width: 100%; 
-            padding: 12px; 
-            cursor: pointer; 
-            border-radius: 5px; 
-            font-size: 13px;
-            transition: 0.2s;
+            background: #2d3b52; color: #fff; border: 1px dashed #64748b; width: 100%; padding: 12px; cursor: pointer; border-radius: 5px; font-size: 13px; transition: 0.2s;
         }
         .btn-add-field:hover { background: #374151; border-color: #94a3b8; }
 
         .inline-checkbox { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-top: 10px; 
-            font-size: 12px; 
-            color: #cbd5e1;
-            cursor: pointer;
+            display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: #cbd5e1; cursor: pointer;
         }
         .inline-checkbox input { width: auto; margin: 0; cursor: pointer; }
 
@@ -372,16 +338,25 @@
         <div class="editor-panel">
             
             <div class="editor-header">
-                <div class="tabs-area">
-                    <button class="tab-btn active" onclick="switchTab('visual')" id="btn-visual">Visual</button>
-                    <button class="tab-btn" onclick="switchTab('json')" id="btn-json">JSON</button>
+                <div class="edit-status-bar" id="edit-status-ui">
+                    <span>✏️ Editando: <b id="editing-name-display" style="color: white;">Nome do Arquivo</b></span>
+                    <button class="btn-exit-edit" onclick="exitEditMode()">✖ Sair da Edição</button>
                 </div>
-                <div class="actions-area">
-                    <button class="action-btn share" onclick="copyShareLink()">🔗 Copiar Link</button>
-                    <button class="action-btn primary" onclick="saveEmbed()">💾 Salvar</button>
-                    <button class="action-btn" onclick="openSavedModal()">📂 Meus Embeds</button>
-                    <button class="action-btn" onclick="copyJSON()">📋 Copiar JSON</button>
-                    <button class="action-btn danger" onclick="clearAll()">🗑️</button>
+
+                <div class="editor-toolbar">
+                    <div class="tabs-area">
+                        <button class="tab-btn active" onclick="switchTab('visual')" id="btn-visual">Visual</button>
+                        <button class="tab-btn" onclick="switchTab('json')" id="btn-json">JSON</button>
+                    </div>
+                    <div class="actions-area">
+                        <button class="action-btn share" onclick="copyShareLink()">🔗 Copiar Link</button>
+                        <button class="action-btn primary" id="btn-save-main" onclick="saveCurrentEmbed()">💾 Salvar</button>
+                        <button class="action-btn" onclick="saveAsNewEmbed()">📑 Salvar Como Novo</button>
+                        
+                        <button class="action-btn" onclick="openSavedModal()">📂 Meus Embeds</button>
+                        <button class="action-btn" onclick="copyJSON()">📋 JSON</button>
+                        <button class="action-btn danger" onclick="clearAll()">🗑️</button>
+                    </div>
                 </div>
             </div>
 
@@ -509,10 +484,10 @@
         const previewFieldsContainer = document.getElementById('preview-fields');
         const jsonTextarea = document.getElementById('json-io');
         
-        // --- NOVO: Variável para controlar edição ---
+        // --- ESTADO DA EDIÇÃO ---
         let currentEditingId = null;
 
-        // --- INICIALIZAÇÃO E URL PARAMS ---
+        // --- INICIALIZAÇÃO ---
         window.addEventListener('load', () => {
             const params = new URLSearchParams(window.location.search);
             const state = params.get('data');
@@ -522,57 +497,76 @@
                     const jsonString = decodeURIComponent(atob(state));
                     applyJSONToInputs(jsonString);
                     console.log("Embed carregado via Link!");
-                } catch(e) {
-                    console.error("Link inválido ou corrompido.", e);
-                }
+                } catch(e) { console.error(e); }
             } else {
                 updatePreview();
                 updateColorPreview(colorInput.value);
             }
         });
 
-        // --- SISTEMA DE LINK COMPARTILHÁVEL ---
-        function copyShareLink() {
-            const data = getDataFromInputs();
-            const jsonString = JSON.stringify({ embeds: [data] });
-            const compressed = btoa(encodeURIComponent(jsonString));
-            const url = window.location.origin + window.location.pathname + '?data=' + compressed;
+        // --- UI DE EDIÇÃO ---
+        function updateEditStatusUI(name) {
+            const statusBar = document.getElementById('edit-status-ui');
+            const nameDisplay = document.getElementById('editing-name-display');
+            const btnSave = document.getElementById('btn-save-main');
             
-            navigator.clipboard.writeText(url).then(() => {
-                alert("🔗 Link copiado!\n\nEnvie este link para qualquer pessoa e ela verá este embed.");
-            });
+            if (currentEditingId) {
+                statusBar.classList.add('active');
+                nameDisplay.innerText = name || "Sem Nome";
+                btnSave.innerText = "💾 Atualizar";
+                btnSave.title = "Salvar alterações neste arquivo";
+            } else {
+                statusBar.classList.remove('active');
+                btnSave.innerText = "💾 Salvar";
+                btnSave.title = "Salvar como novo arquivo";
+            }
         }
 
-        // --- SISTEMA DE SALVAMENTO LOCAL (ATUALIZADO) ---
-        function saveEmbed() {
+        function exitEditMode() {
+            currentEditingId = null;
+            updateEditStatusUI();
+            
+            // Opcional: Limpar campos ao sair? 
+            // Para ser menos destrutivo, mantemos os dados na tela, mas agora o "Salvar" cria um novo.
+        }
+
+        // --- SISTEMA DE SALVAMENTO INTUITIVO ---
+        
+        // 1. Botão Principal (Atualiza se existe, Cria se não existe)
+        function saveCurrentEmbed() {
             const data = getDataFromInputs();
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
 
-            // Lógica para Sobrescrever (Editar)
             if (currentEditingId) {
-                const existingIndex = savedItems.findIndex(x => x.id === currentEditingId);
-                
-                if (existingIndex !== -1) {
-                    // Pergunta ao usuário
-                    const userChoice = confirm(`Você está editando "${savedItems[existingIndex].name}".\n\nDeseja ATUALIZAR este arquivo?\n(Clique em Cancelar para salvar como um NOVO arquivo)`);
+                // MODO ATUALIZAR
+                const index = savedItems.findIndex(x => x.id === currentEditingId);
+                if (index !== -1) {
+                    savedItems[index].data = data;
+                    savedItems[index].date = new Date().toLocaleDateString();
+                    localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
                     
-                    if (userChoice) {
-                        // Atualiza o existente
-                        savedItems[existingIndex].data = data;
-                        savedItems[existingIndex].date = new Date().toLocaleDateString() + " (Editado)";
-                        localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-                        alert("Embed atualizado com sucesso!");
-                        return; // Para a execução aqui
-                    } else {
-                        // Se cancelou, reseta o ID para criar um novo
-                        currentEditingId = null;
-                    }
+                    // Feedback visual rápido
+                    const btn = document.getElementById('btn-save-main');
+                    const originalText = btn.innerText;
+                    btn.innerText = "✅ Salvo!";
+                    setTimeout(() => btn.innerText = originalText, 1500);
+                } else {
+                    // ID não encontrado (talvez deletado em outra aba), salva como novo
+                    saveAsNewEmbed();
                 }
+            } else {
+                // MODO CRIAR NOVO
+                saveAsNewEmbed();
             }
+        }
 
-            // Lógica Original (Salvar Novo)
-            const name = prompt("Dê um nome para este Embed:");
-            if(!name) return;
+        // 2. Botão "Salvar Como Novo" (Sempre cria cópia)
+        function saveAsNewEmbed() {
+            const name = prompt("Nome para salvar este embed:");
+            if (!name) return;
+
+            const data = getDataFromInputs();
+            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             
             const newId = Date.now();
             savedItems.push({
@@ -583,11 +577,14 @@
             });
 
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-            currentEditingId = newId; // Define como atual para futuras edições rápidas
+            
+            // Entra automaticamente no modo de edição do novo item
+            currentEditingId = newId;
+            updateEditStatusUI(name);
             alert("Embed salvo com sucesso!");
         }
 
-        // --- MODAL DE SALVOS (ATUALIZADO COM RENOMEAR) ---
+        // --- MODAL DE SALVOS ---
         function openSavedModal() {
             const list = document.getElementById('saved-list');
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
@@ -600,7 +597,6 @@
             }
 
             list.innerHTML = '';
-            // Usamos spread [...] para inverter apenas visualmente sem afetar o original
             [...savedItems].reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'saved-item';
@@ -610,7 +606,7 @@
                         <span>${item.date}</span>
                     </div>
                     <div class="saved-actions">
-                        <button class="btn-mini load" title="Carregar/Editar" onclick="loadSavedItem(${item.id})">📂</button>
+                        <button class="btn-mini load" title="Carregar e Editar" onclick="loadSavedItem(${item.id})">📂</button>
                         <button class="btn-mini" title="Renomear" onclick="renameSavedItem(${item.id})">✏️</button>
                         <button class="btn-mini share" title="Copiar Link" onclick="shareSavedItem(${item.id})">🔗</button>
                         <button class="btn-mini del" title="Excluir" onclick="deleteSavedItem(${item.id})">🗑️</button>
@@ -624,13 +620,12 @@
             document.getElementById('modal-saved').classList.remove('active');
         }
 
-        // --- CARREGAR ITEM (ATUALIZADO) ---
         function loadSavedItem(id) {
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             const item = savedItems.find(x => x.id === id);
             if(item) {
-                // Define o ID atual para edição
-                currentEditingId = item.id;
+                currentEditingId = item.id; // Define ID ativo
+                updateEditStatusUI(item.name); // Atualiza UI
                 
                 const jsonWrapper = JSON.stringify({ embeds: [item.data] });
                 applyJSONToInputs(jsonWrapper);
@@ -638,33 +633,55 @@
             }
         }
 
-        // --- NOVO: FUNÇÃO DE RENOMEAR ---
         function renameSavedItem(id) {
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             const index = savedItems.findIndex(x => x.id === id);
             
             if (index !== -1) {
-                const newName = prompt("Novo nome para o embed:", savedItems[index].name);
+                const newName = prompt("Novo nome:", savedItems[index].name);
                 if (newName && newName.trim() !== "") {
                     savedItems[index].name = newName;
                     localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-                    openSavedModal(); // Recarrega a lista
+                    openSavedModal();
+                    
+                    // Se estiver editando este item agora, atualiza o nome na barra
+                    if(currentEditingId === id) updateEditStatusUI(newName);
                 }
             }
         }
 
         function deleteSavedItem(id) {
-            if(!confirm("Excluir este item?")) return;
+            if(!confirm("Tem certeza que deseja excluir?")) return;
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             savedItems = savedItems.filter(x => x.id !== id);
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
             
-            // Se deletou o que estava editando, limpa o ID
-            if (currentEditingId === id) currentEditingId = null;
+            if (currentEditingId === id) exitEditMode();
             
             openSavedModal();
         }
 
+        // --- OUTRAS FUNÇÕES (Mantidas iguais, mas necessárias) ---
+        function clearAll() {
+            if(!confirm("Deseja limpar todos os campos?")) return;
+            document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+            colorInput.value = '#00b0f4';
+            updateColorPreview('#00b0f4');
+            fieldsContainer.innerHTML = '';
+            jsonTextarea.value = '';
+            exitEditMode(); // Reseta modo de edição
+            window.history.pushState({}, document.title, window.location.pathname);
+            updatePreview();
+        }
+
+        function copyShareLink() {
+            const data = getDataFromInputs();
+            const jsonString = JSON.stringify({ embeds: [data] });
+            const compressed = btoa(encodeURIComponent(jsonString));
+            const url = window.location.origin + window.location.pathname + '?data=' + compressed;
+            navigator.clipboard.writeText(url).then(() => alert("🔗 Link copiado!"));
+        }
+        
         function shareSavedItem(id) {
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             const item = savedItems.find(x => x.id === id);
@@ -672,29 +689,20 @@
                 const jsonString = JSON.stringify({ embeds: [item.data] });
                 const compressed = btoa(encodeURIComponent(jsonString));
                 const url = window.location.origin + window.location.pathname + '?data=' + compressed;
-                navigator.clipboard.writeText(url).then(() => {
-                    alert("🔗 Link do embed '" + item.name + "' copiado!");
-                });
+                navigator.clipboard.writeText(url).then(() => alert("🔗 Link copiado!"));
             }
         }
 
-        // --- FUNÇÕES VISUAIS ---
-        function updateColorPreview(color) {
-            colorBtnVisual.style.backgroundColor = color;
-        }
+        // --- FUNÇÕES VISUAIS & LOGICA DO EDITOR ---
+        function updateColorPreview(color) { colorBtnVisual.style.backgroundColor = color; }
 
         function switchTab(mode) {
             document.getElementById('btn-visual').classList.toggle('active', mode === 'visual');
             document.getElementById('btn-json').classList.toggle('active', mode === 'json');
-
             document.getElementById('content-visual').classList.toggle('active', mode === 'visual');
             document.getElementById('content-json').classList.toggle('active', mode === 'json');
-
-            if (mode === 'json') {
-                jsonTextarea.value = generateJSONString();
-            } else {
-                applyJSONToInputs(jsonTextarea.value);
-            }
+            if (mode === 'json') jsonTextarea.value = generateJSONString();
+            else applyJSONToInputs(jsonTextarea.value);
         }
 
         function updateFromJSONInput() {
@@ -707,7 +715,6 @@
             } catch (e) {}
         }
 
-        // --- MANIPULAÇÃO DE CAMPOS ---
         function addField(name = "", value = "", inline = false) {
             const id = Date.now() + Math.random();
             const div = document.createElement('div');
@@ -737,22 +744,6 @@
             updatePreview();
         }
 
-        // --- LIMPAR TUDO (ATUALIZADO) ---
-        function clearAll() {
-            if(!confirm("Deseja limpar todos os campos?")) return;
-            document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
-            colorInput.value = '#00b0f4';
-            updateColorPreview('#00b0f4');
-            fieldsContainer.innerHTML = '';
-            jsonTextarea.value = '';
-            
-            currentEditingId = null; // IMPORTANTE: Reseta o modo de edição
-            
-            window.history.pushState({}, document.title, window.location.pathname);
-            updatePreview();
-        }
-
-        // --- GERAÇÃO E APLICAÇÃO DE DADOS ---
         function getDataFromInputs() {
             const fieldsData = [];
             document.querySelectorAll('.field-item').forEach(item => {
@@ -790,9 +781,7 @@
             return data;
         }
 
-        function generateJSONString() {
-            return JSON.stringify({ embeds: [getDataFromInputs()] }, null, 4);
-        }
+        function generateJSONString() { return JSON.stringify({ embeds: [getDataFromInputs()] }, null, 4); }
 
         function copyJSON() {
             const textToCopy = document.getElementById('content-json').classList.contains('active') ? jsonTextarea.value : generateJSONString();
@@ -807,13 +796,11 @@
 
                 document.getElementById('input-title').value = data.title || "";
                 document.getElementById('input-desc').value = data.description || "";
-                
                 if (data.color) {
                     const hex = '#' + data.color.toString(16).padStart(6, '0');
                     colorInput.value = hex;
                     updateColorPreview(hex);
                 }
-                
                 document.getElementById('input-author-name').value = data.author?.name || "";
                 document.getElementById('input-author-icon').value = data.author?.icon_url || "";
                 document.getElementById('input-footer-text').value = data.footer?.text || "";
@@ -832,7 +819,6 @@
             const hexColor = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
             document.getElementById('embed-preview').style.borderLeftColor = hexColor;
             updateColorPreview(hexColor);
-
             const setText = (id, val) => { const el = document.getElementById(id); el.innerText = val || ""; el.style.display = val ? 'block' : 'none'; };
             const setImg = (id, val) => { const el = document.getElementById(id); if(val) { el.src = val; el.style.display = 'block'; } else { el.style.display = 'none'; } };
 
@@ -840,12 +826,10 @@
             setText('preview-desc', data.description);
             setText('preview-author-name', data.author?.name);
             setText('preview-footer-text', data.footer?.text);
-
             setImg('preview-author-icon', data.author?.icon_url);
             setImg('preview-image', data.image?.url);
             setImg('preview-thumb', data.thumbnail?.url);
             setImg('preview-footer-icon', data.footer?.icon_url);
-
             document.getElementById('preview-author').style.display = data.author?.name ? 'flex' : 'none';
             document.getElementById('preview-footer').style.display = data.footer?.text ? 'flex' : 'none';
 
@@ -859,10 +843,7 @@
                 });
             }
         }
-
-        function updatePreview() {
-            renderPreviewFromData(getDataFromInputs());
-        }
+        function updatePreview() { renderPreviewFromData(getDataFromInputs()); }
     </script>
 </body>
 </html>
