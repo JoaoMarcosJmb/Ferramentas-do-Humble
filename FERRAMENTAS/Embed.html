@@ -509,6 +509,9 @@
         const previewFieldsContainer = document.getElementById('preview-fields');
         const jsonTextarea = document.getElementById('json-io');
         
+        // --- NOVO: Variável para controlar edição ---
+        let currentEditingId = null;
+
         // --- INICIALIZAÇÃO E URL PARAMS ---
         window.addEventListener('load', () => {
             const params = new URLSearchParams(window.location.search);
@@ -540,25 +543,51 @@
             });
         }
 
-        // --- SISTEMA DE SALVAMENTO LOCAL (ARQUIVO) ---
+        // --- SISTEMA DE SALVAMENTO LOCAL (ATUALIZADO) ---
         function saveEmbed() {
+            const data = getDataFromInputs();
+            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+
+            // Lógica para Sobrescrever (Editar)
+            if (currentEditingId) {
+                const existingIndex = savedItems.findIndex(x => x.id === currentEditingId);
+                
+                if (existingIndex !== -1) {
+                    // Pergunta ao usuário
+                    const userChoice = confirm(`Você está editando "${savedItems[existingIndex].name}".\n\nDeseja ATUALIZAR este arquivo?\n(Clique em Cancelar para salvar como um NOVO arquivo)`);
+                    
+                    if (userChoice) {
+                        // Atualiza o existente
+                        savedItems[existingIndex].data = data;
+                        savedItems[existingIndex].date = new Date().toLocaleDateString() + " (Editado)";
+                        localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+                        alert("Embed atualizado com sucesso!");
+                        return; // Para a execução aqui
+                    } else {
+                        // Se cancelou, reseta o ID para criar um novo
+                        currentEditingId = null;
+                    }
+                }
+            }
+
+            // Lógica Original (Salvar Novo)
             const name = prompt("Dê um nome para este Embed:");
             if(!name) return;
-
-            const data = getDataFromInputs();
-            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             
+            const newId = Date.now();
             savedItems.push({
-                id: Date.now(),
+                id: newId,
                 name: name,
                 date: new Date().toLocaleDateString(),
                 data: data
             });
 
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+            currentEditingId = newId; // Define como atual para futuras edições rápidas
             alert("Embed salvo com sucesso!");
         }
 
+        // --- MODAL DE SALVOS (ATUALIZADO COM RENOMEAR) ---
         function openSavedModal() {
             const list = document.getElementById('saved-list');
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
@@ -571,7 +600,8 @@
             }
 
             list.innerHTML = '';
-            savedItems.reverse().forEach(item => {
+            // Usamos spread [...] para inverter apenas visualmente sem afetar o original
+            [...savedItems].reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'saved-item';
                 div.innerHTML = `
@@ -580,7 +610,8 @@
                         <span>${item.date}</span>
                     </div>
                     <div class="saved-actions">
-                        <button class="btn-mini load" title="Carregar" onclick="loadSavedItem(${item.id})">📂</button>
+                        <button class="btn-mini load" title="Carregar/Editar" onclick="loadSavedItem(${item.id})">📂</button>
+                        <button class="btn-mini" title="Renomear" onclick="renameSavedItem(${item.id})">✏️</button>
                         <button class="btn-mini share" title="Copiar Link" onclick="shareSavedItem(${item.id})">🔗</button>
                         <button class="btn-mini del" title="Excluir" onclick="deleteSavedItem(${item.id})">🗑️</button>
                     </div>
@@ -593,13 +624,32 @@
             document.getElementById('modal-saved').classList.remove('active');
         }
 
+        // --- CARREGAR ITEM (ATUALIZADO) ---
         function loadSavedItem(id) {
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             const item = savedItems.find(x => x.id === id);
             if(item) {
+                // Define o ID atual para edição
+                currentEditingId = item.id;
+                
                 const jsonWrapper = JSON.stringify({ embeds: [item.data] });
                 applyJSONToInputs(jsonWrapper);
                 closeSavedModal();
+            }
+        }
+
+        // --- NOVO: FUNÇÃO DE RENOMEAR ---
+        function renameSavedItem(id) {
+            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            const index = savedItems.findIndex(x => x.id === id);
+            
+            if (index !== -1) {
+                const newName = prompt("Novo nome para o embed:", savedItems[index].name);
+                if (newName && newName.trim() !== "") {
+                    savedItems[index].name = newName;
+                    localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+                    openSavedModal(); // Recarrega a lista
+                }
             }
         }
 
@@ -608,6 +658,10 @@
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             savedItems = savedItems.filter(x => x.id !== id);
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+            
+            // Se deletou o que estava editando, limpa o ID
+            if (currentEditingId === id) currentEditingId = null;
+            
             openSavedModal();
         }
 
@@ -683,6 +737,7 @@
             updatePreview();
         }
 
+        // --- LIMPAR TUDO (ATUALIZADO) ---
         function clearAll() {
             if(!confirm("Deseja limpar todos os campos?")) return;
             document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
@@ -690,6 +745,9 @@
             updateColorPreview('#00b0f4');
             fieldsContainer.innerHTML = '';
             jsonTextarea.value = '';
+            
+            currentEditingId = null; // IMPORTANTE: Reseta o modo de edição
+            
             window.history.pushState({}, document.title, window.location.pathname);
             updatePreview();
         }
