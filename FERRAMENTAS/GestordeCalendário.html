@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Style Reference</title>
+    <title>Humble Calendar - Dotted Stone Grid</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,19 +13,12 @@
     <style>
         /* --- CONFIGURAÇÕES --- */
         :root {
-            /* Caminho da Imagem */
-            --stone-url: url('../IMAGENS/pedra.png'); 
+            /* Variáveis atualizadas pelo JS */
+            --bg-pattern: url(''); 
+            --tile-size: 40px; /* Tamanho Total (Pedra + Espaço) */
+            --stone-size: 20px; /* Só a pedra (para alinhar o header) */
             
-            /* Cor do Fundo (Creme) */
             --bg-color: #fceeb5;
-            
-            /* Tamanho visual da pedra */
-            --stone-size: 20px; 
-            
-            /* Distância entre uma pedra e outra (Espalhamento) */
-            --stone-spacing: 40px; 
-
-            /* Ajustes do Título e Texto */
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
@@ -81,7 +74,7 @@
         .btn-blue { background: #3b82f6; margin-top: 10px; }
         .btn-back { background: #334155; color: #cbd5e1; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; width: fit-content; margin-bottom: 5px; transition: 0.2s; }
 
-        /* --- ÁREA DE VISUALIZAÇÃO --- */
+        /* --- PREVIEW --- */
         .preview-area {
             flex: 1;
             background: #334155;
@@ -96,12 +89,9 @@
             position: relative;
             width: 1000px; min-width: 1000px;
             height: 1000px; min-height: 1000px;
-            
-            /* FUNDO CREME SÓLIDO */
             background-color: var(--bg-color); 
             background-size: cover;
             background-position: center;
-            
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             font-family: 'Montserrat', sans-serif;
             overflow: hidden; 
@@ -140,9 +130,8 @@
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             margin-bottom: 5px;
-            
-            /* Ajuste fino para alinhar o texto com as colunas */
-            padding-right: var(--stone-size); 
+            /* Compensa visualmente o tamanho da pedra para centralizar */
+            padding-right: 10px; 
         }
         .wk-day {
             color: #d97706;
@@ -152,32 +141,28 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- A GRADE (CONTAINER) --- */
+        /* --- GRADE PRINCIPAL --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
+            gap: 0; /* O espaçamento visual é desenhado, não real */
             
-            /* SEM GAP (O espaçamento visual é feito pela borda desenhada) */
-            gap: 0; 
-
-            /* Desenha a linha de pedras do TOPO e da ESQUERDA na caixa inteira */
-            background-image: var(--stone-url), var(--stone-url);
-            background-repeat: repeat-x, repeat-y;
+            /* BORDA EXTERNA (Topo e Esquerda) */
+            /* Isso fecha o quadrado do calendário */
+            background-image: var(--bg-pattern), var(--bg-pattern);
             background-position: top left, top left;
+            background-repeat: repeat-x, repeat-y;
+            background-size: var(--tile-size) var(--tile-size);
             
-            /* Controle de Espaçamento das Pedras Externas */
-            background-size: var(--stone-spacing) var(--stone-size), var(--stone-size) var(--stone-spacing);
+            /* Padding para o conteúdo não ficar embaixo da borda */
+            padding-top: 15px; 
+            padding-left: 15px;
             
-            /* Espaço interno para não cortar as pedras da borda */
-            padding-top: var(--stone-size);
-            padding-left: var(--stone-size);
-            
-            /* Pixel Art Nítida */
             image-rendering: pixelated; 
         }
 
-        /* --- A CÉLULA (DIA) --- */
+        /* --- CÉLULA (DIA) --- */
         .day-cell {
             position: relative;
             display: flex;
@@ -187,25 +172,18 @@
             padding: 5px;
             box-sizing: border-box;
 
-            /* Desenha a linha de pedras da DIREITA e de BAIXO em cada dia */
-            background-image: var(--stone-url), var(--stone-url);
-            background-repeat: repeat-y, repeat-x;
-            background-position: right top, left bottom;
+            /* BORDA INTERNA (Baixo e Direita de CADA dia) */
+            background-image: var(--bg-pattern), var(--bg-pattern);
+            background-position: bottom left, top right;
+            background-repeat: repeat-x, repeat-y;
+            background-size: var(--tile-size) var(--tile-size);
             
-            /* A MÁGICA: O primeiro valor é o tamanho da pedra, o segundo é o espaço */
-            /* Vertical (Dir): Largura=Pedra, Altura=Espaçamento */
-            /* Horizontal (Baixo): Largura=Espaçamento, Altura=Pedra */
-            background-size: var(--stone-size) var(--stone-spacing), var(--stone-spacing) var(--stone-size);
-            
-            /* Espaço para o conteúdo não bater na pedra */
+            /* Espaço para não encavalar texto na pedra */
             padding-right: 10px;
             padding-bottom: 10px;
         }
 
-        .day-cell.empty {
-            /* Mantém a grade desenhada mesmo em dias vazios */
-            opacity: 1; 
-        }
+        .day-cell.empty { opacity: 1; }
 
         /* --- NÚMEROS E TEXTOS --- */
         .day-num {
@@ -221,7 +199,7 @@
         .day-time {
             position: absolute;
             top: 8px; 
-            right: 15px; /* Afastado da borda de pedra */
+            right: 15px; 
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -240,7 +218,6 @@
             color: #1f2937;
             font-weight: var(--event-weight); 
             line-height: 1.1;
-            
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -269,11 +246,11 @@
         <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
             <label style="color:#fbbf24;">2. Ajustes Visuais</label>
             
-            <label>Tamanho da Pedra</label>
-            <input type="range" min="10" max="40" value="15" oninput="ajustarVar('--stone-size', this.value + 'px')">
+            <label>Tamanho da Pedra (px)</label>
+            <input type="range" min="10" max="40" value="20" id="stoneSizeIn" oninput="atualizarTextura()">
             
-            <label>Distância entre Pedras (Grid)</label>
-            <input type="range" min="20" max="80" value="45" oninput="ajustarVar('--stone-spacing', this.value + 'px')">
+            <label>Espaço entre Pedras (px)</label>
+            <input type="range" min="5" max="60" value="25" id="gapSizeIn" oninput="atualizarTextura()">
             
             <label style="margin-top:10px;">Posição Título</label>
             <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
@@ -338,6 +315,41 @@
         const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
+
+        // --- GERADOR DE TEXTURA (O Segredo do Espaçamento) ---
+        const stoneSrc = '../IMAGENS/pedra.png';
+        const imgStone = new Image();
+        imgStone.src = stoneSrc;
+
+        imgStone.onload = () => {
+            atualizarTextura();
+        };
+
+        function atualizarTextura() {
+            if (!imgStone.complete) return;
+            
+            // Pega valores
+            const stoneSize = parseInt(document.getElementById('stoneSizeIn').value);
+            const gapSize = parseInt(document.getElementById('gapSizeIn').value);
+            
+            // O tamanho total do azulejo é Pedra + Espaço
+            const totalSize = stoneSize + gapSize;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = totalSize;
+            canvas.height = totalSize;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+
+            // Desenha a pedra no canto (0,0) com o tamanho definido
+            // O resto do canvas fica transparente automaticamente
+            ctx.drawImage(imgStone, 0, 0, stoneSize, stoneSize);
+            
+            // Aplica no CSS
+            document.documentElement.style.setProperty('--bg-pattern', `url(${canvas.toDataURL()})`);
+            document.documentElement.style.setProperty('--tile-size', `${totalSize}px`);
+            document.documentElement.style.setProperty('--stone-size', `${stoneSize}px`);
+        }
 
         function ajustarVar(variavel, valor) {
             document.documentElement.style.setProperty(variavel, valor);
