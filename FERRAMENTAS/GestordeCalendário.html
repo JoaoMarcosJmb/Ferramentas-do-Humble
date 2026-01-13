@@ -17,6 +17,7 @@
             --title-size: 80px;
             --event-weight: 700;
             --stone-bg: url('../IMAGENS/pedra.png'); 
+            --bg-size: 18px; /* Variável dinâmica para o tamanho da pedra + espaço */
         }
 
         body {
@@ -159,7 +160,8 @@
             background-image: var(--stone-bg), var(--stone-bg);
             background-repeat: round no-repeat, no-repeat round;
             background-position: top left, top left;
-            background-size: 18px 18px; 
+            /* Usa a variável calculada para não distorcer */
+            background-size: var(--bg-size) var(--bg-size); 
             padding: 8px 0 0 8px; 
         }
 
@@ -174,7 +176,7 @@
             background-image: var(--stone-bg), var(--stone-bg);
             background-repeat: round no-repeat, no-repeat round;
             background-position: bottom left, top right;
-            background-size: 18px 18px; 
+            background-size: var(--bg-size) var(--bg-size); 
             
             padding: 0 14px 5px 14px;
             
@@ -191,7 +193,7 @@
             background-image: var(--stone-bg), var(--stone-bg);
             background-repeat: round no-repeat, no-repeat round;
             background-position: bottom left, top right;
-            background-size: 18px 18px;
+            background-size: var(--bg-size) var(--bg-size);
         }
 
         /* --- TEXTOS --- */
@@ -208,10 +210,7 @@
         .day-time {
             position: absolute;
             top: 10px; 
-            
-            /* CORREÇÃO: 15px aproxima mais da borda sem "enterrar" na pedra */
             right: 17px; 
-            
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -254,7 +253,6 @@
             font-size: 9px; 
             padding: 1px 4px;
             top: 6px;
-            /* Proporcional para 6 linhas */
             right: 17px; 
         }
     </style>
@@ -343,22 +341,36 @@
 
         // --- SCRIPT DE ESPAÇAMENTO AUTOMÁTICO ---
         const stoneSrc = '../IMAGENS/pedra.png';
-        const gap = 19; 
+
+        // ---------------------------------------------
+        // EDITE AQUI O ESPAÇAMENTO (Em pixels)
+        const gap = 30; 
+        // ---------------------------------------------
 
         const imgStone = new Image();
         imgStone.src = stoneSrc;
+
         imgStone.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = imgStone.width + gap;
-            canvas.height = imgStone.height + gap;
+            
+            // Define o tamanho total: imagem + gap
+            const totalSize = imgStone.width + gap;
+            
+            canvas.width = totalSize;
+            canvas.height = totalSize;
+            
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = false;
             
-            const x = (canvas.width - imgStone.width) / 2;
-            const y = (canvas.height - imgStone.height) / 2;
-            ctx.drawImage(imgStone, x, y);
+            // Desenha a pedra no canto superior esquerdo (x=0, y=0)
+            // O restante do canvas ficará transparente, criando o espaço
+            ctx.drawImage(imgStone, 0, 0);
             
+            // 1. Atualiza a imagem de fundo
             document.documentElement.style.setProperty('--stone-bg', `url(${canvas.toDataURL()})`);
+
+            // 2. Atualiza o tamanho no CSS para o background não distorcer
+            document.documentElement.style.setProperty('--bg-size', `${totalSize}px`);
         };
 
         function ajustarVar(variavel, valor) {
@@ -442,7 +454,6 @@
             });
         }
 
-        // --- FUNÇÃO DE DOWNLOAD (Moderno) ---
         function baixarImagem() {
             if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
 
