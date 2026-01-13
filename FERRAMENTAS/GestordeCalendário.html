@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Grade Pontilhada Real</title>
+    <title>Humble Calendar - Final Cut</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,17 +11,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <style>
-        /* --- CONFIGURAÇÕES --- */
+        /* --- CONFIGURAÇÕES GERAIS --- */
         :root {
-            /* Variáveis controladas pelo JS */
+            /* Textura gerada pelo JS */
             --bg-pattern: url(''); 
             
-            /* Tamanho TOTAL do bloco (Pedra + Espaço Vazio) */
+            /* Tamanho exato do azulejo (Pedra + Espaço) */
             --tile-full-size: 40px; 
             
-            /* Cor de fundo */
+            /* Cor de fundo do papel */
             --bg-color: #fceeb5;
             
+            /* Configurações de Texto */
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
@@ -36,7 +37,7 @@
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- BARRA LATERAL --- */
         .sidebar {
             width: 340px;
             background: #0f172a;
@@ -77,7 +78,7 @@
         .btn-blue { background: #3b82f6; margin-top: 10px; }
         .btn-back { background: #334155; color: #cbd5e1; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; width: fit-content; margin-bottom: 5px; transition: 0.2s; }
 
-        /* --- PREVIEW --- */
+        /* --- ÁREA DE VISUALIZAÇÃO --- */
         .preview-area {
             flex: 1;
             background: #334155;
@@ -133,7 +134,6 @@
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             margin-bottom: 5px;
-            /* Pequeno ajuste à direita para compensar visualmente a borda */
             padding-right: 15px; 
         }
         .wk-day {
@@ -144,30 +144,34 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- GRADE PRINCIPAL --- */
+        /* --- A GRADE (QUADRO) --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
             
-            /* LINHAS EXTERNAS (Topo e Esquerda) */
+            /* 1. PEDRAS DA MOLDURA (Topo e Esquerda) */
             background-image: var(--bg-pattern), var(--bg-pattern);
             background-position: top left, top left;
             background-repeat: repeat-x, repeat-y;
-            
-            /* O SEGREDO: Usar exatamente o tamanho calculado pelo JS. 
-               Isso garante que cada "bloco" seja quadrado e não deforme. */
             background-size: var(--tile-full-size) var(--tile-full-size);
             
-            /* Empurra o conteúdo para dentro para não sobrepor a borda */
             padding-top: 15px; 
             padding-left: 15px;
             
+            /* 2. O CORTE (O SEGREDO) */
+            overflow: hidden; /* Corta qualquer pedra que passe do limite */
+            border-radius: 12px; /* Arredonda os cantos e o corte das pedras */
+            
+            /* Acabamento Pixel Art */
             image-rendering: pixelated; 
+            
+            /* Uma borda invisível para forçar o corte limpo em alguns navegadores */
+            border: 1px solid transparent; 
         }
 
-        /* --- CÉLULA (DIA) --- */
+        /* --- CÉLULA DO DIA --- */
         .day-cell {
             position: relative;
             display: flex;
@@ -175,23 +179,19 @@
             align-items: center;
             min-height: 80px;
             
-            /* LINHAS INTERNAS (Direita e Baixo de cada dia) */
+            /* 3. PEDRAS INTERNAS (Direita e Baixo de cada dia) */
             background-image: var(--bg-pattern), var(--bg-pattern);
             background-position: top right, bottom left;
             background-repeat: repeat-y, repeat-x;
-            
-            /* Mesma lógica: tamanho fixo quadrado */
             background-size: var(--tile-full-size) var(--tile-full-size);
             
             box-sizing: border-box;
-            
-            /* Espaço para não encostar nas pedras da direita/baixo */
             padding: 5px 15px 5px 5px; 
         }
 
         .day-cell.empty { opacity: 1; }
 
-        /* --- NÚMEROS E TEXTOS --- */
+        /* --- TEXTOS --- */
         .day-num {
             position: absolute;
             top: 6px;
@@ -205,7 +205,7 @@
         .day-time {
             position: absolute;
             top: 8px; 
-            right: 20px; /* Afastado para não bater na linha */
+            right: 20px; 
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -252,10 +252,10 @@
         <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
             <label style="color:#fbbf24;">2. Ajustes Visuais</label>
             
-            <label>Tamanho da Pedra (Não estica)</label>
+            <label>Tamanho da Pedra (Não deforma)</label>
             <input type="range" min="10" max="40" value="15" id="stoneSizeIn" oninput="atualizarTextura()">
             
-            <label>Espaço Vazio (Afastamento)</label>
+            <label>Espaço Vazio (Pontilhado)</label>
             <input type="range" min="0" max="60" value="25" id="gapSizeIn" oninput="atualizarTextura()">
             
             <label style="margin-top:10px;">Posição Título</label>
@@ -322,7 +322,7 @@
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
 
-        // --- GERADOR DE TEXTURA "ANTI-ESTICAMENTO" ---
+        // --- SISTEMA DE TEXTURA (Trava para não esticar) ---
         const stoneSrc = '../IMAGENS/pedra.png';
         const imgStone = new Image();
         imgStone.src = stoneSrc;
@@ -334,27 +334,24 @@
         function atualizarTextura() {
             if (!imgStone.complete) return;
             
-            // 1. Coleta os valores desejados
             const stoneSize = parseInt(document.getElementById('stoneSizeIn').value);
             const gapSize = parseInt(document.getElementById('gapSizeIn').value);
             
-            // 2. Define o tamanho TOTAL do azulejo (Pedra + Vazio)
-            // IMPORTANTE: Isso cria um quadrado perfeito
+            // Define o bloco quadrado perfeito (Pedra + Vazio)
             const totalSize = stoneSize + gapSize;
             
-            // 3. Cria o canvas quadrado
             const canvas = document.createElement('canvas');
             canvas.width = totalSize;
             canvas.height = totalSize;
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = false;
 
-            // 4. Desenha a pedra no canto (0,0) com o TAMANHO FIXO (stoneSize)
-            // O restante do canvas (gapSize) fica transparente
+            // Desenha a pedra no tamanho exato, sem deformar
             ctx.drawImage(imgStone, 0, 0, stoneSize, stoneSize);
             
-            // 5. Atualiza o CSS com o novo padrão e o tamanho exato
+            // Aplica no CSS
             document.documentElement.style.setProperty('--bg-pattern', `url(${canvas.toDataURL()})`);
+            // Avisa o CSS do tamanho real para ele repetir corretamente
             document.documentElement.style.setProperty('--tile-full-size', `${totalSize}px`);
         }
 
