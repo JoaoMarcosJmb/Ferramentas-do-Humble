@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Pixel Perfect</title>
+    <title>Humble Calendar - Style RPG</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,12 +11,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <style>
-        /* --- CONFIGURAÇÕES GERAIS --- */
+        /* --- CONFIGURAÇÕES --- */
         :root {
+            /* Tamanho da pedra na borda */
+            --stone-size: 20px; 
+            /* Espessura da borda de pedra */
+            --grid-gap: 15px; 
+
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
             --stone-url: url('../IMAGENS/pedra.png'); 
+            
+            /* Cor de fundo do dia (igual a do papel para esconder as pedras) */
+            --day-bg: #fceeb5; 
         }
 
         body {
@@ -28,7 +36,7 @@
             overflow: hidden;
         }
 
-        /* --- SIDEBAR (Barra Lateral) --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: 340px;
             background: #0f172a;
@@ -70,7 +78,7 @@
         .btn-blue { background: #3b82f6; margin-top: 10px; }
         .btn-back { background: #334155; color: #cbd5e1; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; width: fit-content; margin-bottom: 5px; transition: 0.2s; }
 
-        /* --- ÁREA DO CALENDÁRIO --- */
+        /* --- PREVIEW --- */
         .preview-area {
             flex: 1;
             background: #334155;
@@ -135,85 +143,75 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- GRADE DE DIAS --- */
+        /* --- ESTRUTURA DA GRADE (Onde a mágica acontece) --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0;
-            padding: 0;
-            background: none !important; 
+            
+            /* AQUI: O espaço entre os dias (gap) revela o fundo de pedra */
+            gap: var(--grid-gap); 
+            padding: var(--grid-gap); /* Borda externa de pedra */
+            
+            /* O FUNDO DA GRADE É A PEDRA */
+            background-image: var(--stone-url);
+            background-repeat: round; /* Repete a pedra para preencher */
+            background-size: var(--stone-size) var(--stone-size); 
+            
+            /* Deixa nítido (pixel art) */
+            image-rendering: pixelated; 
         }
 
-        /* --- A PEDRA (Célula Individual) --- */
+        /* --- O DIA (Cartão) --- */
         .day-cell {
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            
             min-height: 80px;
             padding: 5px;
             box-sizing: border-box;
 
-            /* Configuração da Imagem */
-            background-image: var(--stone-url);
-            background-repeat: no-repeat;
-            background-position: center 10px; /* Centralizada, levemente para baixo do topo */
-            background-size: 64px 64px; /* Tamanho fixo para não distorcer */
-            
-            /* O SEGREDINHO PARA PIXEL ART FICAR NÍTIDO: */
-            image-rendering: pixelated;       /* Chrome/Opera/etc */
-            image-rendering: crisp-edges;     /* Firefox */
+            /* Cor sólida para cobrir as pedras do fundo, exceto nas bordas */
+            background-color: var(--day-bg); 
+            border-radius: 4px; /* Leve arredondamento */
         }
 
         .day-cell.empty {
-            background: none; 
-            opacity: 0;
+            /* Dias vazios mostram o papel de fundo, escondendo a pedra tbm */
+            background-color: var(--day-bg); 
+            opacity: 1; /* Mantém opaco para manter a grade consistente */
         }
+        
+        /* Se quiser que dias vazios mostrem pedra, use: background: transparent; */
 
-        /* --- NÚMERO DO DIA --- */
+        /* --- NÚMEROS E TEXTOS --- */
         .day-num {
             position: absolute;
-            top: 28px; /* Ajuste fino para centralizar NA PEDRA */
-            width: 100%;
-            text-align: center;
-            
-            font-size: 26px;
-            font-weight: 900;
-            
-            /* Contraste alto: Branco com borda preta */
-            color: #ffffff; 
-            text-shadow: 
-                -2px -2px 0 #000,  
-                 2px -2px 0 #000,
-                -2px  2px 0 #000,
-                 2px  2px 0 #000;
-            
-            z-index: 10;
-            pointer-events: none;
+            top: 6px;
+            left: 10px;
+            font-size: 20px;
+            color: #b45309; 
+            font-weight: 800;
+            z-index: 5;
         }
 
-        /* --- ETIQUETA DE HORÁRIO --- */
         .day-time {
             position: absolute;
-            top: 5px; 
-            right: 15px; 
+            top: 8px; 
+            right: 8px; 
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
             background: #d97706;
             padding: 2px 6px;
             border-radius: 4px;
-            z-index: 15;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-            border: 1px solid #78350f;
+            z-index: 5;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* --- TEXTO DO EVENTO --- */
         .day-text {
-            margin-top: 75px; /* Empurra o texto para baixo da pedra */
+            margin-top: 30px; 
             width: 100%; 
             text-align: center;
             font-size: 13px;
@@ -221,26 +219,18 @@
             font-weight: var(--event-weight); 
             line-height: 1.1;
             
-            /* Limite de linhas */
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        
-        /* Ajuste para quando tem 6 linhas de semanas */
-        .days-grid.six-rows .day-cell {
-            background-size: 55px 55px; /* Pedra um pouco menor */
-        }
-        .days-grid.six-rows .day-num {
-            top: 24px;
-            font-size: 22px;
-        }
-        .days-grid.six-rows .day-text {
-            margin-top: 60px;
-            font-size: 11px;
-        }
 
+        /* Ajuste para 6 linhas */
+        .days-grid.six-rows .day-cell .day-text {
+            margin-top: 25px; 
+            font-size: 11px;  
+            -webkit-line-clamp: 2; 
+        }
     </style>
 </head>
 <body>
@@ -259,10 +249,12 @@
             <label style="color:#fbbf24;">2. Ajustes Visuais</label>
             <label>Posição Título (Vertical)</label>
             <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
-            <label>Tamanho Título</label>
-            <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
-            <label>Peso da Fonte (Texto)</label>
-            <input type="range" min="400" max="900" step="100" value="700" oninput="ajustarVar('--event-weight', this.value)">
+            
+            <label>Espessura da Grade (Pedras)</label>
+            <input type="range" min="5" max="30" value="15" oninput="ajustarVar('--grid-gap', this.value + 'px')">
+            
+            <label>Tamanho da Textura Pedra</label>
+            <input type="range" min="10" max="50" value="20" oninput="ajustarVar('--stone-size', this.value + 'px')">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -335,6 +327,8 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     artContainer.style.backgroundImage = `url(${event.target.result})`;
+                    // Tenta detectar cor média ou usa padrão
+                    // Aqui mantemos fixo para consistência
                     imagemCarregada = true;
                 }
                 reader.readAsDataURL(file);
@@ -355,7 +349,6 @@
             const totalCelulas = primeiroDia + totalDias;
             const numeroLinhas = Math.ceil(totalCelulas / 7);
 
-            // Ajuste automático para caber 6 linhas se precisar
             if (numeroLinhas > 5) {
                 grid.style.gridTemplateRows = "repeat(6, 1fr)";
                 grid.classList.add('six-rows');
@@ -364,12 +357,14 @@
                 grid.classList.remove('six-rows');
             }
 
+            // Dias Vazios (Antes do dia 1)
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
                 grid.appendChild(div);
             }
 
+            // Dias do Mês
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
@@ -411,8 +406,6 @@
             if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
 
             const node = document.getElementById('art-container');
-            
-            // Remove sombra temporariamente para o print
             const originalShadow = node.style.boxShadow;
             node.style.boxShadow = "none";
 
