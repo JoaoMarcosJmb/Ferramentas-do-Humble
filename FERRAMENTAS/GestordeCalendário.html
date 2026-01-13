@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Dotted Stone Grid</title>
+    <title>Humble Calendar - Grade Perfeita</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,12 +13,15 @@
     <style>
         /* --- CONFIGURAÇÕES --- */
         :root {
-            /* Variáveis atualizadas pelo JS */
+            /* Textura gerada dinamicamente */
             --bg-pattern: url(''); 
-            --tile-size: 40px; /* Tamanho Total (Pedra + Espaço) */
-            --stone-size: 20px; /* Só a pedra (para alinhar o header) */
             
+            /* Tamanho do AZULEJO (Pedra + Espaço Transparente) */
+            --tile-total-size: 40px; 
+            
+            /* Cor de fundo do calendário */
             --bg-color: #fceeb5;
+            
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
@@ -50,6 +53,7 @@
 
         h2 { color: #fbbf24; margin: 0; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: 600; }
         label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
+        
         input[type="range"] { width: 100%; cursor: pointer; margin-bottom: 5px; }
         
         input, textarea, select {
@@ -130,8 +134,7 @@
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             margin-bottom: 5px;
-            /* Compensa visualmente o tamanho da pedra para centralizar */
-            padding-right: 10px; 
+            padding-right: 10px; /* Compensa visualmente a borda */
         }
         .wk-day {
             color: #d97706;
@@ -146,16 +149,17 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; /* O espaçamento visual é desenhado, não real */
+            gap: 0;
             
-            /* BORDA EXTERNA (Topo e Esquerda) */
-            /* Isso fecha o quadrado do calendário */
+            /* Desenha a linha de pedras do TOPO e da ESQUERDA da grade inteira */
             background-image: var(--bg-pattern), var(--bg-pattern);
             background-position: top left, top left;
             background-repeat: repeat-x, repeat-y;
-            background-size: var(--tile-size) var(--tile-size);
             
-            /* Padding para o conteúdo não ficar embaixo da borda */
+            /* Tamanho fixo do azulejo (Não estica!) */
+            background-size: var(--tile-total-size) var(--tile-total-size);
+            
+            /* Afasta o conteúdo para não ficar em cima da pedra */
             padding-top: 15px; 
             padding-left: 15px;
             
@@ -172,20 +176,21 @@
             padding: 5px;
             box-sizing: border-box;
 
-            /* BORDA INTERNA (Baixo e Direita de CADA dia) */
+            /* Desenha a linha de pedras de BAIXO e da DIREITA de cada dia */
             background-image: var(--bg-pattern), var(--bg-pattern);
             background-position: bottom left, top right;
             background-repeat: repeat-x, repeat-y;
-            background-size: var(--tile-size) var(--tile-size);
             
-            /* Espaço para não encavalar texto na pedra */
+            /* Tamanho fixo do azulejo (Não estica!) */
+            background-size: var(--tile-total-size) var(--tile-total-size);
+            
             padding-right: 10px;
             padding-bottom: 10px;
         }
 
         .day-cell.empty { opacity: 1; }
 
-        /* --- NÚMEROS E TEXTOS --- */
+        /* --- ELEMENTOS DE TEXTO --- */
         .day-num {
             position: absolute;
             top: 6px;
@@ -247,13 +252,15 @@
             <label style="color:#fbbf24;">2. Ajustes Visuais</label>
             
             <label>Tamanho da Pedra (px)</label>
-            <input type="range" min="10" max="40" value="20" id="stoneSizeIn" oninput="atualizarTextura()">
+            <input type="range" min="10" max="50" value="20" id="stoneSizeIn" oninput="atualizarTextura()">
             
-            <label>Espaço entre Pedras (px)</label>
-            <input type="range" min="5" max="60" value="25" id="gapSizeIn" oninput="atualizarTextura()">
+            <label>Distância entre Pedras (px)</label>
+            <input type="range" min="0" max="60" value="20" id="gapSizeIn" oninput="atualizarTextura()">
             
             <label style="margin-top:10px;">Posição Título</label>
             <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
+            <label>Tamanho Título</label>
+            <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -316,7 +323,7 @@
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
 
-        // --- GERADOR DE TEXTURA (O Segredo do Espaçamento) ---
+        // --- SISTEMA DE TEXTURA (Corrigido para não esticar) ---
         const stoneSrc = '../IMAGENS/pedra.png';
         const imgStone = new Image();
         imgStone.src = stoneSrc;
@@ -328,27 +335,29 @@
         function atualizarTextura() {
             if (!imgStone.complete) return;
             
-            // Pega valores
+            // 1. Pega os valores dos sliders
             const stoneSize = parseInt(document.getElementById('stoneSizeIn').value);
             const gapSize = parseInt(document.getElementById('gapSizeIn').value);
             
-            // O tamanho total do azulejo é Pedra + Espaço
+            // 2. Calcula o tamanho do "Quadrado Invisível" (Pedra + Espaço)
             const totalSize = stoneSize + gapSize;
             
+            // 3. Cria o Canvas com esse tamanho total
             const canvas = document.createElement('canvas');
             canvas.width = totalSize;
             canvas.height = totalSize;
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = false;
 
-            // Desenha a pedra no canto (0,0) com o tamanho definido
-            // O resto do canvas fica transparente automaticamente
+            // 4. Desenha a pedra no tamanho escolhido (SEM ESTICAR)
+            // A pedra fica no canto 0,0. O resto vira espaço vazio.
             ctx.drawImage(imgStone, 0, 0, stoneSize, stoneSize);
             
-            // Aplica no CSS
+            // 5. Atualiza o CSS com a nova imagem e o novo tamanho de repetição
             document.documentElement.style.setProperty('--bg-pattern', `url(${canvas.toDataURL()})`);
-            document.documentElement.style.setProperty('--tile-size', `${totalSize}px`);
-            document.documentElement.style.setProperty('--stone-size', `${stoneSize}px`);
+            
+            // Isso garante que o navegador saiba que o azulejo tem 'totalSize' pixels
+            document.documentElement.style.setProperty('--tile-total-size', `${totalSize}px`);
         }
 
         function ajustarVar(variavel, valor) {
