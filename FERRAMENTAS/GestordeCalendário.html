@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Style RPG</title>
+    <title>Humble Calendar - Grade de Pedra</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,9 +13,10 @@
     <style>
         /* --- CONFIGURAÇÕES --- */
         :root {
-            /* Tamanho da pedra na borda */
-            --stone-size: 20px; 
-            /* Espessura da borda de pedra */
+            /* Tamanho da pedra que forma a linha da grade */
+            --stone-size: 24px; 
+            
+            /* Grossura da linha da grade (quanto de pedra aparece) */
             --grid-gap: 15px; 
 
             --title-top: 40px;
@@ -23,7 +24,7 @@
             --event-weight: 700;
             --stone-url: url('../IMAGENS/pedra.png'); 
             
-            /* Cor de fundo do dia (igual a do papel para esconder as pedras) */
+            /* Cor do PAPEL do dia (Creme) */
             --day-bg: #fceeb5; 
         }
 
@@ -93,9 +94,12 @@
             position: relative;
             width: 1000px; min-width: 1000px;
             height: 1000px; min-height: 1000px;
+            
+            /* Fundo geral (atrás de tudo) */
             background-color: #fceeb5; 
             background-size: cover;
             background-position: center;
+            
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             font-family: 'Montserrat', sans-serif;
             overflow: hidden; 
@@ -133,7 +137,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .wk-day {
             color: #d97706;
@@ -143,26 +147,31 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- ESTRUTURA DA GRADE (Onde a mágica acontece) --- */
+        /* --- A GRADE MÁGICA --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             
-            /* AQUI: O espaço entre os dias (gap) revela o fundo de pedra */
+            /* AQUI ESTÁ O TRUQUE: */
+            /* 1. O espaço entre os dias (gap) revela o fundo */
             gap: var(--grid-gap); 
-            padding: var(--grid-gap); /* Borda externa de pedra */
             
-            /* O FUNDO DA GRADE É A PEDRA */
+            /* 2. Borda externa grossa feita do mesmo fundo */
+            padding: var(--grid-gap); 
+            
+            /* 3. O fundo é a pedra repetida */
             background-image: var(--stone-url);
-            background-repeat: round; /* Repete a pedra para preencher */
+            background-repeat: repeat; /* Repete a pedra como azulejo */
             background-size: var(--stone-size) var(--stone-size); 
             
-            /* Deixa nítido (pixel art) */
+            /* Deixa a pedra pixelada e nítida */
             image-rendering: pixelated; 
+            
+            border-radius: 8px; /* Cantos da grade levemente arredondados */
         }
 
-        /* --- O DIA (Cartão) --- */
+        /* --- O DIA (PAPEL) --- */
         .day-cell {
             position: relative;
             display: flex;
@@ -172,18 +181,19 @@
             padding: 5px;
             box-sizing: border-box;
 
-            /* Cor sólida para cobrir as pedras do fundo, exceto nas bordas */
+            /* Cor sólida (Papel) cobrindo a pedra do fundo */
             background-color: var(--day-bg); 
-            border-radius: 4px; /* Leve arredondamento */
+            
+            /* Sombra suave para destacar o papel da pedra */
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            border-radius: 2px;
         }
 
+        /* Dias vazios: invisíveis ou com leve transparência? */
         .day-cell.empty {
-            /* Dias vazios mostram o papel de fundo, escondendo a pedra tbm */
-            background-color: var(--day-bg); 
-            opacity: 1; /* Mantém opaco para manter a grade consistente */
+            background-color: rgba(252, 238, 181, 0.3); /* Quase transparente */
+            box-shadow: none;
         }
-        
-        /* Se quiser que dias vazios mostrem pedra, use: background: transparent; */
 
         /* --- NÚMEROS E TEXTOS --- */
         .day-num {
@@ -191,7 +201,10 @@
             top: 6px;
             left: 10px;
             font-size: 20px;
+            
+            /* VOLTA PARA A COR ORIGINAL (Escura) POIS O FUNDO AGORA É CLARO */
             color: #b45309; 
+            
             font-weight: 800;
             z-index: 5;
         }
@@ -211,7 +224,7 @@
         }
 
         .day-text {
-            margin-top: 30px; 
+            margin-top: 35px; 
             width: 100%; 
             text-align: center;
             font-size: 13px;
@@ -225,7 +238,7 @@
             overflow: hidden;
         }
 
-        /* Ajuste para 6 linhas */
+        /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
             margin-top: 25px; 
             font-size: 11px;  
@@ -250,11 +263,11 @@
             <label>Posição Título (Vertical)</label>
             <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
             
-            <label>Espessura da Grade (Pedras)</label>
-            <input type="range" min="5" max="30" value="15" oninput="ajustarVar('--grid-gap', this.value + 'px')">
+            <label>Grossura da Grade (Pedras)</label>
+            <input type="range" min="5" max="40" value="15" oninput="ajustarVar('--grid-gap', this.value + 'px')">
             
             <label>Tamanho da Textura Pedra</label>
-            <input type="range" min="10" max="50" value="20" oninput="ajustarVar('--stone-size', this.value + 'px')">
+            <input type="range" min="10" max="64" value="24" oninput="ajustarVar('--stone-size', this.value + 'px')">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -327,8 +340,6 @@
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     artContainer.style.backgroundImage = `url(${event.target.result})`;
-                    // Tenta detectar cor média ou usa padrão
-                    // Aqui mantemos fixo para consistência
                     imagemCarregada = true;
                 }
                 reader.readAsDataURL(file);
