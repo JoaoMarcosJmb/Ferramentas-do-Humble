@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Grade de Pedra</title>
+    <title>Humble Calendar - Grade Final</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,16 +13,15 @@
     <style>
         /* --- CONFIGURAÇÕES --- */
         :root {
-            /* Tamanho da pedra que forma a linha da grade */
-            --stone-size: 24px; 
+            /* Variável dinâmica controlada pelo JS */
+            --bg-pattern: url('../IMAGENS/pedra.png');
             
-            /* Grossura da linha da grade (quanto de pedra aparece) */
+            /* Grossura da linha da grade (o buraco entre os dias) */
             --grid-gap: 15px; 
 
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
-            --stone-url: url('../IMAGENS/pedra.png'); 
             
             /* Cor do PAPEL do dia (Creme) */
             --day-bg: #fceeb5; 
@@ -147,28 +146,22 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- A GRADE MÁGICA --- */
+        /* --- A GRADE --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             
-            /* AQUI ESTÁ O TRUQUE: */
-            /* 1. O espaço entre os dias (gap) revela o fundo */
+            /* Espaço que revela o fundo */
             gap: var(--grid-gap); 
-            
-            /* 2. Borda externa grossa feita do mesmo fundo */
             padding: var(--grid-gap); 
             
-            /* 3. O fundo é a pedra repetida */
-            background-image: var(--stone-url);
-            background-repeat: repeat; /* Repete a pedra como azulejo */
-            background-size: var(--stone-size) var(--stone-size); 
+            /* O Fundo é gerado pelo JS (pedras espaçadas) */
+            background-image: var(--bg-pattern);
+            background-repeat: repeat; 
             
-            /* Deixa a pedra pixelada e nítida */
             image-rendering: pixelated; 
-            
-            border-radius: 8px; /* Cantos da grade levemente arredondados */
+            border-radius: 8px;
         }
 
         /* --- O DIA (PAPEL) --- */
@@ -181,18 +174,18 @@
             padding: 5px;
             box-sizing: border-box;
 
-            /* Cor sólida (Papel) cobrindo a pedra do fundo */
+            /* Cor sólida para esconder o fundo repetido */
             background-color: var(--day-bg); 
+            border-radius: 4px;
             
-            /* Sombra suave para destacar o papel da pedra */
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            border-radius: 2px;
+            /* Sombra interna leve */
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
         }
 
-        /* Dias vazios: invisíveis ou com leve transparência? */
         .day-cell.empty {
-            background-color: rgba(252, 238, 181, 0.3); /* Quase transparente */
-            box-shadow: none;
+            /* Pode deixar semi-transparente ou sólido */
+            background-color: var(--day-bg); 
+            opacity: 0.8; 
         }
 
         /* --- NÚMEROS E TEXTOS --- */
@@ -201,10 +194,7 @@
             top: 6px;
             left: 10px;
             font-size: 20px;
-            
-            /* VOLTA PARA A COR ORIGINAL (Escura) POIS O FUNDO AGORA É CLARO */
             color: #b45309; 
-            
             font-weight: 800;
             z-index: 5;
         }
@@ -238,7 +228,6 @@
             overflow: hidden;
         }
 
-        /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
             margin-top: 25px; 
             font-size: 11px;  
@@ -263,11 +252,14 @@
             <label>Posição Título (Vertical)</label>
             <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
             
-            <label>Grossura da Grade (Pedras)</label>
+            <label>Grossura da Grade</label>
             <input type="range" min="5" max="40" value="15" oninput="ajustarVar('--grid-gap', this.value + 'px')">
             
-            <label>Tamanho da Textura Pedra</label>
-            <input type="range" min="10" max="64" value="24" oninput="ajustarVar('--stone-size', this.value + 'px')">
+            <label>Tamanho da Pedra</label>
+            <input type="range" min="10" max="50" value="20" oninput="atualizarTextura()">
+            
+            <label>Espalhamento das Pedras (Importante!)</label>
+            <input type="range" min="0" max="100" value="40" id="espacoInput" oninput="atualizarTextura()">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -330,6 +322,51 @@
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
 
+        // --- SISTEMA DE TEXTURA DINÂMICA ---
+        const stoneSrc = '../IMAGENS/pedra.png';
+        const imgStone = new Image();
+        imgStone.src = stoneSrc;
+        
+        imgStone.onload = () => {
+            atualizarTextura();
+        };
+
+        function atualizarTextura() {
+            if (!imgStone.complete) return;
+            
+            // Pega os valores dos inputs
+            const inputs = document.querySelectorAll('input[type="range"]');
+            // Nota: Os índices podem variar se você adicionar mais inputs, 
+            // idealmente use IDs, mas aqui pegamos pelo contexto visual:
+            // input[2] é Tamanho Pedra, input[3] é Espalhamento. 
+            // Vamos fazer de forma segura pegando pelo oninput.
+            
+            // Vamos pegar diretamente pelos elementos que chamam essa função
+            // Mas como é onload, vamos buscar pelos labels ou ordem
+            // Ajuste manual para este código:
+            const tamanhoPedra = parseInt(document.querySelectorAll('input[type="range"]')[3].value);
+            const espacamento = parseInt(document.getElementById('espacoInput').value);
+
+            const canvas = document.createElement('canvas');
+            
+            // O segredo: O tamanho do "azulejo" é Pedra + Espaço
+            const tileSize = tamanhoPedra + espacamento;
+            
+            canvas.width = tileSize;
+            canvas.height = tileSize;
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+
+            // Centraliza a pedra no azulejo transparente
+            const x = (tileSize - tamanhoPedra) / 2;
+            const y = (tileSize - tamanhoPedra) / 2;
+            
+            ctx.drawImage(imgStone, x, y, tamanhoPedra, tamanhoPedra);
+            
+            // Aplica ao CSS
+            document.documentElement.style.setProperty('--bg-pattern', `url(${canvas.toDataURL()})`);
+        }
+
         function ajustarVar(variavel, valor) {
             document.documentElement.style.setProperty(variavel, valor);
         }
@@ -368,14 +405,12 @@
                 grid.classList.remove('six-rows');
             }
 
-            // Dias Vazios (Antes do dia 1)
             for (let i = 0; i < primeiroDia; i++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell empty';
                 grid.appendChild(div);
             }
 
-            // Dias do Mês
             for (let d = 1; d <= totalDias; d++) {
                 const div = document.createElement('div');
                 div.className = 'day-cell';
