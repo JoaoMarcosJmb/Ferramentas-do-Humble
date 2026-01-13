@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Fixed</title>
+    <title>Humble Calendar - Fixed V2</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,14 +11,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <style>
-        /* --- CONFIGURAÇÕES SIMPLES --- */
+        /* --- CONFIGURAÇÕES --- */
         :root {
-            /* Mude este valor para afastar ou juntar as pedras */
-            --espaco-entre-pedras: 15px; 
+            /* Aumente/diminua aqui para afastar as pedras */
+            --gap-size: 15px; 
 
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
+            /* Caminho da imagem da pedra */
             --stone-url: url('../IMAGENS/pedra.png'); 
         }
 
@@ -71,21 +72,7 @@
         }
         .btn:hover { background: #15803d; }
         .btn-blue { background: #3b82f6; margin-top: 10px; }
-
-        .btn-back {
-            background: #334155;
-            color: #cbd5e1;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            width: fit-content;
-            margin-bottom: 5px;
-            transition: 0.2s;
-        }
+        .btn-back { background: #334155; color: #cbd5e1; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; width: fit-content; margin-bottom: 5px; transition: 0.2s; }
 
         /* --- PREVIEW --- */
         .preview-area {
@@ -132,7 +119,7 @@
             top: 300px; 
             left: 50px;
             width: 900px;
-            height: 650px; /* Aumentei um pouco a altura da área */
+            height: 650px;
             display: flex;
             flex-direction: column;
             z-index: 5;
@@ -143,8 +130,6 @@
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
             margin-bottom: 10px;
-            /* O header deve alinhar com as colunas, então usamos o mesmo gap se necessário, 
-               mas geralmente o texto fica melhor centralizado sem gap visual */
         }
         .wk-day {
             color: #d97706;
@@ -154,38 +139,43 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- GRID --- */
+        /* --- GRID PRINCIPAL --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             
-            /* AQUI ESTÁ A MÁGICA DO ESPAÇO: */
-            gap: var(--espaco-entre-pedras);
+            /* AQUI: O Gap controla o espaço VAZIO entre as pedras */
+            gap: var(--gap-size); 
             
-            padding: 0; 
+            padding: 0;
+            /* Garante que o fundo da grade seja transparente */
+            background: none !important; 
         }
 
-        /* --- CÉLULA (A PEDRA) --- */
+        /* --- A PEDRA (Célula) --- */
         .day-cell {
             position: relative;
-            
-            /* Fundo da pedra: UMA única imagem que preenche tudo */
-            background-image: var(--stone-url);
-            background-size: 100% 100%; /* Estica para caber na célula exata */
-            background-repeat: no-repeat;
-            background-position: center;
-            
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 80px; /* Altura mínima para garantir forma */
+            min-height: 80px;
             padding: 5px;
-            box-sizing: border-box; 
+            box-sizing: border-box;
+
+            /* CONFIGURAÇÃO DA IMAGEM DA PEDRA */
+            background-image: var(--stone-url);
+            
+            /* ESSAS 3 LINHAS CORRIGEM O PROBLEMA DO AZULEJO: */
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100% 100%; /* Estica a pedra para ocupar todo o quadrado */
         }
 
+        /* Dias vazios ficam invisíveis (sem pedra) */
         .day-cell.empty {
-            background: none; /* Dias vazios sem pedra */
+            background: none; 
+            opacity: 0;
         }
 
         /* --- TEXTOS --- */
@@ -228,7 +218,6 @@
             word-wrap: break-word; 
         }
 
-        /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
             margin-top: 28px; 
             font-size: 11px;  
@@ -256,6 +245,9 @@
             <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
             <label>Peso da Fonte (Texto)</label>
             <input type="range" min="400" max="900" step="100" value="700" oninput="ajustarVar('--event-weight', this.value)">
+            
+            <label>Espaçamento das Pedras</label>
+            <input type="range" min="0" max="50" value="15" oninput="ajustarVar('--gap-size', this.value + 'px')">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -348,7 +340,6 @@
             const totalCelulas = primeiroDia + totalDias;
             const numeroLinhas = Math.ceil(totalCelulas / 7);
 
-            // Ajuste automático para caber 6 linhas se precisar
             if (numeroLinhas > 5) {
                 grid.style.gridTemplateRows = "repeat(6, 1fr)";
                 grid.classList.add('six-rows');
