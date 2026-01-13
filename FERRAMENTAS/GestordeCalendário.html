@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Grade Final</title>
+    <title>Humble Calendar - Grade Limpa</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,18 +13,18 @@
     <style>
         /* --- CONFIGURAÇÕES --- */
         :root {
-            /* Variável dinâmica controlada pelo JS */
+            /* Textura gerada pelo JS */
             --bg-pattern: url('../IMAGENS/pedra.png');
             
-            /* Grossura da linha da grade (o buraco entre os dias) */
-            --grid-gap: 15px; 
+            /* Cor UNIFICADA (Fundo e Dias iguais para sumir com o quadrado) */
+            --main-bg-color: #fceeb5;
+            
+            /* Grossura da linha de pedras */
+            --grid-gap: 20px; 
 
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
-            
-            /* Cor do PAPEL do dia (Creme) */
-            --day-bg: #fceeb5; 
         }
 
         body {
@@ -94,8 +94,8 @@
             width: 1000px; min-width: 1000px;
             height: 1000px; min-height: 1000px;
             
-            /* Fundo geral (atrás de tudo) */
-            background-color: #fceeb5; 
+            /* FUNDO PRINCIPAL */
+            background-color: var(--main-bg-color); 
             background-size: cover;
             background-position: center;
             
@@ -146,25 +146,27 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- A GRADE --- */
+        /* --- A GRADE DE PEDRAS --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             
-            /* Espaço que revela o fundo */
+            /* O GAP define a largura da linha de pedra */
             gap: var(--grid-gap); 
-            padding: var(--grid-gap); 
+            padding: var(--grid-gap); /* Borda externa */
             
-            /* O Fundo é gerado pelo JS (pedras espaçadas) */
+            /* O Fundo aqui SÃO AS PEDRAS */
             background-image: var(--bg-pattern);
             background-repeat: repeat; 
             
+            /* Importante para pixel art */
             image-rendering: pixelated; 
+            
             border-radius: 8px;
         }
 
-        /* --- O DIA (PAPEL) --- */
+        /* --- CÉLULA DO DIA (MÁSCARA) --- */
         .day-cell {
             position: relative;
             display: flex;
@@ -174,18 +176,19 @@
             padding: 5px;
             box-sizing: border-box;
 
-            /* Cor sólida para esconder o fundo repetido */
-            background-color: var(--day-bg); 
-            border-radius: 4px;
+            /* TRUQUE: Cor sólida IGUAL ao fundo principal.
+               Isso esconde as pedras dentro do quadrado, 
+               sobrando só as do GAP (linhas). */
+            background-color: var(--main-bg-color); 
             
-            /* Sombra interna leve */
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            /* SEM SOMBRAS, SEM BORDAS ARREDONDADAS - Visual Plano */
+            box-shadow: none;
+            border-radius: 0; 
         }
 
         .day-cell.empty {
-            /* Pode deixar semi-transparente ou sólido */
-            background-color: var(--day-bg); 
-            opacity: 0.8; 
+            /* Dias vazios também cobrem as pedras de fundo */
+            background-color: var(--main-bg-color); 
         }
 
         /* --- NÚMEROS E TEXTOS --- */
@@ -228,6 +231,7 @@
             overflow: hidden;
         }
 
+        /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
             margin-top: 25px; 
             font-size: 11px;  
@@ -252,14 +256,14 @@
             <label>Posição Título (Vertical)</label>
             <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
             
-            <label>Grossura da Grade</label>
-            <input type="range" min="5" max="40" value="15" oninput="ajustarVar('--grid-gap', this.value + 'px')">
+            <label>Grossura da Linha (Gap)</label>
+            <input type="range" min="10" max="40" value="20" oninput="ajustarVar('--grid-gap', this.value + 'px')">
             
             <label>Tamanho da Pedra</label>
-            <input type="range" min="10" max="50" value="20" oninput="atualizarTextura()">
+            <input type="range" min="10" max="40" value="18" oninput="atualizarTextura()">
             
-            <label>Espalhamento das Pedras (Importante!)</label>
-            <input type="range" min="0" max="100" value="40" id="espacoInput" oninput="atualizarTextura()">
+            <label>Distância entre Pedras (Evita muro)</label>
+            <input type="range" min="0" max="100" value="50" id="espacoInput" oninput="atualizarTextura()">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -322,11 +326,12 @@
         const artContainer = document.getElementById('art-container');
         let imagemCarregada = false;
 
-        // --- SISTEMA DE TEXTURA DINÂMICA ---
+        // --- GERADOR DE TEXTURA (CRUCIAL) ---
         const stoneSrc = '../IMAGENS/pedra.png';
         const imgStone = new Image();
         imgStone.src = stoneSrc;
         
+        // Inicia quando a imagem carrega
         imgStone.onload = () => {
             atualizarTextura();
         };
@@ -334,22 +339,15 @@
         function atualizarTextura() {
             if (!imgStone.complete) return;
             
-            // Pega os valores dos inputs
+            // Pega valores dos sliders de pedra
+            // (Assumindo a ordem dos inputs na sidebar)
             const inputs = document.querySelectorAll('input[type="range"]');
-            // Nota: Os índices podem variar se você adicionar mais inputs, 
-            // idealmente use IDs, mas aqui pegamos pelo contexto visual:
-            // input[2] é Tamanho Pedra, input[3] é Espalhamento. 
-            // Vamos fazer de forma segura pegando pelo oninput.
-            
-            // Vamos pegar diretamente pelos elementos que chamam essa função
-            // Mas como é onload, vamos buscar pelos labels ou ordem
-            // Ajuste manual para este código:
-            const tamanhoPedra = parseInt(document.querySelectorAll('input[type="range"]')[3].value);
-            const espacamento = parseInt(document.getElementById('espacoInput').value);
+            const tamanhoPedra = parseInt(inputs[2].value); // Tamanho da Pedra
+            const espacamento = parseInt(document.getElementById('espacoInput').value); // Distância
 
             const canvas = document.createElement('canvas');
             
-            // O segredo: O tamanho do "azulejo" é Pedra + Espaço
+            // O tamanho total do "padrão" é pedra + espaço transparente
             const tileSize = tamanhoPedra + espacamento;
             
             canvas.width = tileSize;
@@ -357,7 +355,7 @@
             const ctx = canvas.getContext('2d');
             ctx.imageSmoothingEnabled = false;
 
-            // Centraliza a pedra no azulejo transparente
+            // Centraliza a pedra dentro do espaço transparente
             const x = (tileSize - tamanhoPedra) / 2;
             const y = (tileSize - tamanhoPedra) / 2;
             
