@@ -11,11 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <style>
-        /* --- CONFIGURAÇÕES --- */
+        /* --- CONFIGURAÇÕES GERAIS --- */
         :root {
-            /* Tamanho da pedra dentro do quadrado (0.8 = 80%) */
-            --stone-scale: 0.8; 
-            
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
@@ -31,7 +28,7 @@
             overflow: hidden;
         }
 
-        /* --- SIDEBAR --- */
+        /* --- SIDEBAR (Barra Lateral) --- */
         .sidebar {
             width: 340px;
             background: #0f172a;
@@ -73,7 +70,7 @@
         .btn-blue { background: #3b82f6; margin-top: 10px; }
         .btn-back { background: #334155; color: #cbd5e1; text-decoration: none; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; width: fit-content; margin-bottom: 5px; transition: 0.2s; }
 
-        /* --- PREVIEW --- */
+        /* --- ÁREA DO CALENDÁRIO --- */
         .preview-area {
             flex: 1;
             background: #334155;
@@ -115,10 +112,10 @@
 
         .calendar-wrapper {
             position: absolute;
-            top: 300px; 
+            top: 280px; 
             left: 50px;
             width: 900px;
-            height: 650px;
+            height: 680px;
             display: flex;
             flex-direction: column;
             z-index: 5;
@@ -138,100 +135,112 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- GRID PRINCIPAL --- */
+        /* --- GRADE DE DIAS --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; 
+            gap: 0;
             padding: 0;
             background: none !important; 
         }
 
-        /* --- A PEDRA (Célula) --- */
+        /* --- A PEDRA (Célula Individual) --- */
         .day-cell {
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Centraliza verticalmente */
+            justify-content: flex-start;
+            
             min-height: 80px;
             padding: 5px;
             box-sizing: border-box;
 
+            /* Configuração da Imagem */
             background-image: var(--stone-url);
             background-repeat: no-repeat;
+            background-position: center 10px; /* Centralizada, levemente para baixo do topo */
+            background-size: 64px 64px; /* Tamanho fixo para não distorcer */
             
-            /* AQUI ESTÁ A CORREÇÃO: */
-            background-position: center center;
-            background-size: 70px auto; /* Tamanho fixo para não distorcer */
-            
-            /* DEIXA A IMAGEM NÍTIDA (Pixel Art) */
-            image-rendering: pixelated; 
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
+            /* O SEGREDINHO PARA PIXEL ART FICAR NÍTIDO: */
+            image-rendering: pixelated;       /* Chrome/Opera/etc */
+            image-rendering: crisp-edges;     /* Firefox */
         }
 
-        /* Dias vazios ficam invisíveis */
         .day-cell.empty {
             background: none; 
             opacity: 0;
         }
 
-        /* --- TEXTOS --- */
+        /* --- NÚMERO DO DIA --- */
         .day-num {
             position: absolute;
-            top: 15px; /* Ajuste para cair em cima da pedra */
-            left: 50%;
-            transform: translateX(-50%);
+            top: 28px; /* Ajuste fino para centralizar NA PEDRA */
+            width: 100%;
+            text-align: center;
             
-            font-size: 24px;
+            font-size: 26px;
+            font-weight: 900;
             
-            /* COR BRANCA COM CONTORNO PRETO PARA LEITURA */
+            /* Contraste alto: Branco com borda preta */
             color: #ffffff; 
-            text-shadow: 2px 2px 0px #000000;
+            text-shadow: 
+                -2px -2px 0 #000,  
+                 2px -2px 0 #000,
+                -2px  2px 0 #000,
+                 2px  2px 0 #000;
             
-            font-weight: 800;
-            z-index: 5;
+            z-index: 10;
             pointer-events: none;
         }
 
+        /* --- ETIQUETA DE HORÁRIO --- */
         .day-time {
             position: absolute;
             top: 5px; 
-            right: 5px; 
-            font-size: 10px;
+            right: 15px; 
+            font-size: 11px;
             color: #fff; 
             font-weight: 700;
             background: #d97706;
-            padding: 2px 4px;
+            padding: 2px 6px;
             border-radius: 4px;
-            z-index: 6;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            z-index: 15;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+            border: 1px solid #78350f;
         }
 
+        /* --- TEXTO DO EVENTO --- */
         .day-text {
-            /* Texto do evento fica abaixo da pedra */
-            margin-top: 55px; 
+            margin-top: 75px; /* Empurra o texto para baixo da pedra */
             width: 100%; 
             text-align: center;
             font-size: 13px;
             color: #1f2937;
             font-weight: var(--event-weight); 
             line-height: 1.1;
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
             
+            /* Limite de linhas */
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            word-wrap: break-word; 
+        }
+        
+        /* Ajuste para quando tem 6 linhas de semanas */
+        .days-grid.six-rows .day-cell {
+            background-size: 55px 55px; /* Pedra um pouco menor */
+        }
+        .days-grid.six-rows .day-num {
+            top: 24px;
+            font-size: 22px;
+        }
+        .days-grid.six-rows .day-text {
+            margin-top: 60px;
+            font-size: 11px;
         }
 
-        .days-grid.six-rows .day-cell .day-text {
-            margin-top: 45px; 
-            font-size: 11px;  
-        }
     </style>
 </head>
 <body>
@@ -254,9 +263,6 @@
             <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
             <label>Peso da Fonte (Texto)</label>
             <input type="range" min="400" max="900" step="100" value="700" oninput="ajustarVar('--event-weight', this.value)">
-            
-            <label>Tamanho da Pedra</label>
-            <input type="range" min="40" max="120" value="70" oninput="ajustarPedra(this.value)">
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -322,14 +328,6 @@
         function ajustarVar(variavel, valor) {
             document.documentElement.style.setProperty(variavel, valor);
         }
-
-        // Função para controlar o tamanho da pedra via slider
-        function ajustarPedra(valor) {
-             const celulas = document.querySelectorAll('.day-cell');
-             celulas.forEach(celula => {
-                 celula.style.backgroundSize = `${valor}px auto`;
-             });
-        }
         
         bgInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -357,6 +355,7 @@
             const totalCelulas = primeiroDia + totalDias;
             const numeroLinhas = Math.ceil(totalCelulas / 7);
 
+            // Ajuste automático para caber 6 linhas se precisar
             if (numeroLinhas > 5) {
                 grid.style.gridTemplateRows = "repeat(6, 1fr)";
                 grid.classList.add('six-rows');
@@ -412,6 +411,8 @@
             if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
 
             const node = document.getElementById('art-container');
+            
+            // Remove sombra temporariamente para o print
             const originalShadow = node.style.boxShadow;
             node.style.boxShadow = "none";
 
