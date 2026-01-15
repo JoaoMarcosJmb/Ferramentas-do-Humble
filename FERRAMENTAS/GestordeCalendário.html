@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Calendário Visual - Humble League</title>
+    <title>Gestor Humble League - Visual Builder</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
         :root {
-            --bg-color: #fceeb5; /* Cor de areia do fundo */
+            --cell-width: 150px;
+            --cell-height: 140px;
             --text-color: #5d4037;
-            --cell-size: 140px; /* Tamanho do dia */
-            --grid-gap: 10px;
+            --event-bg: #fff8e1;
+            --highlight: #ff7043;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Fredoka', sans-serif;
+            background-color: #333; /* Fundo escuro fora do calendário para destaque */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -23,310 +25,358 @@
             align-items: center;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            color: #3e2723;
-        }
-
-        /* --- Controles --- */
+        /* --- PAINEL DE CONTROLE --- */
         .controls {
-            background: rgba(255, 255, 255, 0.4);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        input, button {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 1rem;
-        }
-
-        button {
-            background-color: #ff7043;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: transform 0.1s;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-            background-color: #f4511e;
-        }
-
-        /* --- O Calendário --- */
-        .calendar-wrapper {
-            position: relative;
+            background: white;
             padding: 20px;
-            /* Container para limitar a grade visual */
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+            max-width: 1100px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 100;
         }
 
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, var(--cell-size));
-            margin-bottom: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #bf360c;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, var(--cell-size));
-            grid-auto-rows: var(--cell-size);
-            position: relative; /* Necessário para posicionar as pedras absolutas */
-        }
-
-        /* Célula do dia */
-        .day-cell {
-            position: relative;
-            padding: 10px;
-            box-sizing: border-box;
+        .control-group {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
 
+        label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        input[type="file"], input[type="text"], input[type="date"], input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        button {
+            background-color: var(--highlight);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 100%;
+            align-self: flex-end;
+        }
+
+        button:hover {
+            background-color: #e64a19;
+        }
+
+        /* --- ÁREA DO CALENDÁRIO --- */
+        #calendarWrapper {
+            /* Tamanho fixo baseado no layout visual desejado */
+            width: 1150px; 
+            min-height: 900px;
+            position: relative;
+            background-color: #fceeb5; /* Cor padrão caso não tenha imagem */
+            background-size: cover; /* A imagem vai cobrir tudo */
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden; /* Corta o que passar */
+        }
+
+        /* Header dos dias da semana */
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            padding-top: 280px; /* ESPAÇO PARA O CABEÇALHO/LOGO DA IMAGEM */
+            padding-bottom: 10px;
+            margin-left: 50px; /* Margem lateral para centralizar na arte */
+            margin-right: 50px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 700;
+            color: #bf360c; /* Tom avermelhado do print */
+            font-size: 1.4rem;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+        }
+
+        /* Grade principal */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, var(--cell-width));
+            grid-auto-rows: var(--cell-height);
+            justify-content: center;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        /* Célula individual */
+        .day-cell {
+            position: relative;
+            /* Border removida para usar as imagens como borda */
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        /* Número do dia (Estilo Imagem 3) */
         .day-number {
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: #795548;
-            align-self: flex-start;
-        }
-
-        .day-cell.empty {
-            background: transparent;
-        }
-
-        /* --- O Visual da Grade (Pedras) --- */
-        /* Essa classe será aplicada às imagens geradas via JS */
-        .grid-asset {
             position: absolute;
-            width: 24px; /* Ajuste conforme o tamanho do seu PNG */
-            height: 24px;
-            pointer-events: none; /* Não atrapalha o clique nos eventos */
-            z-index: 10;
-            /* O JS vai injetar o transform: rotate(...) */
+            bottom: 10px;
+            left: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #5d4037; /* Marrom escuro */
+            z-index: 5;
         }
 
-        /* --- Eventos --- */
+        /* Card de Evento (Estilo Imagem 3) */
         .event-card {
-            background-color: rgba(255, 255, 255, 0.6);
-            border-left: 4px solid #ff7043;
+            background: #fff8e1;
+            border-left: 5px solid var(--highlight);
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .event-card:hover {
-            background-color: #fff;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            z-index: 10;
+            position: relative;
         }
 
         .event-time {
-            font-size: 0.75rem;
-            color: #666;
             font-weight: bold;
+            font-size: 0.7rem;
+            color: #555;
+            margin-bottom: 2px;
         }
         
         .event-title {
-            font-weight: 600;
+            font-weight: 700;
             color: #333;
+            line-height: 1.1;
+        }
+
+        /* --- ELEMENTOS DA GRADE (PEDRAS/CABOS) --- */
+        .grid-asset {
+            position: absolute;
+            width: 28px; /* Tamanho do ícone da grade */
+            height: 28px;
+            pointer-events: none;
+            z-index: 2; /* Fica acima do fundo, abaixo do texto */
+            /* A rotação é via JS */
         }
 
     </style>
 </head>
 <body>
 
-    <h1>Gestor Humble League</h1>
-
     <div class="controls">
-        <input type="text" id="eventTitle" placeholder="Nome do Evento (ex: Qualify OU)">
-        <input type="date" id="eventDate">
-        <input type="time" id="eventTime">
-        <button onclick="addEvent()">Adicionar Evento</button>
-        <button onclick="resetCalendar()">Limpar Tudo</button>
+        <div class="control-group">
+            <label>1. Imagem de Fundo (Praia Limpa)</label>
+            <input type="file" id="bgInput" accept="image/*">
+        </div>
+
+        <div class="control-group">
+            <label>2. Item da Grade (Pedra/Cabo PNG)</label>
+            <input type="file" id="assetInput" accept="image/*">
+        </div>
+
+        <div style="width: 1px; background: #ddd; margin: 0 10px;"></div>
+
+        <div class="control-group">
+            <label>Nome do Evento</label>
+            <input type="text" id="evtName" placeholder="Ex: Qualify OU">
+        </div>
+        <div class="control-group">
+            <label>Data</label>
+            <input type="date" id="evtDate">
+        </div>
+        <div class="control-group">
+            <label>Horário</label>
+            <input type="time" id="evtTime">
+        </div>
+        <button onclick="addEvent()">+ Adicionar</button>
     </div>
 
-    <div class="calendar-wrapper">
+    <div id="calendarWrapper">
         <div class="weekdays">
-            <div>Domingo</div><div>Segunda</div><div>Terça</div><div>Quarta</div><div>Quinta</div><div>Sexta</div><div>Sábado</div>
+            <div class="weekday">Domingo</div>
+            <div class="weekday">Segunda</div>
+            <div class="weekday">Terça</div>
+            <div class="weekday">Quarta</div>
+            <div class="weekday">Quinta</div>
+            <div class="weekday">Sexta</div>
+            <div class="weekday">Sábado</div>
         </div>
-        
-        <div class="calendar-grid" id="calendarGrid">
+
+        <div class="calendar-grid" id="gridContainer">
             </div>
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO VISUAL ---
-        const CONFIG = {
-            // Caminho da imagem. Se trocar para 'IMAGENS/madeira.png', o sistema todo muda.
-            // Estou usando um placeholder online para você ver funcionando agora.
-            // TROQUE POR: 'IMAGENS/pedra.png'
-            gridImage: 'https://cdn-icons-png.flaticon.com/512/7509/7509680.png', 
-            
-            gridDensity: 'corners', // 'corners' (só cantos) ou 'full' (linha completa)
-            rotationRange: 20 // Graus (+ ou -)
-        };
-
-        // --- ESTADO DA APLICAÇÃO ---
-        let currentDate = new Date();
-        // Exemplo inicial de dados
+        // --- ESTADO DO SISTEMA ---
+        let gridAssetUrl = null; // Vai guardar a imagem da pedra/cabo
+        let currentDate = new Date(2026, 0, 1); // Janeiro 2026
         let events = [
             { id: 1, title: 'Qualify UU', date: '2026-01-04', time: '18:00' },
-            { id: 2, title: 'Semanal RU', date: '2026-01-06', time: '19:00' },
-            { id: 3, title: 'Final League', date: '2026-01-10', time: '18:00' }
+            { id: 2, title: 'Semanal RU', date: '2026-01-06', time: '19:00' }
         ];
 
-        const gridContainer = document.getElementById('calendarGrid');
+        const gridContainer = document.getElementById('gridContainer');
+        const wrapper = document.getElementById('calendarWrapper');
 
-        // --- FUNÇÃO PRINCIPAL: RENDERIZAR CALENDÁRIO ---
+        // --- 1. CONFIGURAÇÃO DE UPLOAD ---
+        
+        // Upload do Fundo
+        document.getElementById('bgInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file){
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    wrapper.style.backgroundImage = `url(${event.target.result})`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Upload da Pedra/Cabo
+        document.getElementById('assetInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file){
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    gridAssetUrl = event.target.result;
+                    renderCalendar(); // Redesenha com a nova imagem
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // --- 2. LÓGICA DO CALENDÁRIO ---
+
         function renderCalendar() {
-            gridContainer.innerHTML = ''; // Limpa tudo
-            
+            gridContainer.innerHTML = ''; 
+
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-
+            
+            // Ajuste simples para começar a grade no domingo correto
+            // Para Janeiro 2026, dia 1 é Quinta-feira (index 4)
             const firstDayIndex = new Date(year, month, 1).getDay();
             const lastDay = new Date(year, month + 1, 0).getDate();
 
-            // 1. Renderizar células vazias (dias do mês anterior)
+            // Células vazias (dias do mês anterior)
             for (let i = 0; i < firstDayIndex; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.classList.add('day-cell', 'empty');
-                gridContainer.appendChild(emptyCell);
+                const empty = document.createElement('div');
+                empty.className = 'day-cell';
+                gridContainer.appendChild(empty);
             }
 
-            // 2. Renderizar dias do mês
+            // Dias do mês
             for (let day = 1; day <= lastDay; day++) {
                 const cell = document.createElement('div');
-                cell.classList.add('day-cell');
-                
-                // Número do dia
-                const dayNumber = document.createElement('div');
-                dayNumber.classList.add('day-number');
-                dayNumber.innerText = day;
-                cell.appendChild(dayNumber);
+                cell.className = 'day-cell';
 
-                // Filtrar e adicionar eventos desse dia
-                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const daysEvents = events.filter(e => e.date === dateString);
-                
-                daysEvents.sort((a, b) => a.time.localeCompare(b.time)); // Ordenar por horário
+                // Número do dia (Posicionado no canto inferior esquerdo via CSS)
+                const num = document.createElement('div');
+                num.className = 'day-number';
+                num.innerText = day;
+                cell.appendChild(num);
 
-                daysEvents.forEach(evt => {
-                    const evtDiv = document.createElement('div');
-                    evtDiv.classList.add('event-card');
-                    evtDiv.innerHTML = `
-                        <div class="event-time">${evt.time}</div>
-                        <div class="event-title">${evt.title}</div>
-                    `;
-                    cell.appendChild(evtDiv);
+                // Eventos
+                const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                const dayEvents = events.filter(e => e.date === dateKey);
+                
+                dayEvents.forEach(evt => {
+                    const el = document.createElement('div');
+                    el.className = 'event-card';
+                    el.innerHTML = `<div class="event-time">${evt.time}</div><div class="event-title">${evt.title}</div>`;
+                    cell.appendChild(el);
                 });
 
                 gridContainer.appendChild(cell);
             }
 
-            // 3. Renderizar a Grade Orgânica (As pedras)
-            renderOrganicGrid(firstDayIndex + lastDay);
+            // --- 3. GERAÇÃO DA GRADE DE IMAGENS ---
+            if (gridAssetUrl) {
+                renderVisualGrid(firstDayIndex + lastDay);
+            } else {
+                // Mensagem visual se não tiver asset carregado
+                // (Opcional, mas ajuda o usuário a lembrar de carregar)
+                console.log("Nenhuma imagem de grade carregada (pedra/cabo)");
+            }
         }
 
-        // --- A LÓGICA DA GRADE ORGÂNICA ---
-        function renderOrganicGrid(totalCells) {
-            // A grade tem 7 colunas. Calculamos quantas linhas temos.
-            const columns = 7;
-            const rows = Math.ceil(totalCells / columns);
-            const cellSize = 140; // Mesmo valor do CSS
+        function renderVisualGrid(totalCells) {
+            const cols = 7;
+            const rows = Math.ceil(totalCells / cols);
+            const cellW = 150; // precisa bater com o CSS
+            const cellH = 140;
 
-            // Função auxiliar para criar uma pedra
-            function createStone(top, left) {
+            // Função para colocar uma imagem no grid
+            function placeAsset(x, y) {
                 const img = document.createElement('img');
-                img.src = CONFIG.gridImage;
-                img.classList.add('grid-asset');
+                img.src = gridAssetUrl;
+                img.className = 'grid-asset';
                 
-                // Rotação Aleatória
-                const randomRot = (Math.random() * CONFIG.rotationRange * 2) - CONFIG.rotationRange;
-                // Leve variação de tamanho para ficar mais orgânico
-                const randomScale = 0.8 + (Math.random() * 0.4); 
+                // Centralizar a imagem no ponto X, Y
+                img.style.left = (x - 14) + 'px'; // 14 é metade de 28px (tamanho da img)
+                img.style.top = (y - 14) + 'px';
 
-                img.style.top = `${top - 12}px`;  // -12 para centralizar (metade do tamanho da img)
-                img.style.left = `${left - 12}px`;
-                img.style.transform = `rotate(${randomRot}deg) scale(${randomScale})`;
+                // Rotação aleatória (-15 a +15 graus)
+                const rot = (Math.random() * 30) - 15;
+                img.style.transform = `rotate(${rot}deg)`;
 
-                return img;
+                gridContainer.appendChild(img);
             }
 
-            // Desenhar pedras nas intersecções (Cantos)
-            // Loop pelas linhas e colunas para colocar as pedras nos cantos das células
+            // Loop para criar as "linhas" usando imagens
             for (let r = 0; r <= rows; r++) {
-                for (let c = 0; c <= columns; c++) {
-                    // Posição baseada na linha/coluna
-                    const topPos = r * cellSize;
-                    const leftPos = c * cellSize;
+                for (let c = 0; c <= cols; c++) {
+                    const x = c * cellW;
+                    const y = r * cellH;
 
-                    // Adiciona a pedra
-                    const stone = createStone(topPos, leftPos);
-                    gridContainer.appendChild(stone);
+                    // Coloca nos cantos (intersecções)
+                    placeAsset(x, y);
 
-                    // EXTRA: Se quiser a linha "pontilhada" igual a imagem de referência,
-                    // adicionamos pedras no MEIO das linhas também.
-                    if (c < columns) {
-                        // Pedra no meio da linha horizontal superior
-                         const stoneMidH = createStone(topPos, leftPos + (cellSize / 2));
-                         gridContainer.appendChild(stoneMidH);
+                    // Coloca no meio da linha horizontal (se não for a última coluna)
+                    if (c < cols) {
+                        placeAsset(x + (cellW/2), y);
                     }
+                    
+                    // Coloca no meio da linha vertical (se não for a última linha)
+                    // Mas evitamos desenhar vertical se a célula estiver vazia no final da grade
+                    // Lógica simplificada: desenha em todas as linhas completas
                     if (r < rows) {
-                         // Pedra no meio da linha vertical esquerda
-                         const stoneMidV = createStone(topPos + (cellSize / 2), leftPos);
-                         gridContainer.appendChild(stoneMidV);
+                        placeAsset(x, y + (cellH/2));
                     }
                 }
             }
         }
 
-        // --- FUNÇÕES DE EVENTOS ---
+        // --- 4. FUNÇÕES DE EVENTOS ---
         function addEvent() {
-            const title = document.getElementById('eventTitle').value;
-            const date = document.getElementById('eventDate').value;
-            const time = document.getElementById('eventTime').value;
+            const t = document.getElementById('evtName').value;
+            const d = document.getElementById('evtDate').value;
+            const h = document.getElementById('evtTime').value;
 
-            if (!title || !date || !time) {
-                alert("Preencha todos os campos!");
-                return;
-            }
-
-            events.push({
-                id: Date.now(),
-                title,
-                date,
-                time
-            });
-
-            renderCalendar(); // Redesenha a tela
-        }
-
-        function resetCalendar() {
-            if(confirm("Deseja apagar todos os eventos?")) {
-                events = [];
+            if(t && d && h) {
+                events.push({ title: t, date: d, time: h });
                 renderCalendar();
+            } else {
+                alert('Preencha os dados do evento');
             }
         }
 
-        // Inicialização
-        // Colocando data fixa em Janeiro/2026 para demonstração, mas pode usar Date() atual
-        currentDate = new Date(2026, 0, 1); 
+        // Inicializa
         renderCalendar();
 
     </script>
