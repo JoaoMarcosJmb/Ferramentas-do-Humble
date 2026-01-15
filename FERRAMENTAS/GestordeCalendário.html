@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Gestor de Calendário - Humble League</title>
+    <title>Gestor Humble League - Web Version</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap');
 
@@ -17,7 +17,7 @@
             margin: 0;
         }
 
-        /* --- CONTROLES --- */
+        /* --- CONTROLES (Painel Superior) --- */
         .controls {
             background: #333;
             padding: 15px;
@@ -33,12 +33,7 @@
             justify-content: center;
         }
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
         label { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
         
         input, button {
@@ -48,11 +43,10 @@
             font-family: inherit;
             font-size: 0.9rem;
         }
-
-        input[type="text"], input[type="date"], input[type="time"] {
-            border: 1px solid #555;
-        }
-
+        
+        input[type="text"], input[type="date"], input[type="time"] { border: 1px solid #555; }
+        input[type="file"] { background: #444; color: white; cursor: pointer; }
+        
         button {
             background-color: #ff7043;
             color: white;
@@ -62,25 +56,25 @@
             align-self: flex-end;
             margin-top: auto;
         }
-
         button:hover { background-color: #f4511e; }
-        input[type="file"] { background: #444; color: white; cursor: pointer; }
 
-        /* --- ÁREA DO CALENDÁRIO (1080x1080) --- */
+        /* --- O CANVAS (Área da Imagem) --- */
         #calendar-canvas {
             width: 1080px;
             height: 1080px;
             position: relative;
-            /* Cor de fundo padrão caso não carregue imagem */
-            background-color: #fceeb5; 
+            background-color: #fceeb5; /* Cor de segurança */
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            overflow: hidden;
-            flex-shrink: 0; /* Impede que o canvas encolha em telas pequenas */
+            overflow: hidden; /* Corta o que sair da borda */
+            flex-shrink: 0;
+            user-select: none; /* Evita selecionar texto ao arrastar */
         }
 
-        /* --- LAYOUT DA GRADE --- */
+        /* --- ELEMENTOS DO CALENDÁRIO --- */
+        
+        /* Dias da Semana (Topo) */
         .week-header {
             position: absolute;
             top: 275px; 
@@ -89,15 +83,17 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            z-index: 5;
+            z-index: 10; /* Fica acima das pedras */
         }
 
         .weekday-name {
             color: #bf360c;
             font-size: 24px;
             font-weight: 700;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
         }
 
+        /* Container da Grade (Onde ficam os dias) */
         .grid-container {
             position: absolute;
             top: 315px;
@@ -107,60 +103,49 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             grid-template-rows: repeat(5, 1fr);
+            z-index: 10; /* Fica acima das pedras */
+            pointer-events: none; /* Deixa clicar através se precisar */
         }
 
         .day-cell {
             position: relative;
-            background-color: transparent; /* TRANSPARÊNCIA AQUI */
+            background-color: transparent; /* TOTALMENTE TRANSPARENTE */
         }
 
         /* Número do dia */
         .day-number {
             position: absolute;
-            bottom: 8px;
-            left: 12px;
-            font-size: 28px;
-            font-weight: 700;
-            color: #5d4037;
-            z-index: 5;
+            bottom: 8px; left: 12px;
+            font-size: 28px; font-weight: 700; color: #5d4037;
         }
 
-        /* Eventos */
+        /* Estilo do Evento */
         .event-box {
             position: absolute;
-            top: 8px;
-            left: 6px;
-            right: 6px;
+            top: 8px; left: 6px; right: 6px;
             background-color: #fff8e1;
             border-left: 5px solid #ff7043;
             padding: 6px 8px;
             border-radius: 6px;
             box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
-            z-index: 10;
         }
 
-        .event-time {
-            font-size: 13px;
-            font-weight: 700;
-            color: #666;
-            display: block;
-            margin-bottom: 2px;
+        .event-time { font-size: 13px; font-weight: 700; color: #666; display: block; margin-bottom: 2px; }
+        .event-title { font-size: 15px; font-weight: 700; color: #333; line-height: 1.1; }
+
+        /* --- AS PEDRAS (Estilo) --- */
+        /* Container separado para as pedras ficarem ATRÁS dos textos */
+        #stones-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; /* Nível mais baixo, acima do fundo */
+            pointer-events: none;
         }
 
-        .event-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #333;
-            line-height: 1.1;
-        }
-
-        /* Pedras da Grade */
         .grid-asset {
             position: absolute;
-            width: 17px; /* Tamanho da pedra */
-            height: 17px;
-            pointer-events: none;
-            z-index: 2;
+            width: 32px;  /* TAMANHO DA PEDRA */
+            height: 32px;
         }
 
     </style>
@@ -172,11 +157,13 @@
             <label>1. Fundo (Liso)</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
+
+        <button onclick="drawOrganicGrid()" style="background:#555; margin-left:10px;">Regerar Pedras</button> 
         
         <div style="border-left: 1px solid #555; height: 30px; margin: 0 10px;"></div>
 
         <div class="control-group">
-            <label>Nome do Evento</label>
+            <label>Evento</label>
             <input type="text" id="evtName" placeholder="Ex: Qualify OU">
         </div>
         <div class="control-group">
@@ -188,11 +175,12 @@
             <input type="time" id="evtTime" value="18:00">
         </div>
         <button onclick="addEvent()">+ Adicionar</button>
-        <button onclick="renderCalendar()" style="background-color: #555; margin-left: 10px;">Recarregar Grade</button>
     </div>
 
     <div id="calendar-canvas">
         
+        <div id="stones-layer"></div>
+
         <div class="week-header">
             <div class="weekday-name">Domingo</div>
             <div class="weekday-name">Segunda</div>
@@ -210,13 +198,14 @@
 
     <script>
         // --- CONFIGURAÇÃO ---
-        const ASSET_PATH = '../IMAGENS/pedra.png'; // Caminho da pedra
+        // Ajuste este caminho se a imagem estiver em outro lugar
+        const ASSET_PATH = '../IMAGENS/pedra.png'; 
 
-        // Configuração de Aleatoriedade
         const CONFIG = {
-            skipChance: 0.15, // 15% de chance de NÃO desenhar uma pedra (deixa falhas na grade)
-            jitter: 8,        // Quantos pixels a pedra pode "tremer" para fora do alinhamento
-            rotationMax: 25   // Rotação máxima em graus
+            stonesDensity: 5,   // Quantas pedras por linha da grade (antes era 1 ou 2)
+            scatterCount: 150,  // Quantas pedras "jogadas" aleatoriamente na tela
+            jitter: 20,         // O quão desalinhadas elas ficam (pixels)
+            rotationMax: 45     // Rotação máxima em graus
         };
 
         // Dados Iniciais
@@ -228,8 +217,9 @@
 
         const canvas = document.getElementById('calendar-canvas');
         const gridContainer = document.getElementById('gridContainer');
+        const stonesLayer = document.getElementById('stones-layer');
 
-        // --- 1. UPLOAD DE FUNDO ---
+        // --- 1. CARREGAR FUNDO ---
         document.getElementById('bgInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(file){
@@ -241,19 +231,19 @@
             }
         });
 
-        // --- 2. RENDERIZAR CALENDÁRIO ---
+        // --- 2. RENDERIZAR DIAS E EVENTOS ---
         function renderCalendar() {
             gridContainer.innerHTML = ''; 
             
-            // Define Mês/Ano (Janeiro 2026)
+            // Configuração da Data: Janeiro 2026
             const baseDate = new Date(2026, 0, 1); 
             
             const year = baseDate.getFullYear();
             const month = baseDate.getMonth();
-            const firstDayIndex = new Date(year, month, 1).getDay();
+            const firstDayIndex = new Date(year, month, 1).getDay(); // Dia da semana do dia 1
             const lastDay = new Date(year, month + 1, 0).getDate();
 
-            // Renderizar 35 Células (5 semanas)
+            // Total de células fixas (5 semanas = 35 dias)
             const totalCells = 35;
 
             for (let i = 0; i < totalCells; i++) {
@@ -261,15 +251,14 @@
                 const cell = document.createElement('div');
                 cell.className = 'day-cell';
 
-                // Se for dia válido
+                // Se for um dia válido do mês
                 if (dayNumber > 0 && dayNumber <= lastDay) {
-                    // Número
                     const num = document.createElement('div');
                     num.className = 'day-number';
                     num.innerText = dayNumber;
                     cell.appendChild(num);
 
-                    // Buscar Eventos
+                    // Filtrar eventos
                     const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(dayNumber).padStart(2,'0')}`;
                     const daysEvents = events.filter(e => e.date === dateKey);
                     
@@ -288,87 +277,106 @@
                 gridContainer.appendChild(cell);
             }
 
-            // Desenhar Grade Orgânica
+            // Chama a função das pedras
             drawOrganicGrid();
         }
 
-        // --- 3. DESENHAR GRADE COM "FALHAS" E TREMORES ---
+        // --- 3. DESENHAR AS PEDRAS (O Segredo do Visual) ---
         function drawOrganicGrid() {
+            stonesLayer.innerHTML = ''; // Limpa as pedras anteriores
+            
+            // Definições da área da grade (Baseado no CSS)
+            const startX = 65;
+            const startY = 315;
+            const gridW = 950;
+            const gridH = 650;
             const rows = 5;
             const cols = 7;
             
-            // Tamanho das células (baseado no container 950x650)
-            const cellW = 135.7; 
-            const cellH = 130;
-            const assetSize = 32; // Mesmo valor do CSS
+            const cellW = gridW / cols;
+            const cellH = gridH / rows;
+            const assetSize = 32; // Tamanho da pedra no CSS
 
-            // Função que desenha UMA pedra
-            function tryPlaceStone(top, left) {
-                // 1. Chance de pular (Aleatoriedade na quantidade)
-                if (Math.random() < CONFIG.skipChance) {
-                    return; // Não desenha nada aqui (cria um buraco na grade)
-                }
-
+            // Função auxiliar para colocar UMA pedra
+            function placeStone(x, y) {
                 const img = document.createElement('img');
                 img.src = ASSET_PATH;
                 img.className = 'grid-asset';
                 
-                // 2. Cálculo de Tremor (Jitter) - Posição levemente errada
-                const randomX = (Math.random() * CONFIG.jitter) - (CONFIG.jitter / 2);
-                const randomY = (Math.random() * CONFIG.jitter) - (CONFIG.jitter / 2);
-
-                // Centralizar e aplicar tremor
-                img.style.top = (top - (assetSize/2) + randomY) + 'px';
-                img.style.left = (left - (assetSize/2) + randomX) + 'px';
+                // Jitter (Tremor) - deixa a posição irregular
+                const jX = (Math.random() * CONFIG.jitter) - (CONFIG.jitter/2);
+                const jY = (Math.random() * CONFIG.jitter) - (CONFIG.jitter/2);
                 
-                // 3. Rotação Aleatória
-                const rot = (Math.random() * (CONFIG.rotationMax * 2)) - CONFIG.rotationMax;
+                // Centraliza e aplica tremor
+                img.style.left = (x - (assetSize/2) + jX) + 'px';
+                img.style.top = (y - (assetSize/2) + jY) + 'px';
+                
+                // Rotação
+                const rot = (Math.random() * (CONFIG.rotationMax*2)) - CONFIG.rotationMax;
                 img.style.transform = `rotate(${rot}deg)`;
-
-                // Tratamento de erro (aviso no console)
-                img.onerror = function() { console.warn("Pedra não encontrada em: " + ASSET_PATH); }
-
-                gridContainer.appendChild(img);
+                
+                // Tratamento de erro silencioso
+                img.onerror = function(){ this.style.display='none'; };
+                
+                stonesLayer.appendChild(img);
             }
 
-            // Loop para percorrer a grade
+            // A. PREENCHER AS LINHAS DA GRADE (Densidade)
+            // Percorre todas as linhas horizontais e verticais
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
-                    const y = r * cellH;
-                    const x = c * cellW;
+                    const px = startX + (c * cellW);
+                    const py = startY + (r * cellH);
 
-                    // A. Pedra no vértice (cruzamento das linhas)
-                    tryPlaceStone(y, x);
+                    // 1. Pedra no vértice (cruzamento)
+                    placeStone(px, py);
 
-                    // B. Pedra no meio da linha horizontal
+                    // 2. Pedras INTERMEDIÁRIAS nas linhas Horizontais
+                    // Se não for a última coluna, desenha pedras entre este ponto e o próximo
                     if (c < cols) {
-                        tryPlaceStone(y, x + (cellW/2));
+                        // Cria várias pedras ao longo da linha (ex: 20%, 40%, 60%, 80%)
+                        for (let k = 1; k < CONFIG.stonesDensity; k++) {
+                            const factor = k / CONFIG.stonesDensity;
+                            placeStone(px + (cellW * factor), py);
+                        }
                     }
 
-                    // C. Pedra no meio da linha vertical
+                    // 3. Pedras INTERMEDIÁRIAS nas linhas Verticais
                     if (r < rows) {
-                        tryPlaceStone(y + (cellH/2), x);
+                        for (let k = 1; k < CONFIG.stonesDensity; k++) {
+                            const factor = k / CONFIG.stonesDensity;
+                            placeStone(px, py + (cellH * factor));
+                        }
                     }
                 }
             }
+
+            // B. CHUVA DE PEDRAS ALEATÓRIAS (Scattering)
+            // Joga pedras em posições X,Y totalmente aleatórias dentro da área
+            for (let i = 0; i < CONFIG.scatterCount; i++) {
+                // Sorteia uma posição qualquer dentro da área da grade
+                const randX = startX + (Math.random() * gridW);
+                const randY = startY + (Math.random() * gridH);
+                
+                placeStone(randX, randY);
+            }
         }
 
-        // --- 4. FUNÇÃO DE ADICIONAR EVENTO ---
+        // --- 4. ADICIONAR EVENTO ---
         function addEvent() {
             const name = document.getElementById('evtName').value;
             const date = document.getElementById('evtDate').value;
             const time = document.getElementById('evtTime').value;
 
-            if(!name || !date || !time) {
-                alert("Preencha todos os dados do evento!");
-                return;
+            if(name && date && time) {
+                events.push({ title: name, date: date, time: time });
+                renderCalendar(); // Redesenha tudo
+            } else {
+                alert("Preencha todos os campos!");
             }
-
-            events.push({ title: name, date: date, time: time });
-            renderCalendar();
         }
 
-        // Inicializa
+        // Inicia o sistema
         renderCalendar();
 
     </script>
