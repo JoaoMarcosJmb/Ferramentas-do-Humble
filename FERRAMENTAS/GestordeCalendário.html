@@ -14,15 +14,14 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            margin: 0;
         }
-
-        h2 { margin-bottom: 10px; color: #ccc; }
 
         /* --- CONTROLES --- */
         .controls {
             background: #333;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
             display: flex;
             gap: 15px;
@@ -30,6 +29,8 @@
             flex-wrap: wrap;
             border: 1px solid #444;
             max-width: 1080px;
+            width: 100%;
+            justify-content: center;
         }
 
         .control-group {
@@ -38,13 +39,18 @@
             gap: 5px;
         }
 
-        label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
+        label { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
         
         input, button {
-            padding: 10px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 4px;
             border: none;
             font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="date"], input[type="time"] {
+            border: 1px solid #555;
         }
 
         button {
@@ -52,26 +58,26 @@
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
             height: 100%;
             align-self: flex-end;
+            margin-top: auto;
         }
 
-        button:hover { background-color: #f4511e; transform: scale(1.05); }
-
-        input[type="file"] { background: #444; color: white; }
+        button:hover { background-color: #f4511e; }
+        input[type="file"] { background: #444; color: white; cursor: pointer; }
 
         /* --- ÁREA DO CALENDÁRIO (1080x1080) --- */
         #calendar-canvas {
             width: 1080px;
             height: 1080px;
             position: relative;
-            background-color: #fceeb5; /* Cor base caso esqueça a imagem */
+            /* Cor de fundo padrão caso não carregue imagem */
+            background-color: #fceeb5; 
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             overflow: hidden;
-            /* O fundo será injetado via JS aqui */
+            flex-shrink: 0; /* Impede que o canvas encolha em telas pequenas */
         }
 
         /* --- LAYOUT DA GRADE --- */
@@ -105,6 +111,7 @@
 
         .day-cell {
             position: relative;
+            background-color: transparent; /* TRANSPARÊNCIA AQUI */
         }
 
         /* Número do dia */
@@ -150,37 +157,26 @@
         /* Pedras da Grade */
         .grid-asset {
             position: absolute;
-            width: 17px; 
-            height: 17px;
+            width: 32px; /* Tamanho da pedra */
+            height: 32px;
             pointer-events: none;
             z-index: 2;
-        }
-
-        /* Aviso se a pedra não carregar */
-        .img-error-msg {
-            color: red;
-            font-size: 12px;
-            position: absolute;
-            top: 0; left: 0;
-            background: rgba(0,0,0,0.8);
         }
 
     </style>
 </head>
 <body>
 
-    <h2>Gestor de Calendário</h2>
-
     <div class="controls">
         <div class="control-group">
-            <label>1. Carregar Fundo (Calendário Liso)</label>
+            <label>1. Fundo (Liso)</label>
             <input type="file" id="bgInput" accept="image/*">
         </div>
-
-        <div style="border-left: 1px solid #555; height: 40px; margin: 0 10px;"></div>
+        
+        <div style="border-left: 1px solid #555; height: 30px; margin: 0 10px;"></div>
 
         <div class="control-group">
-            <label>Evento</label>
+            <label>Nome do Evento</label>
             <input type="text" id="evtName" placeholder="Ex: Qualify OU">
         </div>
         <div class="control-group">
@@ -192,7 +188,7 @@
             <input type="time" id="evtTime" value="18:00">
         </div>
         <button onclick="addEvent()">+ Adicionar</button>
-        <button onclick="renderCalendar()" style="background-color: #555;">Recarregar</button>
+        <button onclick="renderCalendar()" style="background-color: #555; margin-left: 10px;">Recarregar Grade</button>
     </div>
 
     <div id="calendar-canvas">
@@ -213,11 +209,17 @@
     </div>
 
     <script>
-        // --- CONFIGURAÇÃO DE CAMINHOS ---
-        // '../' significa: saia da pasta FERRAMENTAS e procure na raiz a pasta IMAGENS
-        const ASSET_PATH = '../IMAGENS/pedra.png'; 
+        // --- CONFIGURAÇÃO ---
+        const ASSET_PATH = '../IMAGENS/pedra.png'; // Caminho da pedra
 
-        // --- DADOS ---
+        // Configuração de Aleatoriedade
+        const CONFIG = {
+            skipChance: 0.15, // 15% de chance de NÃO desenhar uma pedra (deixa falhas na grade)
+            jitter: 8,        // Quantos pixels a pedra pode "tremer" para fora do alinhamento
+            rotationMax: 25   // Rotação máxima em graus
+        };
+
+        // Dados Iniciais
         let events = [
             { title: 'Qualify UU', date: '2026-01-04', time: '18:00' },
             { title: 'Semanal RU', date: '2026-01-06', time: '19:00' },
@@ -227,7 +229,7 @@
         const canvas = document.getElementById('calendar-canvas');
         const gridContainer = document.getElementById('gridContainer');
 
-        // --- 1. CARREGAR FUNDO (UPLOAD) ---
+        // --- 1. UPLOAD DE FUNDO ---
         document.getElementById('bgInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(file){
@@ -243,8 +245,7 @@
         function renderCalendar() {
             gridContainer.innerHTML = ''; 
             
-            // Configuração da Data (Janeiro 2026 fixo ou dinâmico)
-            // Para mudar o mês base, altere aqui: (Ano, Mês-1, Dia)
+            // Define Mês/Ano (Janeiro 2026)
             const baseDate = new Date(2026, 0, 1); 
             
             const year = baseDate.getFullYear();
@@ -252,7 +253,7 @@
             const firstDayIndex = new Date(year, month, 1).getDay();
             const lastDay = new Date(year, month + 1, 0).getDate();
 
-            // Vamos criar 35 células fixas (5 linhas x 7 colunas) para manter o visual
+            // Renderizar 35 Células (5 semanas)
             const totalCells = 35;
 
             for (let i = 0; i < totalCells; i++) {
@@ -260,7 +261,7 @@
                 const cell = document.createElement('div');
                 cell.className = 'day-cell';
 
-                // Se o dia existe dentro do mês atual
+                // Se for dia válido
                 if (dayNumber > 0 && dayNumber <= lastDay) {
                     // Número
                     const num = document.createElement('div');
@@ -268,7 +269,7 @@
                     num.innerText = dayNumber;
                     cell.appendChild(num);
 
-                    // Eventos
+                    // Buscar Eventos
                     const dateKey = `${year}-${String(month+1).padStart(2,'0')}-${String(dayNumber).padStart(2,'0')}`;
                     const daysEvents = events.filter(e => e.date === dateKey);
                     
@@ -284,69 +285,82 @@
                         cell.appendChild(box);
                     });
                 }
-
                 gridContainer.appendChild(cell);
             }
 
-            // Desenhar a grade (pedras)
-            drawGridAssets();
+            // Desenhar Grade Orgânica
+            drawOrganicGrid();
         }
 
-        // --- 3. DESENHAR GRADE (PEDRAS) ---
-        function drawGridAssets() {
+        // --- 3. DESENHAR GRADE COM "FALHAS" E TREMORES ---
+        function drawOrganicGrid() {
             const rows = 5;
             const cols = 7;
             
-            // Tamanhos calculados baseados no container (950 / 7 e 650 / 5)
+            // Tamanho das células (baseado no container 950x650)
             const cellW = 135.7; 
             const cellH = 130;
+            const assetSize = 32; // Mesmo valor do CSS
 
-            function placeAsset(top, left) {
+            // Função que desenha UMA pedra
+            function tryPlaceStone(top, left) {
+                // 1. Chance de pular (Aleatoriedade na quantidade)
+                if (Math.random() < CONFIG.skipChance) {
+                    return; // Não desenha nada aqui (cria um buraco na grade)
+                }
+
                 const img = document.createElement('img');
                 img.src = ASSET_PATH;
                 img.className = 'grid-asset';
                 
-                // Centralizar (-16px é metade de 32px)
-                img.style.top = (top - 16) + 'px';
-                img.style.left = (left - 16) + 'px';
+                // 2. Cálculo de Tremor (Jitter) - Posição levemente errada
+                const randomX = (Math.random() * CONFIG.jitter) - (CONFIG.jitter / 2);
+                const randomY = (Math.random() * CONFIG.jitter) - (CONFIG.jitter / 2);
+
+                // Centralizar e aplicar tremor
+                img.style.top = (top - (assetSize/2) + randomY) + 'px';
+                img.style.left = (left - (assetSize/2) + randomX) + 'px';
                 
-                // Rotação orgânica
-                const rot = (Math.random() * 30) - 15;
+                // 3. Rotação Aleatória
+                const rot = (Math.random() * (CONFIG.rotationMax * 2)) - CONFIG.rotationMax;
                 img.style.transform = `rotate(${rot}deg)`;
-                
-                // Debug caso a imagem não carregue
-                img.onerror = function() { 
-                    console.log("Erro ao carregar pedra em: " + ASSET_PATH);
-                }
+
+                // Tratamento de erro (aviso no console)
+                img.onerror = function() { console.warn("Pedra não encontrada em: " + ASSET_PATH); }
 
                 gridContainer.appendChild(img);
             }
 
+            // Loop para percorrer a grade
             for (let r = 0; r <= rows; r++) {
                 for (let c = 0; c <= cols; c++) {
                     const y = r * cellH;
                     const x = c * cellW;
 
-                    // Pedra no vértice (cruzamento)
-                    placeAsset(y, x);
+                    // A. Pedra no vértice (cruzamento das linhas)
+                    tryPlaceStone(y, x);
 
-                    // Pedra no meio da horizontal
-                    if (c < cols) placeAsset(y, x + (cellW/2));
+                    // B. Pedra no meio da linha horizontal
+                    if (c < cols) {
+                        tryPlaceStone(y, x + (cellW/2));
+                    }
 
-                    // Pedra no meio da vertical
-                    if (r < rows) placeAsset(y + (cellH/2), x);
+                    // C. Pedra no meio da linha vertical
+                    if (r < rows) {
+                        tryPlaceStone(y + (cellH/2), x);
+                    }
                 }
             }
         }
 
-        // --- 4. ADICIONAR EVENTO ---
+        // --- 4. FUNÇÃO DE ADICIONAR EVENTO ---
         function addEvent() {
             const name = document.getElementById('evtName').value;
             const date = document.getElementById('evtDate').value;
             const time = document.getElementById('evtTime').value;
 
             if(!name || !date || !time) {
-                alert("Preencha todos os campos do evento!");
+                alert("Preencha todos os dados do evento!");
                 return;
             }
 
@@ -354,7 +368,7 @@
             renderCalendar();
         }
 
-        // Iniciar
+        // Inicializa
         renderCalendar();
 
     </script>
