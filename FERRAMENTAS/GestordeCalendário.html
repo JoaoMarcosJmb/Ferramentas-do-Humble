@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Calibrador</title>
+    <title>Humble Calendar - Calibrador V2</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +39,7 @@
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 360px; /* Um pouco mais larga para os controles */
+            width: 360px;
             background: #0f172a;
             padding: 20px;
             display: flex;
@@ -79,6 +79,13 @@
             font-family: sans-serif;
             font-size: 13px;
         }
+
+        /* Estilo do Input File */
+        input[type="file"] {
+            padding: 5px;
+            background: #0f172a;
+            font-size: 12px;
+        }
         
         textarea { height: 120px; resize: none; font-family: monospace; }
 
@@ -111,6 +118,7 @@
             position: relative;
             width: 1000px; min-width: 1000px;
             height: 1000px; min-height: 1000px;
+            /* Tenta carregar o padrão, mas pode ser trocado */
             background-image: url('Prancheta_1_copia_2.png'); 
             background-size: cover;
             background-position: center;
@@ -146,7 +154,6 @@
             display: flex;
             flex-direction: column;
             z-index: 5;
-            /* Borda de Debug (opcional via JS) */
         }
         
         .calendar-wrapper.debug {
@@ -254,11 +261,16 @@
 
         <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
             <input type="checkbox" id="chkDebug" onchange="toggleDebug()" style="width:auto; height:auto;">
-            <label for="chkDebug" style="color:#ef4444; font-weight:bold; cursor:pointer;">MOSTRAR BORDAS (Ajuda a alinhar)</label>
+            <label for="chkDebug" style="color:#ef4444; font-weight:bold; cursor:pointer;">MOSTRAR BORDAS</label>
         </div>
 
         <div class="control-group">
-            <span class="control-title">1. Posição da Grade</span>
+            <span class="control-title">1. Imagem de Fundo</span>
+            <input type="file" id="bgInput" accept="image/*">
+        </div>
+
+        <div class="control-group">
+            <span class="control-title">2. Posição da Grade</span>
             <label>Topo (Y) <span id="lblTop">380px</span></label>
             <input type="range" min="300" max="500" value="380" oninput="ajustar('Top', this.value)">
             
@@ -267,7 +279,7 @@
         </div>
 
         <div class="control-group">
-            <span class="control-title">2. Tamanho Total</span>
+            <span class="control-title">3. Tamanho Total</span>
             <label>Largura <span id="lblWidth">910px</span></label>
             <input type="range" min="800" max="1000" value="910" oninput="ajustar('Width', this.value)">
             
@@ -276,7 +288,7 @@
         </div>
 
         <div class="control-group">
-            <span class="control-title">3. Espaçamento Interno (Gap)</span>
+            <span class="control-title">4. Espaçamento Interno (Gap)</span>
             <label>Colunas <span id="lblColGap">0px</span></label>
             <input type="range" min="0" max="30" value="0" oninput="ajustar('ColGap', this.value)">
             
@@ -285,7 +297,7 @@
         </div>
 
         <div class="control-group">
-            <span class="control-title">4. Conteúdo</span>
+            <span class="control-title">5. Conteúdo</span>
             <div style="display:flex; gap:5px; margin-bottom:5px;">
                 <select id="mesNum" onchange="gerarGrid()" style="flex:2">
                     <option value="0">Janeiro</option>
@@ -312,8 +324,6 @@
 
         <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar Texto</button>
         <button class="btn" onclick="baixarImagem()">📸 Baixar PNG</button>
-        
-        <input type="file" id="bgInput" accept="image/*" style="display:none;">
     </div>
 
     <div class="preview-area">
@@ -335,9 +345,23 @@
     </div>
 
     <script>
+        // --- SCRIPT DE IMAGEM ---
+        const bgInput = document.getElementById('bgInput');
+        const artContainer = document.getElementById('art-container');
+
+        bgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    artContainer.style.backgroundImage = `url(${event.target.result})`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
         // --- FUNÇÕES DE CALIBRAÇÃO ---
         function ajustar(tipo, valor) {
-            // Atualiza a variável CSS
             let cssVar = '';
             let suffix = 'px';
             
@@ -349,8 +373,6 @@
             if (tipo === 'RowGap') cssVar = '--grid-row-gap';
 
             document.documentElement.style.setProperty(cssVar, valor + suffix);
-            
-            // Atualiza o texto do label
             document.getElementById('lbl' + tipo).innerText = valor + suffix;
         }
 
@@ -368,7 +390,7 @@
             }
         }
 
-        // --- LÓGICA DO CALENDÁRIO (MANTIDA) ---
+        // --- LÓGICA DO CALENDÁRIO ---
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
             grid.innerHTML = "";
@@ -435,7 +457,6 @@
         }
 
         function baixarImagem() {
-            // Garante que o debug esteja desligado ao baixar
             const chk = document.getElementById('chkDebug');
             const estavaDebug = chk.checked;
             if (estavaDebug) {
@@ -455,7 +476,6 @@
                     link.href = dataUrl;
                     link.click();
                     
-                    // Restaura debug se estava ligado
                     if (estavaDebug) {
                         chk.checked = true;
                         toggleDebug();
