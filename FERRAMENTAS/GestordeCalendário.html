@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Final</title>
+    <title>Humble Calendar - Final v2</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,7 +99,7 @@
             position: relative;
             width: 1000px; min-width: 1000px;
             height: 1000px; min-height: 1000px;
-            /* AQUI FICA A IMAGEM FIXA */
+            /* Padrão tenta carregar o arquivo, mas o botão substitui */
             background-image: url('Prancheta_1_copia_2.png'); 
             background-size: cover;
             background-position: center;
@@ -127,7 +127,6 @@
 
         .calendar-wrapper {
             position: absolute;
-            /* AJUSTE AQUI SE PRECISAR MOVER A GRADE PARA ENCAIXAR NAS PEDRAS */
             top: 380px; 
             left: 45px;
             width: 910px;
@@ -141,7 +140,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            margin-bottom: 15px; /* Espaço entre dias da semana e a grade */
+            margin-bottom: 15px;
         }
         .wk-day {
             color: #d97706;
@@ -157,7 +156,6 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
-            /* Sem background de pedras aqui */
             padding: 0; 
         }
 
@@ -166,7 +164,7 @@
         /* --- CÉLULA TRANSPARENTE --- */
         .day-cell {
             position: relative;
-            background: transparent; /* Transparente para ver o fundo */
+            background: transparent; 
             border-radius: 0;
             padding: 0 10px 5px 10px;
             display: flex;
@@ -219,10 +217,9 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             word-wrap: break-word; 
-            text-shadow: 0px 0px 2px rgba(255,255,255,0.5); /* Leve brilho para leitura */
+            text-shadow: 0px 0px 2px rgba(255,255,255,0.5); 
         }
 
-        /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
             margin-top: 25px; 
             font-size: 11px;  
@@ -238,8 +235,9 @@
 
         <h2>📅 Calendário Humble</h2>
         
-        <div style="margin-top:10px; padding:10px; background:#1e293b; border-radius:6px; font-size:12px; color:#94a3b8;">
-            ℹ️ Fundo fixo: Prancheta_1_copia_2.png
+        <div style="margin-top:10px;">
+            <label style="color:#fbbf24;">1. Imagem de Fundo</label>
+            <input type="file" id="bgInput" accept="image/*">
         </div>
 
         <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
@@ -308,11 +306,26 @@
     </div>
 
     <script>
+        const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
+        let imagemCarregada = false;
 
         function ajustarVar(variavel, valor) {
             document.documentElement.style.setProperty(variavel, valor);
         }
+        
+        // --- FUNÇÃO DE UPLOAD RESTAURADA ---
+        bgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    artContainer.style.backgroundImage = `url(${event.target.result})`;
+                    imagemCarregada = true;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
 
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
@@ -394,7 +407,7 @@
                 })
                 .catch(function (error) {
                     console.error('Erro:', error);
-                    alert('Erro ao gerar imagem.');
+                    alert('Erro ao gerar imagem. Tente novamente.');
                 });
         }
 
