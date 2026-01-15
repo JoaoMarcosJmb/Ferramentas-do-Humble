@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Clean & Sharp</title>
+    <title>Humble Calendar - Final</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,6 @@
             --title-top: 40px;
             --title-size: 80px;
             --event-weight: 700;
-            --stone-bg: url('../IMAGENS/pedra.png'); 
         }
 
         body {
@@ -100,7 +99,8 @@
             position: relative;
             width: 1000px; min-width: 1000px;
             height: 1000px; min-height: 1000px;
-            background-color: #fceeb5; 
+            /* AQUI FICA A IMAGEM FIXA */
+            background-image: url('Prancheta_1_copia_2.png'); 
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
@@ -127,10 +127,11 @@
 
         .calendar-wrapper {
             position: absolute;
-            top: 320px; 
-            left: 50px;
-            width: 900px;
-            height: 600px;
+            /* AJUSTE AQUI SE PRECISAR MOVER A GRADE PARA ENCAIXAR NAS PEDRAS */
+            top: 380px; 
+            left: 45px;
+            width: 910px;
+            height: 520px;
             display: flex;
             flex-direction: column;
             z-index: 5;
@@ -140,7 +141,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px; /* Espaço entre dias da semana e a grade */
         }
         .wk-day {
             color: #d97706;
@@ -150,55 +151,41 @@
             text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
         }
 
-        /* --- GRID --- */
+        /* --- GRID LIMPO --- */
         .days-grid {
             flex: 1;
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0;
-            background-image: var(--stone-bg), var(--stone-bg);
-            background-repeat: round no-repeat, no-repeat round;
-            background-position: top left, top left;
-            background-size: 18px 18px; 
-            padding: 8px 0 0 8px; 
+            /* Sem background de pedras aqui */
+            padding: 0; 
         }
 
         .days-grid.six-rows { gap: 0; }
 
-        /* --- CÉLULA --- */
+        /* --- CÉLULA TRANSPARENTE --- */
         .day-cell {
             position: relative;
-            background: rgba(255, 248, 220, 0.2);
+            background: transparent; /* Transparente para ver o fundo */
             border-radius: 0;
-            
-            background-image: var(--stone-bg), var(--stone-bg);
-            background-repeat: round no-repeat, no-repeat round;
-            background-position: bottom left, top right;
-            background-size: 18px 18px; 
-            
-            padding: 0 14px 5px 14px;
-            
+            padding: 0 10px 5px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100px;
+            min-height: 80px;
             overflow: visible;
             box-sizing: border-box; 
         }
 
         .day-cell.empty {
             background: transparent;
-            background-image: var(--stone-bg), var(--stone-bg);
-            background-repeat: round no-repeat, no-repeat round;
-            background-position: bottom left, top right;
-            background-size: 18px 18px;
         }
 
         /* --- TEXTOS --- */
         .day-num {
             position: absolute;
-            top: 8px;
-            left: 10px;
+            top: 2px;
+            left: 8px;
             font-size: 20px;
             color: #b45309; 
             font-weight: 800;
@@ -207,11 +194,8 @@
 
         .day-time {
             position: absolute;
-            top: 10px; 
-            
-            /* CORREÇÃO: 15px aproxima mais da borda sem "enterrar" na pedra */
-            right: 17px; 
-            
+            top: 4px; 
+            right: 8px; 
             font-size: 11px;
             color: #fff; 
             font-weight: 700;
@@ -223,7 +207,7 @@
         }
 
         .day-text {
-            margin-top: 38px; 
+            margin-top: 32px; 
             width: 100%; 
             text-align: center;
             font-size: 13px;
@@ -235,28 +219,16 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             word-wrap: break-word; 
+            text-shadow: 0px 0px 2px rgba(255,255,255,0.5); /* Leve brilho para leitura */
         }
 
         /* Ajustes para meses de 6 linhas */
         .days-grid.six-rows .day-cell .day-text {
-            margin-top: 30px; 
+            margin-top: 25px; 
             font-size: 11px;  
             -webkit-line-clamp: 2; 
         }
         
-        .days-grid.six-rows .day-cell .day-num {
-            font-size: 16px; 
-            top: 5px;
-            left: 6px;
-        }
-        
-        .days-grid.six-rows .day-cell .day-time {
-            font-size: 9px; 
-            padding: 1px 4px;
-            top: 6px;
-            /* Proporcional para 6 linhas */
-            right: 17px; 
-        }
     </style>
 </head>
 <body>
@@ -266,9 +238,8 @@
 
         <h2>📅 Calendário Humble</h2>
         
-        <div style="margin-top:10px;">
-            <label style="color:#fbbf24;">1. Imagem de Fundo</label>
-            <input type="file" id="bgInput" accept="image/*">
+        <div style="margin-top:10px; padding:10px; background:#1e293b; border-radius:6px; font-size:12px; color:#94a3b8;">
+            ℹ️ Fundo fixo: Prancheta_1_copia_2.png
         </div>
 
         <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
@@ -337,45 +308,11 @@
     </div>
 
     <script>
-        const bgInput = document.getElementById('bgInput');
         const artContainer = document.getElementById('art-container');
-        let imagemCarregada = false;
-
-        // --- SCRIPT DE ESPAÇAMENTO AUTOMÁTICO ---
-        const stoneSrc = '../IMAGENS/pedra.png';
-        const gap = 40; 
-
-        const imgStone = new Image();
-        imgStone.src = stoneSrc;
-        imgStone.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = imgStone.width + gap;
-            canvas.height = imgStone.height + gap;
-            const ctx = canvas.getContext('2d');
-            ctx.imageSmoothingEnabled = false;
-            
-            const x = (canvas.width - imgStone.width) / 2;
-            const y = (canvas.height - imgStone.height) / 2;
-            ctx.drawImage(imgStone, x, y);
-            
-            document.documentElement.style.setProperty('--stone-bg', `url(${canvas.toDataURL()})`);
-        };
 
         function ajustarVar(variavel, valor) {
             document.documentElement.style.setProperty(variavel, valor);
         }
-        
-        bgInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    artContainer.style.backgroundImage = `url(${event.target.result})`;
-                    imagemCarregada = true;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
 
         function gerarGrid() {
             const grid = document.getElementById('days-grid');
@@ -442,10 +379,7 @@
             });
         }
 
-        // --- FUNÇÃO DE DOWNLOAD (Moderno) ---
         function baixarImagem() {
-            if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
-
             const node = document.getElementById('art-container');
             const originalShadow = node.style.boxShadow;
             node.style.boxShadow = "none";
@@ -459,8 +393,8 @@
                     link.click();
                 })
                 .catch(function (error) {
-                    console.error('oops, something went wrong!', error);
-                    alert('Erro ao gerar imagem. Tente novamente.');
+                    console.error('Erro:', error);
+                    alert('Erro ao gerar imagem.');
                 });
         }
 
