@@ -2,468 +2,333 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Humble Calendar - Clean & Sharp</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Calendário Visual - Humble League</title>
     <style>
-        /* Variáveis de Controle */
         :root {
-            --title-top: 40px;
-            --title-size: 80px;
-            --event-weight: 700;
-            --stone-bg: url('../IMAGENS/pedra.png'); 
+            --bg-color: #fceeb5; /* Cor de areia do fundo */
+            --text-color: #5d4037;
+            --cell-size: 140px; /* Tamanho do dia */
+            --grid-gap: 10px;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #1e293b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 340px;
-            background: #0f172a;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            border-right: 1px solid #334155;
-            color: white;
-            z-index: 10;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.5);
-            overflow-y: auto;
+            align-items: center;
         }
 
-        h2 { color: #fbbf24; margin: 0; font-size: 20px; font-family: 'Montserrat', sans-serif; font-weight: 600; }
-        label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 5px; }
-        
-        input[type="range"] { width: 100%; cursor: pointer; margin-bottom: 5px; }
-        
-        input, textarea, select {
-            width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            color: #fff;
+        h1 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: #3e2723;
+        }
+
+        /* --- Controles --- */
+        .controls {
+            background: rgba(255, 255, 255, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        input, button {
             padding: 10px;
             border-radius: 6px;
-            box-sizing: border-box;
-            font-family: sans-serif;
-        }
-        
-        textarea { height: 200px; resize: none; font-family: monospace; font-size: 13px; line-height: 1.4; }
-
-        .btn {
-            background: #16a34a; color: white; border: none; padding: 15px;
-            border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;
-            width: 100%; margin-top: auto; transition: 0.2s; font-family: 'Montserrat', sans-serif;
-        }
-        .btn:hover { background: #15803d; }
-        .btn-blue { background: #3b82f6; margin-top: 10px; }
-
-        .btn-back {
-            background: #334155;
-            color: #cbd5e1;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            width: fit-content;
-            margin-bottom: 5px;
-            transition: 0.2s;
-        }
-        .btn-back:hover { background: #475569; color: white; }
-
-        /* --- PREVIEW --- */
-        .preview-area {
-            flex: 1;
-            background: #334155;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow: auto;
+            border: 1px solid #ccc;
+            font-size: 1rem;
         }
 
-        #art-container {
-            position: relative;
-            width: 1000px; min-width: 1000px;
-            height: 1000px; min-height: 1000px;
-            background-color: #fceeb5; 
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            font-family: 'Montserrat', sans-serif;
-            overflow: hidden; 
+        button {
+            background-color: #ff7043;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
         }
 
-        #month-title {
-            position: absolute;
-            top: var(--title-top);
-            width: 100%;
-            text-align: center;
-            font-size: var(--title-size);
-            color: #E25D33;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            -webkit-text-stroke: 3px white; 
-            paint-order: stroke fill;
-            filter: drop-shadow(4px 4px 0px rgba(63, 46, 34, 0.3));
-            pointer-events: none;
-            z-index: 5;
+        button:hover {
+            transform: scale(1.05);
+            background-color: #f4511e;
         }
 
+        /* --- O Calendário --- */
         .calendar-wrapper {
-            position: absolute;
-            top: 320px; 
-            left: 50px;
-            width: 900px;
-            height: 600px;
-            display: flex;
-            flex-direction: column;
-            z-index: 5;
+            position: relative;
+            padding: 20px;
+            /* Container para limitar a grade visual */
         }
 
-        .week-header {
+        .weekdays {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
+            grid-template-columns: repeat(7, var(--cell-size));
             margin-bottom: 10px;
-        }
-        .wk-day {
-            color: #d97706;
-            font-size: 20px;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-shadow: 0px 0px 3px rgba(255,255,255,0.8);
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #bf360c;
         }
 
-        /* --- GRID --- */
-        .days-grid {
-            flex: 1;
+        .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0;
-            background-repeat: no-repeat;
-            background-position: top left, top left;
-            background-size: 70px 70px;
-            padding: 8px 0 0 8px; 
+            grid-template-columns: repeat(7, var(--cell-size));
+            grid-auto-rows: var(--cell-size);
+            position: relative; /* Necessário para posicionar as pedras absolutas */
         }
 
-        .days-grid.six-rows { gap: 0; }
-
-        /* --- CÉLULA --- */
+        /* Célula do dia */
         .day-cell {
             position: relative;
-            background: rgba(255, 248, 220, 0.2);
-            border-radius: 0;
-            
-            background-image: var(--stone-bg), var(--stone-bg);
-            background-repeat: no-repeat;
-            background-position: bottom left, top right;
-            background-size: 70px 70px;
-            
-            padding: 4px 18px 8px 18px;
-            
+            padding: 10px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100px;
-            overflow: visible;
-            box-sizing: border-box; 
+            gap: 5px;
+        }
+
+        .day-number {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: #795548;
+            align-self: flex-start;
         }
 
         .day-cell.empty {
             background: transparent;
-            background-image: var(--stone-bg), var(--stone-bg);
-            background-repeat: no-repeat;
-            background-position: bottom left, top right;
-            background-size: 70px 70px;
         }
 
-        /* --- TEXTOS --- */
-        .day-num {
+        /* --- O Visual da Grade (Pedras) --- */
+        /* Essa classe será aplicada às imagens geradas via JS */
+        .grid-asset {
             position: absolute;
-            top: 8px;
-            left: 10px;
-            font-size: 20px;
-            color: #b45309; 
-            font-weight: 800;
-            z-index: 5;
+            width: 24px; /* Ajuste conforme o tamanho do seu PNG */
+            height: 24px;
+            pointer-events: none; /* Não atrapalha o clique nos eventos */
+            z-index: 10;
+            /* O JS vai injetar o transform: rotate(...) */
         }
 
-        .day-time {
-            position: absolute;
-            top: 10px; 
-            
-            /* CORREÇÃO: 15px aproxima mais da borda sem "enterrar" na pedra */
-            right: 17px; 
-            
-            font-size: 11px;
-            color: #fff; 
-            font-weight: 700;
-            background: #d97706;
-            padding: 2px 6px;
+        /* --- Eventos --- */
+        .event-card {
+            background-color: rgba(255, 255, 255, 0.6);
+            border-left: 4px solid #ff7043;
+            padding: 4px 8px;
             border-radius: 4px;
-            z-index: 5;
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .day-text {
-            margin-top: 38px; 
-            width: 100%; 
-            text-align: center;
-            font-size: 13px;
-            color: #1f2937;
-            font-weight: var(--event-weight); 
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-wrap: break-word; 
+        .event-card:hover {
+            background-color: #fff;
         }
 
-        /* Ajustes para meses de 6 linhas */
-        .days-grid.six-rows .day-cell .day-text {
-            margin-top: 30px; 
-            font-size: 11px;  
-            -webkit-line-clamp: 2; 
+        .event-time {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: bold;
         }
         
-        .days-grid.six-rows .day-cell .day-num {
-            font-size: 16px; 
-            top: 5px;
-            left: 6px;
+        .event-title {
+            font-weight: 600;
+            color: #333;
         }
-        
-        .days-grid.six-rows .day-cell .day-time {
-            font-size: 9px; 
-            padding: 1px 4px;
-            top: 6px;
-            /* Proporcional para 6 linhas */
-            right: 17px; 
-        }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <a href="../index.html" class="btn-back">⬅ Voltar</a>
+    <h1>Gestor Humble League</h1>
 
-        <h2>📅 Calendário Humble</h2>
-        
-        <div style="margin-top:10px;">
-            <label style="color:#fbbf24;">1. Imagem de Fundo</label>
-            <input type="file" id="bgInput" accept="image/*">
-        </div>
-
-        <div style="margin-top:10px; border-top:1px solid #334155; padding-top:10px;">
-            <label style="color:#fbbf24;">2. Ajustes Visuais</label>
-            <label>Posição Título (Vertical)</label>
-            <input type="range" min="0" max="200" value="40" oninput="ajustarVar('--title-top', this.value + 'px')">
-            <label>Tamanho Título</label>
-            <input type="range" min="40" max="120" value="80" oninput="ajustarVar('--title-size', this.value + 'px')">
-            <label>Peso da Fonte (Texto)</label>
-            <input type="range" min="400" max="900" step="100" value="700" oninput="ajustarVar('--event-weight', this.value)">
-        </div>
-
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <div style="flex:2">
-                <label>Mês</label>
-                <select id="mesNum" onchange="gerarGrid()">
-                    <option value="0">Janeiro</option>
-                    <option value="1">Fevereiro</option>
-                    <option value="2">Março</option>
-                    <option value="3">Abril</option>
-                    <option value="4">Maio</option>
-                    <option value="5">Junho</option>
-                    <option value="6">Julho</option>
-                    <option value="7">Agosto</option>
-                    <option value="8">Setembro</option>
-                    <option value="9">Outubro</option>
-                    <option value="10">Novembro</option>
-                    <option value="11">Dezembro</option>
-                </select>
-            </div>
-            <div style="flex:1">
-                <label>Ano</label>
-                <input type="number" id="anoNum" value="2025" onchange="gerarGrid()">
-            </div>
-        </div>
-
-        <div style="margin-top:10px;">
-            <label>3. Eventos</label>
-            <textarea id="eventInput" placeholder="Ex: 4: 18h - Final">1: 18h - Final Humble League
-4: 19h - Qualify UU
-12: 20h - Semanal OU
-18: 18h - Qualify NatDex
-25: 19h - Qualify RU</textarea>
-        </div>
-
-        <button class="btn btn-blue" onclick="processarEventos()">🔄 Atualizar</button>
-        <button class="btn" onclick="baixarImagem()">📸 Baixar PNG</button>
+    <div class="controls">
+        <input type="text" id="eventTitle" placeholder="Nome do Evento (ex: Qualify OU)">
+        <input type="date" id="eventDate">
+        <input type="time" id="eventTime">
+        <button onclick="addEvent()">Adicionar Evento</button>
+        <button onclick="resetCalendar()">Limpar Tudo</button>
     </div>
 
-    <div class="preview-area">
-        <div id="art-container">
-            <div id="month-title">JANEIRO</div>
-            <div class="calendar-wrapper">
-                <div class="week-header">
-                    <div class="wk-day">DOM</div>
-                    <div class="wk-day">SEG</div>
-                    <div class="wk-day">TER</div>
-                    <div class="wk-day">QUA</div>
-                    <div class="wk-day">QUI</div>
-                    <div class="wk-day">SEX</div>
-                    <div class="wk-day">SÁB</div>
-                </div>
-                <div class="days-grid" id="days-grid"></div>
-            </div>
+    <div class="calendar-wrapper">
+        <div class="weekdays">
+            <div>Domingo</div><div>Segunda</div><div>Terça</div><div>Quarta</div><div>Quinta</div><div>Sexta</div><div>Sábado</div>
         </div>
+        
+        <div class="calendar-grid" id="calendarGrid">
+            </div>
     </div>
 
     <script>
-        const bgInput = document.getElementById('bgInput');
-        const artContainer = document.getElementById('art-container');
-        let imagemCarregada = false;
-
-        // --- SCRIPT DE ESPAÇAMENTO AUTOMÁTICO ---
-        const stoneSrc = '../IMAGENS/pedra.png';
-        const gap = 70;
-
-        const imgStone = new Image();
-        imgStone.src = stoneSrc;
-        imgStone.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = imgStone.width + gap;
-            canvas.height = imgStone.height + gap;
-            const ctx = canvas.getContext('2d');
-            ctx.imageSmoothingEnabled = false;
+        // --- CONFIGURAÇÃO VISUAL ---
+        const CONFIG = {
+            // Caminho da imagem. Se trocar para 'IMAGENS/madeira.png', o sistema todo muda.
+            // Estou usando um placeholder online para você ver funcionando agora.
+            // TROQUE POR: 'IMAGENS/pedra.png'
+            gridImage: 'https://cdn-icons-png.flaticon.com/512/7509/7509680.png', 
             
-            const x = (canvas.width - imgStone.width) / 2;
-            const y = (canvas.height - imgStone.height) / 2;
-            ctx.drawImage(imgStone, x, y);
-            
-            document.documentElement.style.setProperty('--stone-bg', `url(${canvas.toDataURL()})`);
+            gridDensity: 'corners', // 'corners' (só cantos) ou 'full' (linha completa)
+            rotationRange: 20 // Graus (+ ou -)
         };
 
-        function ajustarVar(variavel, valor) {
-            document.documentElement.style.setProperty(variavel, valor);
-        }
-        
-        bgInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    artContainer.style.backgroundImage = `url(${event.target.result})`;
-                    imagemCarregada = true;
-                }
-                reader.readAsDataURL(file);
-            }
-        });
+        // --- ESTADO DA APLICAÇÃO ---
+        let currentDate = new Date();
+        // Exemplo inicial de dados
+        let events = [
+            { id: 1, title: 'Qualify UU', date: '2026-01-04', time: '18:00' },
+            { id: 2, title: 'Semanal RU', date: '2026-01-06', time: '19:00' },
+            { id: 3, title: 'Final League', date: '2026-01-10', time: '18:00' }
+        ];
 
-        function gerarGrid() {
-            const grid = document.getElementById('days-grid');
-            grid.innerHTML = "";
-            const mesIndex = parseInt(document.getElementById('mesNum').value);
-            const ano = parseInt(document.getElementById('anoNum').value);
+        const gridContainer = document.getElementById('calendarGrid');
+
+        // --- FUNÇÃO PRINCIPAL: RENDERIZAR CALENDÁRIO ---
+        function renderCalendar() {
+            gridContainer.innerHTML = ''; // Limpa tudo
             
-            const nomeMes = document.getElementById('mesNum').options[mesIndex].text;
-            document.getElementById('month-title').innerText = nomeMes;
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
 
-            const primeiroDia = new Date(ano, mesIndex, 1).getDay();
-            const totalDias = new Date(ano, mesIndex + 1, 0).getDate();
-            const totalCelulas = primeiroDia + totalDias;
-            const numeroLinhas = Math.ceil(totalCelulas / 7);
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const lastDay = new Date(year, month + 1, 0).getDate();
 
-            if (numeroLinhas > 5) {
-                grid.style.gridTemplateRows = "repeat(6, 1fr)";
-                grid.classList.add('six-rows');
-            } else {
-                grid.style.gridTemplateRows = "repeat(5, 1fr)";
-                grid.classList.remove('six-rows');
+            // 1. Renderizar células vazias (dias do mês anterior)
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.classList.add('day-cell', 'empty');
+                gridContainer.appendChild(emptyCell);
             }
 
-            for (let i = 0; i < primeiroDia; i++) {
-                const div = document.createElement('div');
-                div.className = 'day-cell empty';
-                grid.appendChild(div);
+            // 2. Renderizar dias do mês
+            for (let day = 1; day <= lastDay; day++) {
+                const cell = document.createElement('div');
+                cell.classList.add('day-cell');
+                
+                // Número do dia
+                const dayNumber = document.createElement('div');
+                dayNumber.classList.add('day-number');
+                dayNumber.innerText = day;
+                cell.appendChild(dayNumber);
+
+                // Filtrar e adicionar eventos desse dia
+                const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const daysEvents = events.filter(e => e.date === dateString);
+                
+                daysEvents.sort((a, b) => a.time.localeCompare(b.time)); // Ordenar por horário
+
+                daysEvents.forEach(evt => {
+                    const evtDiv = document.createElement('div');
+                    evtDiv.classList.add('event-card');
+                    evtDiv.innerHTML = `
+                        <div class="event-time">${evt.time}</div>
+                        <div class="event-title">${evt.title}</div>
+                    `;
+                    cell.appendChild(evtDiv);
+                });
+
+                gridContainer.appendChild(cell);
             }
 
-            for (let d = 1; d <= totalDias; d++) {
-                const div = document.createElement('div');
-                div.className = 'day-cell';
-                div.innerHTML = `
-                    <div class="day-num">${d}</div>
-                    <div class="day-time" id="time-${d}"></div>
-                    <div class="day-text" id="evt-${d}"></div>
-                `;
-                grid.appendChild(div);
-            }
-            processarEventos();
+            // 3. Renderizar a Grade Orgânica (As pedras)
+            renderOrganicGrid(firstDayIndex + lastDay);
         }
 
-        function processarEventos() {
-            document.querySelectorAll('.day-text').forEach(e => e.innerText = "");
-            document.querySelectorAll('.day-time').forEach(e => e.innerText = "");
-            document.querySelectorAll('.day-time').forEach(e => e.style.display = 'none');
+        // --- A LÓGICA DA GRADE ORGÂNICA ---
+        function renderOrganicGrid(totalCells) {
+            // A grade tem 7 colunas. Calculamos quantas linhas temos.
+            const columns = 7;
+            const rows = Math.ceil(totalCells / columns);
+            const cellSize = 140; // Mesmo valor do CSS
 
-            const lines = document.getElementById('eventInput').value.split('\n');
-            lines.forEach(line => {
-                const regex = /^(\d+):\s*(?:(.*?)\s*-\s*)?(.*)/;
-                const match = line.match(regex);
-                if (match) {
-                    const dia = match[1];
-                    const hora = match[2];
-                    const texto = match[3];
-                    const elTexto = document.getElementById(`evt-${dia}`);
-                    if (elTexto) elTexto.innerText = texto;
-                    const elHora = document.getElementById(`time-${dia}`);
-                    if (elHora && hora) {
-                        elHora.innerText = hora;
-                        elHora.style.display = 'block';
+            // Função auxiliar para criar uma pedra
+            function createStone(top, left) {
+                const img = document.createElement('img');
+                img.src = CONFIG.gridImage;
+                img.classList.add('grid-asset');
+                
+                // Rotação Aleatória
+                const randomRot = (Math.random() * CONFIG.rotationRange * 2) - CONFIG.rotationRange;
+                // Leve variação de tamanho para ficar mais orgânico
+                const randomScale = 0.8 + (Math.random() * 0.4); 
+
+                img.style.top = `${top - 12}px`;  // -12 para centralizar (metade do tamanho da img)
+                img.style.left = `${left - 12}px`;
+                img.style.transform = `rotate(${randomRot}deg) scale(${randomScale})`;
+
+                return img;
+            }
+
+            // Desenhar pedras nas intersecções (Cantos)
+            // Loop pelas linhas e colunas para colocar as pedras nos cantos das células
+            for (let r = 0; r <= rows; r++) {
+                for (let c = 0; c <= columns; c++) {
+                    // Posição baseada na linha/coluna
+                    const topPos = r * cellSize;
+                    const leftPos = c * cellSize;
+
+                    // Adiciona a pedra
+                    const stone = createStone(topPos, leftPos);
+                    gridContainer.appendChild(stone);
+
+                    // EXTRA: Se quiser a linha "pontilhada" igual a imagem de referência,
+                    // adicionamos pedras no MEIO das linhas também.
+                    if (c < columns) {
+                        // Pedra no meio da linha horizontal superior
+                         const stoneMidH = createStone(topPos, leftPos + (cellSize / 2));
+                         gridContainer.appendChild(stoneMidH);
+                    }
+                    if (r < rows) {
+                         // Pedra no meio da linha vertical esquerda
+                         const stoneMidV = createStone(topPos + (cellSize / 2), leftPos);
+                         gridContainer.appendChild(stoneMidV);
                     }
                 }
+            }
+        }
+
+        // --- FUNÇÕES DE EVENTOS ---
+        function addEvent() {
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+
+            if (!title || !date || !time) {
+                alert("Preencha todos os campos!");
+                return;
+            }
+
+            events.push({
+                id: Date.now(),
+                title,
+                date,
+                time
             });
+
+            renderCalendar(); // Redesenha a tela
         }
 
-        // --- FUNÇÃO DE DOWNLOAD (Moderno) ---
-        function baixarImagem() {
-            if (!imagemCarregada && !confirm("Sem fundo. Continuar?")) return;
-
-            const node = document.getElementById('art-container');
-            const originalShadow = node.style.boxShadow;
-            node.style.boxShadow = "none";
-
-            htmlToImage.toPng(node, { pixelRatio: 2 })
-                .then(function (dataUrl) {
-                    node.style.boxShadow = originalShadow;
-                    var link = document.createElement('a');
-                    link.download = 'Calendario_Humble.png';
-                    link.href = dataUrl;
-                    link.click();
-                })
-                .catch(function (error) {
-                    console.error('oops, something went wrong!', error);
-                    alert('Erro ao gerar imagem. Tente novamente.');
-                });
+        function resetCalendar() {
+            if(confirm("Deseja apagar todos os eventos?")) {
+                events = [];
+                renderCalendar();
+            }
         }
 
-        window.onload = gerarGrid;
+        // Inicialização
+        // Colocando data fixa em Janeiro/2026 para demonstração, mas pode usar Date() atual
+        currentDate = new Date(2026, 0, 1); 
+        renderCalendar();
+
     </script>
 </body>
 </html>
