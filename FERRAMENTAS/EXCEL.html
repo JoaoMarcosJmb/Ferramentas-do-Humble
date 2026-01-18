@@ -23,7 +23,7 @@
             flex-direction: column;
         }
 
-        /* --- NAVBAR (Igual ao Index) --- */
+        /* --- NAVBAR --- */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -81,10 +81,9 @@
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             width: 90%; 
-            flex: 1; /* Empurra o rodapé para baixo */
+            flex: 1;
         }
         
-        /* Título da ferramenta dentro do container */
         .page-title {
             margin-top: 0;
             margin-bottom: 25px;
@@ -164,7 +163,7 @@
             min-width: 150px;
             font-weight: bold;
             color: #e5e7eb;
-            background: #131c2e; /* Destaque leve */
+            background: #131c2e;
         }
 
         /* Coluna 2: ESPAÇO VAZIO */
@@ -173,8 +172,8 @@
             background-color: #0d1321;
         }
 
-        /* Coluna 7: TOTAL */
-        td:nth-child(7), th:nth-child(7) {
+        /* Tenta estilizar a última coluna como Total se for a tabela padrão (7 colunas) */
+        table tr td:nth-child(7), table tr th:nth-child(7) {
             font-weight: bold;
             color: #fbbf24;
             background-color: #162032;
@@ -276,7 +275,7 @@
         <h1 class="page-title">📊 Leitor / Editor de Tabela</h1>
 
         <div class="actions-bar">
-            <input type="file" id="input-excel" accept=".xlsx,.xls">
+            <input type="file" id="input-excel" accept=".xlsx,.xls, .csv">
             <button class="btn btn-secondary" onclick="criarTabelaPadrao()">📝 Criar Tabela Padrão</button>
             <button class="btn" onclick="exportarExcel()">💾 Salvar Excel</button>
         </div>
@@ -284,7 +283,7 @@
         <div class="table-container" id="output">
             <div style="padding: 40px; text-align: center; color: #64748b;">
                 <p>Nenhuma planilha carregada.</p>
-                <p style="font-size: 14px;">Carregue um arquivo .xlsx acima ou clique em "Criar Tabela Padrão".</p>
+                <p style="font-size: 14px;">Carregue um arquivo .xlsx/.csv acima ou clique em "Criar Tabela Padrão".</p>
             </div>
         </div>
 
@@ -387,17 +386,21 @@
 
         function calcularLinha(e) {
             const cell = e.target;
+            // Só executa se estiver dentro de uma TD
             if (cell.tagName === 'TD') {
                 const row = cell.parentElement;
                 const cells = row.querySelectorAll('td');
 
+                // Mantivemos a lógica visual apenas para a tabela padrão (7 colunas)
+                // Para evitar bugar planilhas pequenas importadas
                 if (cells.length >= 7) {
-                    const p1 = parseInt(cells[2].innerText) || 0;
-                    const p2 = parseInt(cells[3].innerText) || 0;
-                    const p3 = parseInt(cells[4].innerText) || 0;
-                    const p4 = parseInt(cells[5].innerText) || 0;
-                    const total = p1 + p2 + p3 + p4;
-                    cells[6].innerText = total; // Atualiza visualmente
+                    let total = 0;
+                    // Soma da coluna 2 até a penúltima
+                    for (let i = 2; i < cells.length - 1; i++) {
+                        total += parseInt(cells[i].innerText) || 0;
+                    }
+                    // Atualiza a última coluna (Total)
+                    cells[cells.length - 1].innerText = total;
                 }
             }
         }
@@ -412,7 +415,7 @@
             XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
         }
 
-        // --- 5. GERAR DISCORD ---
+        // --- 5. GERAR DISCORD (AGORA DINÂMICO) ---
         function gerarDiscord() {
             const table = document.querySelector("table");
             if (!table) return alert("Crie ou carregue uma tabela primeiro!");
@@ -423,6 +426,17 @@
 
             let dados = [];
             
+            // Verifica se a tabela tem cabeçalho "TOTAL" na última coluna
+            // Isso serve para não somar a coluna de total se ela já existir
+            const headers = table.querySelectorAll('thead th');
+            let temColunaTotal = false;
+            if (headers.length > 0) {
+                const ultimoHeader = headers[headers.length - 1].innerText.toUpperCase();
+                if (ultimoHeader.includes("TOTAL")) {
+                    temColunaTotal = true;
+                }
+            }
+
             // Pega linhas ignorando cabeçalho
             let rows = table.querySelectorAll('tbody tr');
             if (rows.length === 0) { 
@@ -435,13 +449,21 @@
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 
-                if (cells.length >= 7) {
+                // Mínimo 3 colunas para processar (Nick, Vazio, Pontos)
+                if (cells.length >= 3) {
                     const nick = cells[0].innerText.trim();
-                    const p1 = parseInt(cells[2].innerText) || 0;
-                    const p2 = parseInt(cells[3].innerText) || 0;
-                    const p3 = parseInt(cells[4].innerText) || 0;
-                    const p4 = parseInt(cells[5].innerText) || 0;
-                    const totalReal = p1 + p2 + p3 + p4;
+                    let totalReal = 0;
+
+                    // Define até onde vai o loop
+                    // Se tiver coluna "TOTAL" no final, paramos antes dela para não duplicar
+                    // Se não tiver (CSV importado), vamos até o fim
+                    const limiteLoop = temColunaTotal ? cells.length - 1 : cells.length;
+
+                    // Loop soma todas as colunas de pontos (pula 0 e 1)
+                    for (let i = 2; i < limiteLoop; i++) {
+                        const valor = parseInt(cells[i].innerText);
+                        totalReal += isNaN(valor) ? 0 : valor;
+                    }
 
                     if (nick) { 
                         dados.push({ nick: nick, pontos: totalReal });
@@ -467,4 +489,3 @@
 
 </body>
 </html>
-
