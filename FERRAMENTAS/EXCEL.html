@@ -6,7 +6,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-    <style>
+<style>
         /* --- GERAL --- */
         body {
             margin: 0;
@@ -21,6 +21,23 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        /* --- SCROLLBAR CUSTOMIZADA (ESSENCIAL PARA VER A BARRA) --- */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 12px; /* Importante para o scroll horizontal */
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 6px;
+            border: 3px solid #0f172a;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8B1D1D; /* Cor de destaque ao passar o mouse */
         }
 
         /* --- NAVBAR --- */
@@ -82,6 +99,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             width: 90%; 
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Garante que nada saia do container principal */
         }
         
         .page-title {
@@ -158,26 +178,29 @@
             border-radius: 0 0 8px 8px;
         }
 
-        /* TABELA */
+        /* TABELA CONTAINER */
         .table-container {
-            overflow-x: auto;
+            width: 100%;
+            overflow-x: auto; /* Força scroll horizontal se necessário */
             margin-top: 10px;
             max-height: 500px;
             overflow-y: auto;
             border: 1px solid #334155;
             border-radius: 8px 8px 0 0;
+            background: #0f172a; /* Fundo para evitar transparência estranha no scroll */
         }
 
         table {
-            width: 100%;
+            width: 100%; 
             border-collapse: collapse;
-            min-width: 800px; 
+            /* Removido min-width fixo */
         }
 
         th, td {
             border: 1px solid #334155;
-            padding: 10px;
+            padding: 10px 15px; /* Um pouco mais de espaço lateral */
             text-align: center;
+            white-space: nowrap; /* ISSO É O QUE CRIA O SCROLL HORIZONTAL */
         }
 
         /* Coluna 1: NICK */
@@ -187,6 +210,10 @@
             font-weight: bold;
             color: #e5e7eb;
             background: #131c2e;
+            position: sticky;
+            left: 0;
+            z-index: 20; /* Fica acima das outras células ao rolar para o lado */
+            border-right: 2px solid #334155; /* Destaque visual onde congela */
         }
 
         /* Coluna 2: ESPAÇO VAZIO */
@@ -207,8 +234,13 @@
             color: #94a3b8;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 10; /* Header fixo no topo */
             font-weight: 600;
+        }
+        
+        /* Correção para o Nick no Header ficar acima de tudo */
+        th:nth-child(1) {
+            z-index: 30;
         }
 
         td {
@@ -272,6 +304,7 @@
             padding: 20px;
             text-align: center;
             width: 100%;
+            margin-top: auto;
         }
 
         .credits-content p {
@@ -585,3 +618,4 @@
 
 </body>
 </html>
+
