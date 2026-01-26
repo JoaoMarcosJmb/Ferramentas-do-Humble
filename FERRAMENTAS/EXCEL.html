@@ -72,12 +72,12 @@
         .btn-danger:hover { background: #7f1d1d; color: white; }
         input[type="file"] { color: #cbd5e1; }
 
-        /* --- ESTRUTURA DA TABELA --- */
+        /* --- TABELA E SCROLL --- */
         .table-container {
             width: 100%;
-            /* CORREÇÃO VISUAL: Removemos o limite de altura. Agora a tabela cresce infinitamente */
-            /* Se preferir scroll interno, mude para max-height: 80vh; */
-            overflow-x: auto; 
+            overflow-x: auto; /* Permite scroll lateral */
+            overflow-y: auto; /* Permite scroll vertical */
+            max-height: 70vh; /* Altura máxima */
             border: 1px solid #334155;
             border-radius: 8px 8px 0 0;
             background: #0f172a;
@@ -87,7 +87,7 @@
         table {
             border-collapse: collapse;
             min-width: 100%;
-            width: max-content; /* Força expansão lateral */
+            width: max-content; /* OBRIGATÓRIO: Força tabela a expandir para o lado */
         }
 
         th, td {
@@ -99,14 +99,12 @@
             color: #e5e7eb;
         }
 
-        /* --- CABEÇALHOS E STICKY --- */
-        /* O cabeçalho só fica fixo se a tabela estiver dentro da tela. 
-           Como removemos o scroll interno, o sticky se baseia na janela */
+        /* --- STICKY HEADERS --- */
         th {
             position: sticky;
-            top: 0; /* Cola no topo */
+            top: 0;
             z-index: 100;
-            background: #1e293b;
+            background: #1e293b; 
             color: #94a3b8;
             font-weight: 600;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
@@ -125,11 +123,12 @@
 
         th:nth-child(1) { z-index: 120; background: #1e293b; }
 
-        /* Coluna Total */
-        td:last-child, th:last-child {
+        /* Total Fixo (Última Coluna) */
+        /* Só aplicamos cor se tiver a classe 'total-col' para não bugar colunas novas */
+        .total-col {
             font-weight: bold;
-            background-color: #1e293b;
-            color: #fbbf24;
+            background-color: #1e293b !important;
+            color: #fbbf24 !important;
         }
 
         td[contenteditable="true"]:focus { background: #334155; outline: 2px solid #8B1D1D; outline-offset: -2px; }
@@ -199,7 +198,7 @@
         let workbook;
         let sheetName;
 
-        // --- 1. CARREGAR EXCEL (CORREÇÃO DE LINHAS SUMINDO) ---
+        // --- 1. CARREGAR EXCEL (CORRIGIDO: NÃO COME A PRIMEIRA LINHA) ---
         document.getElementById('input-excel').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -211,8 +210,7 @@
                 sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 
-                // MUDANÇA IMPORTANTE: blankrows: true
-                // Isso obriga o leitor a trazer TODAS as linhas, mesmo as vazias no meio
+                // Pega todos os dados brutos, incluindo linhas em branco
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { 
                     header: 1, 
                     defval: "", 
@@ -224,37 +222,57 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // --- 2. CONSTRUTOR DE TABELA ---
+        // --- 2. CONSTRUTOR INTELIGENTE ---
         function construirTabelaManualmente(dados) {
             if (!dados || dados.length === 0) return;
+
+            // ANALISAR SE A PRIMEIRA LINHA É CABEÇALHO OU DADO
+            // Se a primeira célula não for "Nick", "Nome" ou similar, assumimos que é DADO
+            // e criamos um cabeçalho genérico.
+            let cabecalhos = [];
+            let linhasDeDados = [];
+            
+            const primeiraCelula = dados[0][0] ? String(dados[0][0]).toLowerCase() : "";
+            const pareceCabecalho = primeiraCelula.includes("nick") || primeiraCelula.includes("nome") || primeiraCelula.includes("player");
+
+            if (pareceCabecalho) {
+                cabecalhos = dados[0];
+                linhasDeDados = dados.slice(1);
+            } else {
+                // EXCEL SEM CABEÇALHO (Caso do "Abreuolindo")
+                // Cria cabeçalho artificial baseado na quantidade de colunas da primeira linha
+                const qtdColunas = dados[0].length;
+                cabecalhos = ["Nick"];
+                for(let k=1; k < qtdColunas; k++) {
+                    cabecalhos.push("R" + k); // Cria R1, R2...
+                }
+                cabecalhos[cabecalhos.length - 1] = "TOTAL"; // Força o último a ser Total
+                linhasDeDados = dados; // Usa TODOS os dados, inclusive a linha 0
+            }
 
             let html = '<table id="data-table">';
 
             // --- CABEÇALHO ---
             html += '<thead><tr>';
-            const cabecalhos = dados[0]; 
-            
             cabecalhos.forEach((col, index) => {
-                html += `<th contenteditable="true">${col || "Coluna " + (index+1)}</th>`;
+                const isTotal = index === cabecalhos.length - 1;
+                html += `<th contenteditable="true" class="${isTotal ? 'total-col' : ''}">${col}</th>`;
             });
             html += '</tr></thead>';
 
             // --- CORPO ---
             html += '<tbody>';
-            // Loop começa em 1 pois 0 é cabeçalho
-            for (let i = 1; i < dados.length; i++) {
-                const linha = dados[i];
-                // Verifica se a linha não é totalmente vazia/nula antes de criar
-                if(linha) {
+            for (let i = 0; i < linhasDeDados.length; i++) {
+                const linha = linhasDeDados[i];
+                if(linha && linha.length > 0) { // Ignora linhas totalmente vazias se houver
                     html += '<tr>';
-                    // Garante consistência de colunas com o cabeçalho
                     for (let j = 0; j < cabecalhos.length; j++) {
                         let valor = linha[j];
-                        if (valor === undefined || valor === null) valor = "";
+                        if (valor === undefined || valor === null) valor = "0"; // Valor padrão 0 se vazio
 
                         const isTotal = j === cabecalhos.length - 1;
                         if (isTotal) {
-                            html += `<td contenteditable="false">${valor}</td>`;
+                            html += `<td contenteditable="false" class="total-col">${valor}</td>`;
                         } else {
                             html += `<td contenteditable="true">${valor}</td>`;
                         }
@@ -277,6 +295,8 @@
                 ["Player3", "", 0, 0, 0, 0, 0],
                 ["Player4", "", 0, 0, 0, 0, 0]
             ];
+            // Para tabela padrão, sabemos que a linha 0 é cabeçalho
+            // Então passamos direto para a lógica de construção, mas simulamos "Nick" para ele detectar
             construirTabelaManualmente(dadosPadrao);
             sheetName = "Pontuacao";
         }
@@ -299,10 +319,15 @@
             for (let i = 0; i < colCount; i++) {
                 const cell = newRow.insertCell();
                 cell.contentEditable = "true";
-                if (i === 0) cell.innerText = "Novo";
-                else if (i === colCount - 1) { cell.innerText = "0"; cell.contentEditable = "false"; }
-                else if (i === 1) cell.innerText = "";
-                else cell.innerText = "0";
+                if (i === colCount - 1) { 
+                    cell.innerText = "0"; 
+                    cell.contentEditable = "false"; 
+                    cell.classList.add('total-col');
+                } else if (i === 0) {
+                    cell.innerText = "Novo";
+                } else {
+                    cell.innerText = "0";
+                }
             }
         }
 
@@ -370,16 +395,16 @@
             let total = 0;
             
             for (let i = 2; i < cells.length - 1; i++) {
-                // Converte vírgula para ponto e remove espaços
                 let texto = cells[i].innerText.replace(',', '.').trim();
                 let val = parseFloat(texto);
                 total += isNaN(val) ? 0 : val;
             }
             
-            cells[cells.length - 1].innerText = total;
+            const totalCell = cells[cells.length - 1];
+            totalCell.innerText = total;
             
-            if(total > 0) cells[cells.length - 1].style.color = "#4ade80";
-            else cells[cells.length - 1].style.color = "#fbbf24";
+            if(total > 0) totalCell.style.color = "#4ade80";
+            else totalCell.style.color = "#fbbf24";
         }
 
         // --- 6. EXPORTAR ---
