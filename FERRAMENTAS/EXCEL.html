@@ -6,7 +6,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
-<style>
+    <style>
         /* --- GERAL --- */
         body {
             margin: 0;
@@ -14,7 +14,7 @@
             color: #e5e7eb;
             background:
                 linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
-                url("../IMAGENS/Fundo.png");
+                url("../IMAGENS/Fundo.png"); /* Certifique-se que essa imagem existe ou remova esta linha */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -23,21 +23,22 @@
             flex-direction: column;
         }
 
-        /* --- SCROLLBAR CUSTOMIZADA (ESSENCIAL PARA VER A BARRA) --- */
+        /* --- SCROLLBAR CUSTOMIZADA (Estilo Visual) --- */
         ::-webkit-scrollbar {
-            width: 10px;
-            height: 12px; /* Importante para o scroll horizontal */
+            width: 12px;
+            height: 12px; /* Altura da barra horizontal */
         }
         ::-webkit-scrollbar-track {
             background: #0f172a; 
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb {
             background: #475569; 
-            border-radius: 6px;
-            border: 3px solid #0f172a;
+            border-radius: 4px;
+            border: 2px solid #0f172a;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #8B1D1D; /* Cor de destaque ao passar o mouse */
+            background: #8B1D1D;
         }
 
         /* --- NAVBAR --- */
@@ -88,7 +89,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* --- CONTEÚDO --- */
+        /* --- CONTAINER PRINCIPAL --- */
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -101,7 +102,6 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Garante que nada saia do container principal */
         }
         
         .page-title {
@@ -113,7 +113,7 @@
             color: #fff;
         }
 
-        /* BOTÕES E INPUTS */
+        /* --- BOTÕES --- */
         input[type="file"] {
             margin-bottom: 0;
             color: #ccc;
@@ -131,30 +131,20 @@
             transition: background 0.2s;
             margin-bottom: 5px;
         }
-
-        .btn:hover {
-            background: #a32424;
-        }
+        .btn:hover { background: #a32424; }
 
         .btn-secondary {
             background: #1e293b;
             border: 1px solid #334155;
         }
-        
-        .btn-secondary:hover {
-            background: #2d3b52;
-        }
+        .btn-secondary:hover { background: #2d3b52; }
 
         .btn-danger {
             background: #450a0a;
             border: 1px solid #7f1d1d;
             color: #fca5a5;
         }
-        
-        .btn-danger:hover {
-            background: #7f1d1d;
-            color: white;
-        }
+        .btn-danger:hover { background: #7f1d1d; color: white; }
 
         .actions-bar {
             display: flex;
@@ -178,69 +168,78 @@
             border-radius: 0 0 8px 8px;
         }
 
-        /* TABELA CONTAINER */
+        /* --- ESTRUTURA DA TABELA (SCROLL E STICKY) --- */
         .table-container {
             width: 100%;
-            overflow-x: auto; /* Força scroll horizontal se necessário */
+            overflow-x: auto; /* Permite scroll horizontal */
             margin-top: 10px;
-            max-height: 500px;
+            max-height: 500px; /* Altura máxima antes de rolar verticalmente */
             overflow-y: auto;
             border: 1px solid #334155;
             border-radius: 8px 8px 0 0;
-            background: #0f172a; /* Fundo para evitar transparência estranha no scroll */
+            background: #0f172a;
+            
+            /* Correções de layout */
+            display: block; 
+            white-space: nowrap; 
         }
 
         table {
-            width: 100%; 
+            /* O SEGREDO DO SCROLL: */
+            min-width: 100%; 
+            width: max-content; /* Força a tabela a ter o tamanho real do conteúdo */
             border-collapse: collapse;
-            /* Removido min-width fixo */
         }
 
         th, td {
             border: 1px solid #334155;
-            padding: 10px 15px; /* Um pouco mais de espaço lateral */
+            padding: 10px 15px;
             text-align: center;
-            white-space: nowrap; /* ISSO É O QUE CRIA O SCROLL HORIZONTAL */
+            white-space: nowrap; /* Impede quebra de linha nas células */
         }
 
-        /* Coluna 1: NICK */
+        /* >> COLUNA 1: NICK (CONGELADA) << */
         td:nth-child(1), th:nth-child(1) {
             text-align: left;
             min-width: 150px;
             font-weight: bold;
             color: #e5e7eb;
-            background: #131c2e;
+            background: #131c2e; /* Cor de fundo opaca para não ver através */
+            
+            /* Sticky Logic */
             position: sticky;
             left: 0;
-            z-index: 20; /* Fica acima das outras células ao rolar para o lado */
-            border-right: 2px solid #334155; /* Destaque visual onde congela */
+            z-index: 20; /* Fica acima das células normais */
+            border-right: 2px solid #334155;
         }
 
-        /* Coluna 2: ESPAÇO VAZIO */
+        /* Cabeçalho do Nick precisa ficar acima de tudo */
+        th:nth-child(1) {
+            z-index: 30; 
+        }
+
+        /* >> COLUNA 2: ESPAÇO VAZIO << */
         td:nth-child(2), th:nth-child(2) {
             width: 50px;
             background-color: #0d1321;
         }
 
-        /* Estiliza a última coluna dinamicamente como Total */
+        /* >> ÚLTIMA COLUNA: TOTAL << */
+        /* Usamos seletores específicos para pegar a última célula da linha */
         table tr td:last-child, table tr th:last-child {
             font-weight: bold;
             color: #fbbf24;
             background-color: #162032;
         }
 
+        /* CABEÇALHO GERAL */
         th {
             background: #1e293b;
             color: #94a3b8;
             position: sticky;
             top: 0;
-            z-index: 10; /* Header fixo no topo */
+            z-index: 10;
             font-weight: 600;
-        }
-        
-        /* Correção para o Nick no Header ficar acima de tudo */
-        th:nth-child(1) {
-            z-index: 30;
         }
 
         td {
@@ -253,7 +252,7 @@
             outline-offset: -2px;
         }
 
-        /* AREA DO DISCORD */
+        /* --- ÁREA DO DISCORD --- */
         .discord-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -387,7 +386,7 @@
                 sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 
-                // Gera o HTML
+                // Converte a planilha para HTML
                 const html = XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
                 document.getElementById('output').innerHTML = html;
                 
@@ -424,6 +423,7 @@
             finalizarCargaTabela();
         }
 
+        // Função auxiliar para ativar os controles após carregar a tabela
         function finalizarCargaTabela() {
             document.getElementById('controls-area').style.display = 'flex';
             ativarCalculoAutomatico();
@@ -435,7 +435,8 @@
             const table = document.getElementById("data-table");
             if (!table) return;
             const tbody = table.querySelector("tbody");
-            const headerCells = table.rows[0].cells.length; // Conta colunas atuais
+            // Conta quantas colunas tem no cabeçalho para criar a linha do tamanho certo
+            const headerCells = table.rows[0].cells.length; 
             
             const newRow = tbody.insertRow();
             
@@ -443,11 +444,12 @@
                 const cell = newRow.insertCell();
                 cell.contentEditable = "true";
                 
+                // Preenche com 0, exceto Nick e Espaço Vazio
                 if (i >= 2 && i < headerCells - 1) {
-                    cell.innerText = "0"; // Colunas de pontos
+                    cell.innerText = "0"; 
                 } else if (i === headerCells - 1) {
                     cell.innerText = "0"; 
-                    cell.contentEditable = "false"; // Total bloqueado
+                    cell.contentEditable = "false"; // Bloqueia edição manual do Total
                 }
             }
         }
@@ -456,15 +458,17 @@
             const table = document.getElementById("data-table");
             if (!table) return;
 
-            // Adiciona no Header (antes do Total)
+            // Encontra a posição da última coluna (Total)
             const headRow = table.querySelector("thead tr");
             const totalIndex = headRow.cells.length - 1;
+
+            // 1. Adiciona no Header (antes do Total)
             const newTh = document.createElement("th");
-            newTh.innerText = "Extra";
+            newTh.innerText = "Extra"; // Nome padrão
             newTh.contentEditable = "true";
             headRow.insertBefore(newTh, headRow.cells[totalIndex]);
 
-            // Adiciona nas Linhas (antes do Total)
+            // 2. Adiciona em todas as Linhas (antes do Total)
             const bodyRows = table.querySelectorAll("tbody tr");
             bodyRows.forEach(row => {
                 const newTd = document.createElement("td");
@@ -473,7 +477,7 @@
                 row.insertBefore(newTd, row.cells[totalIndex]);
             });
 
-            // Recalcula
+            // Força recálculo
             dispararCalculo();
         }
 
@@ -481,7 +485,7 @@
             const table = document.getElementById("data-table");
             if (!table) return;
             const tbody = table.querySelector("tbody");
-            if (tbody.rows.length > 1) { // Mantém pelo menos 1 linha
+            if (tbody.rows.length > 1) { // Evita apagar a última linha restante
                 tbody.deleteRow(-1);
             } else {
                 alert("Não é possível remover a última linha!");
@@ -493,16 +497,17 @@
             if (!table) return;
             const headRow = table.querySelector("thead tr");
             
-            // Segurança: Não remover se tiver 4 ou menos colunas (Nick, Vazio, 1 Ponto, Total)
+            // Segurança: Não remover colunas essenciais (Nick, Vazio, 1 Ponto, Total)
             if (headRow.cells.length <= 4) {
                 return alert("Não é possível remover mais colunas básicas.");
             }
 
-            // Remove a PENÚLTIMA coluna (antes do Total)
+            // Remove a PENÚLTIMA coluna (a que vem antes do Total)
             const targetIndex = headRow.cells.length - 2; 
 
-            headRow.deleteCell(targetIndex);
+            headRow.deleteCell(targetIndex); // Remove do Header
 
+            // Remove de cada linha do corpo
             const bodyRows = table.querySelectorAll("tbody tr");
             bodyRows.forEach(row => {
                 row.deleteCell(targetIndex);
@@ -514,12 +519,14 @@
         // --- 4. SOMA AUTOMÁTICA ROBUSTA ---
         function ativarCalculoAutomatico() {
             const container = document.getElementById('output');
+            // Remove listener antigo para não duplicar
             container.removeEventListener('input', calcularLinha);
+            // Adiciona novo listener
             container.addEventListener('input', calcularLinha);
         }
 
         function dispararCalculo() {
-            // Cria um evento fake para forçar recálculo visual
+            // Percorre todas as linhas e força o cálculo (útil após adicionar coluna)
             const table = document.getElementById("data-table");
             if(table) {
                 const rows = table.querySelectorAll("tbody tr");
@@ -531,6 +538,7 @@
 
         function calcularLinha(e) {
             const cell = e.target;
+            // Só calcula se o input veio de uma célula da tabela
             if (cell.tagName === 'TD') {
                 const row = cell.parentElement;
                 calcularRow(row);
@@ -539,11 +547,12 @@
 
         function calcularRow(row) {
             const cells = row.querySelectorAll('td');
+            // Precisa de pelo menos Nick, Vazio e Total
             if (cells.length < 3) return;
 
             let total = 0;
-            // Soma da coluna 2 até a PENÚLTIMA (Index Length - 2)
-            // Isso garante que se adicionarmos colunas, elas entram na soma
+            // Soma da coluna 2 até a PENÚLTIMA
+            // Ignora Nick (0), Vazio (1) e Total (última)
             for (let i = 2; i < cells.length - 1; i++) {
                 const val = parseInt(cells[i].innerText);
                 total += isNaN(val) ? 0 : val;
@@ -557,9 +566,11 @@
         function exportarExcel() {
             const table = document.querySelector("table");
             if (!table) return alert("Nenhuma planilha carregada");
+            
             const newSheet = XLSX.utils.table_to_sheet(table);
             const newWorkbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
+            
             XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
         }
 
@@ -574,7 +585,7 @@
 
             let dados = [];
             
-            // Pega linhas ignorando cabeçalho
+            // Pega as linhas (se tiver THEAD, pega TBODY, senão pega todas menos a 1ª)
             let rows = table.querySelectorAll('tbody tr');
             if (rows.length === 0) { 
                 const allRows = table.querySelectorAll('tr');
@@ -588,7 +599,6 @@
                     const nick = cells[0].innerText.trim();
                     
                     // Pega o valor da ÚLTIMA coluna como total
-                    // Isso evita ter que ressomar e garante consistência com o que está na tela
                     const totalCell = cells[cells.length - 1];
                     let totalVal = parseInt(totalCell.innerText);
                     
@@ -603,6 +613,7 @@
             // Ordena do Maior para o Menor
             dados.sort((a, b) => b.pontos - a.pontos);
 
+            // Monta o Texto
             let result = `# ${title} - ${emoji}   (${round})\n\n`;
 
             dados.forEach((jogador, index) => {
@@ -618,4 +629,3 @@
 
 </body>
 </html>
-
