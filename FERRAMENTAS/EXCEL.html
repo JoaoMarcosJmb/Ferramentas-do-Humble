@@ -72,12 +72,12 @@
         .btn-danger:hover { background: #7f1d1d; color: white; }
         input[type="file"] { color: #cbd5e1; }
 
-        /* --- TABELA E SCROLL --- */
+        /* --- TABELA --- */
         .table-container {
             width: 100%;
-            overflow-x: auto; /* Permite scroll lateral */
-            overflow-y: auto; /* Permite scroll vertical */
-            max-height: 70vh; /* Altura máxima */
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 70vh;
             border: 1px solid #334155;
             border-radius: 8px 8px 0 0;
             background: #0f172a;
@@ -87,7 +87,7 @@
         table {
             border-collapse: collapse;
             min-width: 100%;
-            width: max-content; /* OBRIGATÓRIO: Força tabela a expandir para o lado */
+            width: max-content; 
         }
 
         th, td {
@@ -99,7 +99,7 @@
             color: #e5e7eb;
         }
 
-        /* --- STICKY HEADERS --- */
+        /* --- STICKY & COLUNAS ESPECIAIS --- */
         th {
             position: sticky;
             top: 0;
@@ -110,7 +110,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* Nick Fixo na Esquerda */
+        /* Coluna 1: Nick (Fixo Esquerda) */
         td:nth-child(1), th:nth-child(1) {
             position: sticky;
             left: 0;
@@ -119,16 +119,23 @@
             border-right: 2px solid #334155;
             text-align: left;
             font-weight: bold;
+            min-width: 150px;
         }
-
         th:nth-child(1) { z-index: 120; background: #1e293b; }
 
-        /* Total Fixo (Última Coluna) */
-        /* Só aplicamos cor se tiver a classe 'total-col' para não bugar colunas novas */
-        .total-col {
+        /* Coluna 2: Espaço Vazio (Layout Padrão) */
+        td:nth-child(2), th:nth-child(2) {
+            width: 50px;
+            min-width: 50px;
+            background-color: #0d1321;
+            border-right: 1px solid #334155;
+        }
+
+        /* Coluna Total (Sempre a última da linha) */
+        td:last-child, th:last-child {
             font-weight: bold;
-            background-color: #1e293b !important;
-            color: #fbbf24 !important;
+            background-color: #1e293b;
+            color: #fbbf24;
         }
 
         td[contenteditable="true"]:focus { background: #334155; outline: 2px solid #8B1D1D; outline-offset: -2px; }
@@ -198,7 +205,7 @@
         let workbook;
         let sheetName;
 
-        // --- 1. CARREGAR EXCEL (CORRIGIDO: NÃO COME A PRIMEIRA LINHA) ---
+        // --- 1. CARREGAR EXCEL ---
         document.getElementById('input-excel').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -210,7 +217,6 @@
                 sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 
-                // Pega todos os dados brutos, incluindo linhas em branco
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { 
                     header: 1, 
                     defval: "", 
@@ -222,58 +228,90 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // --- 2. CONSTRUTOR INTELIGENTE ---
+        // --- 2. CONSTRUTOR INTELIGENTE (COM ESPAÇADOR E TOTAL NOVO) ---
         function construirTabelaManualmente(dados) {
             if (!dados || dados.length === 0) return;
 
-            // ANALISAR SE A PRIMEIRA LINHA É CABEÇALHO OU DADO
-            // Se a primeira célula não for "Nick", "Nome" ou similar, assumimos que é DADO
-            // e criamos um cabeçalho genérico.
-            let cabecalhos = [];
-            let linhasDeDados = [];
-            
-            const primeiraCelula = dados[0][0] ? String(dados[0][0]).toLowerCase() : "";
-            const pareceCabecalho = primeiraCelula.includes("nick") || primeiraCelula.includes("nome") || primeiraCelula.includes("player");
-
-            if (pareceCabecalho) {
-                cabecalhos = dados[0];
-                linhasDeDados = dados.slice(1);
-            } else {
-                // EXCEL SEM CABEÇALHO (Caso do "Abreuolindo")
-                // Cria cabeçalho artificial baseado na quantidade de colunas da primeira linha
-                const qtdColunas = dados[0].length;
-                cabecalhos = ["Nick"];
-                for(let k=1; k < qtdColunas; k++) {
-                    cabecalhos.push("R" + k); // Cria R1, R2...
-                }
-                cabecalhos[cabecalhos.length - 1] = "TOTAL"; // Força o último a ser Total
-                linhasDeDados = dados; // Usa TODOS os dados, inclusive a linha 0
+            // -- DETECTA SE TEM CABEÇALHO --
+            let temHeader = false;
+            let primeiraCelula = dados[0][0] ? String(dados[0][0]).toLowerCase() : "";
+            if (primeiraCelula.includes("nick") || primeiraCelula.includes("nome") || primeiraCelula.includes("player")) {
+                temHeader = true;
             }
 
+            let cabecalhos = [];
+            let dadosBrutos = [];
+
+            if (temHeader) {
+                // Se já tem header no Excel, usamos ele, mas precisamos garantir que encaixa no layout
+                // (Nick | Vazio | Dados... | Total)
+                // O código assume que se o user mandou header, ele sabe o que tá fazendo,
+                // mas vamos normalizar adicionando o Vazio se faltar.
+                cabecalhos = [...dados[0]];
+                dadosBrutos = dados.slice(1);
+            } else {
+                // SEM HEADER (CASO COMUM DO USUÁRIO)
+                // Criamos um header do zero
+                // A linha 0 é DADO (ex: Abreuolindo)
+                dadosBrutos = dados;
+                
+                // Determina quantas colunas de dados existem
+                let numColsDados = 0;
+                if(dadosBrutos.length > 0) numColsDados = dadosBrutos[0].length;
+
+                // Monta: Nick | (Vazio Inserido) | 1..N | Total (Inserido)
+                cabecalhos = ["Nick", ""]; // Coluna 2 vazia para o espaçador
+                
+                // Pula a coluna 0 (Nick) e conta o resto como rodadas
+                for(let k = 1; k < numColsDados; k++) {
+                    cabecalhos.push((k) + "°");
+                }
+                
+                // Adiciona o Total no final
+                cabecalhos.push("TOTAL");
+            }
+
+            // --- MONTA HTML ---
             let html = '<table id="data-table">';
 
-            // --- CABEÇALHO ---
+            // CABEÇALHO
             html += '<thead><tr>';
             cabecalhos.forEach((col, index) => {
-                const isTotal = index === cabecalhos.length - 1;
-                html += `<th contenteditable="true" class="${isTotal ? 'total-col' : ''}">${col}</th>`;
+                html += `<th contenteditable="true">${col}</th>`;
             });
             html += '</tr></thead>';
 
-            // --- CORPO ---
+            // CORPO
             html += '<tbody>';
-            for (let i = 0; i < linhasDeDados.length; i++) {
-                const linha = linhasDeDados[i];
-                if(linha && linha.length > 0) { // Ignora linhas totalmente vazias se houver
+            for (let i = 0; i < dadosBrutos.length; i++) {
+                const linhaExcel = dadosBrutos[i];
+                if(linhaExcel && linhaExcel.length > 0) {
                     html += '<tr>';
-                    for (let j = 0; j < cabecalhos.length; j++) {
-                        let valor = linha[j];
-                        if (valor === undefined || valor === null) valor = "0"; // Valor padrão 0 se vazio
 
-                        const isTotal = j === cabecalhos.length - 1;
-                        if (isTotal) {
-                            html += `<td contenteditable="false" class="total-col">${valor}</td>`;
-                        } else {
+                    // Se construímos o header manualmente, temos que mapear os dados manualmente também
+                    if (!temHeader) {
+                        // 1. NICK
+                        let nick = linhaExcel[0] || "";
+                        html += `<td contenteditable="true">${nick}</td>`;
+
+                        // 2. ESPAÇADOR (Vazio) - Inserimos artificialmente
+                        html += `<td contenteditable="true"></td>`;
+
+                        // 3. DADOS (Colunas 1 em diante do Excel)
+                        for (let k = 1; k < linhaExcel.length; k++) {
+                            let valor = linhaExcel[k];
+                            if (valor === undefined || valor === null) valor = "0";
+                            html += `<td contenteditable="true">${valor}</td>`;
+                        }
+
+                        // 4. TOTAL (Inserimos artificialmente como 0, o JS calcula depois)
+                        html += `<td contenteditable="false">0</td>`;
+                    } 
+                    else {
+                        // Se tinha header, segue a estrutura original, mas cuidado com o Total
+                        // Se não tiver coluna Total no final, adicionamos
+                        for (let j = 0; j < linhaExcel.length; j++) {
+                            let valor = linhaExcel[j] || "";
                             html += `<td contenteditable="true">${valor}</td>`;
                         }
                     }
@@ -286,19 +324,27 @@
             finalizarCarga();
         }
 
-        // --- 3. PADRÃO ---
         function criarTabelaPadrao() {
+            // Simula o formato "Sem Header" para testar a lógica
             const dadosPadrao = [
-                ["Nick", "", "1°", "2°", "3°", "4°", "TOTAL"], 
-                ["Player1", "", 0, 0, 0, 0, 0],
-                ["Player2", "", 0, 0, 0, 0, 0],
-                ["Player3", "", 0, 0, 0, 0, 0],
-                ["Player4", "", 0, 0, 0, 0, 0]
+                ["Player1", 0, 0, 0, 0],
+                ["Player2", 0, 0, 0, 0],
+                ["Player3", 0, 0, 0, 0]
             ];
-            // Para tabela padrão, sabemos que a linha 0 é cabeçalho
-            // Então passamos direto para a lógica de construção, mas simulamos "Nick" para ele detectar
-            construirTabelaManualmente(dadosPadrao);
+            // Mas aqui chamamos direto a construção manual sabendo que vai cair no "Sem Header"
+            // Ou podemos forçar o header:
+            const html = `
+                <table id="data-table">
+                    <thead><tr><th>Nick</th><th></th><th>1°</th><th>2°</th><th>3°</th><th>4°</th><th>TOTAL</th></tr></thead>
+                    <tbody>
+                        <tr><td contenteditable="true">Player1</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                        <tr><td contenteditable="true">Player2</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('output').innerHTML = html;
             sheetName = "Pontuacao";
+            finalizarCarga();
         }
 
         function finalizarCarga() {
@@ -307,13 +353,13 @@
             dispararCalculo(); 
         }
 
-        // --- 4. EDIÇÃO ---
+        // --- 3. EDIÇÃO ---
         function adicionarLinha() {
             const table = document.getElementById("data-table");
             if (!table) return;
             const tbody = table.querySelector("tbody");
             const headRow = table.querySelector("thead tr");
-            const colCount = headRow ? headRow.cells.length : 7;
+            const colCount = headRow.cells.length;
             
             const newRow = tbody.insertRow();
             for (let i = 0; i < colCount; i++) {
@@ -322,7 +368,6 @@
                 if (i === colCount - 1) { 
                     cell.innerText = "0"; 
                     cell.contentEditable = "false"; 
-                    cell.classList.add('total-col');
                 } else if (i === 0) {
                     cell.innerText = "Novo";
                 } else {
@@ -335,6 +380,8 @@
             const table = document.getElementById("data-table");
             if (!table) return;
             const headRow = table.querySelector("thead tr");
+            
+            // Adiciona ANTES do Total (última coluna)
             const totalIndex = headRow.cells.length - 1;
             
             const newTh = document.createElement("th");
@@ -361,9 +408,10 @@
         function removerColuna() {
             const table = document.getElementById("data-table");
             const headRow = table.querySelector("thead tr");
-            if (headRow.cells.length <= 3) return alert("Mínimo atingido.");
+            // Nick, Vazio e Total são intocáveis (3 colunas)
+            if (headRow.cells.length <= 3) return alert("Limite mínimo atingido.");
             
-            const targetIndex = headRow.cells.length - 2;
+            const targetIndex = headRow.cells.length - 2; // Penúltima
             headRow.deleteCell(targetIndex);
             
             const bodyRows = table.querySelectorAll("tbody tr");
@@ -371,7 +419,7 @@
             dispararCalculo();
         }
 
-        // --- 5. CÁLCULO ---
+        // --- 4. CÁLCULO ---
         function ativarCalculoAutomatico() {
             const container = document.getElementById('output');
             container.removeEventListener('input', aoDigitar);
@@ -394,6 +442,8 @@
             if (cells.length < 3) return;
             let total = 0;
             
+            // Soma começa no índice 2 (pula Nick e Espaçador)
+            // Vai até a penúltima coluna (pula Total)
             for (let i = 2; i < cells.length - 1; i++) {
                 let texto = cells[i].innerText.replace(',', '.').trim();
                 let val = parseFloat(texto);
@@ -407,7 +457,7 @@
             else totalCell.style.color = "#fbbf24";
         }
 
-        // --- 6. EXPORTAR ---
+        // --- 5. EXPORTAR ---
         function exportarExcel() {
             const table = document.getElementById("data-table");
             if (!table) return alert("Nada para salvar.");
@@ -417,7 +467,7 @@
             XLSX.writeFile(wb, "HumbleLeague_Tabela.xlsx");
         }
 
-        // --- 7. DISCORD ---
+        // --- 6. DISCORD ---
         function gerarDiscord() {
             const table = document.getElementById("data-table");
             if (!table) return;
