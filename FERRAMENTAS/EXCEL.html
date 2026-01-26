@@ -12,34 +12,19 @@
             margin: 0;
             font-family: 'Segoe UI', Arial, sans-serif;
             color: #e5e7eb;
-            background:
-                linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
-                url("../IMAGENS/Fundo.png");
+            background: linear-gradient(rgba(22,26,35,0.95), rgba(22,26,35,0.95)), url("../IMAGENS/Fundo.png");
             background-size: cover;
-            background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* --- SCROLLBAR CUSTOMIZADA (ADICIONADO PARA CORRIGIR NAVEGAÇÃO) --- */
-        ::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #475569; 
-            border-radius: 4px;
-            border: 2px solid #0f172a;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #8B1D1D;
-        }
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 12px; height: 12px; }
+        ::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; border: 2px solid #0f172a; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B1D1D; }
 
         /* --- NAVBAR --- */
         .navbar {
@@ -47,280 +32,121 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 40px;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             border-bottom: 1px solid #1e293b;
-            backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
-            z-index: 2000; /* Aumentado para ficar acima da tabela */
+            z-index: 2000;
         }
+        .nav-brand { display: flex; align-items: center; gap: 15px; font-weight: bold; font-size: 20px; }
+        .nav-brand img { height: 40px; border-radius: 50%; }
+        .nav-links a { color: #94a3b8; text-decoration: none; padding: 5px 10px; transition: 0.2s; font-weight: 500; }
+        .nav-links a:hover { color: white; background: rgba(255,255,255,0.05); border-radius: 4px; }
 
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        .nav-brand img {
-            height: 40px;
-            width: auto;
-            border-radius: 50%;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links a {
-            color: #94a3b8;
-            font-weight: 500;
-            transition: 0.2s;
-            padding: 5px 10px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 16px;
-        }
-
-        .nav-links a:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* --- CONTEÚDO --- */
+        /* --- CONTAINER --- */
         .container {
             max-width: 1200px;
             margin: 40px auto;
-            background: rgba(22,26,35,0.95);
+            background: #161a23;
             border: 1px solid #1f2933;
             border-radius: 16px;
             padding: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            width: 90%; 
+            width: 90%;
             flex: 1;
             display: flex;
             flex-direction: column;
-        }
-        
-        .page-title {
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-size: 24px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-            color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* BOTÕES E INPUTS */
-        input[type="file"] {
-            margin-bottom: 0;
-            color: #ccc;
-        }
+        .page-title { margin-top: 0; border-bottom: 1px solid #334155; padding-bottom: 15px; color: #fff; font-size: 24px; }
 
-        .btn {
-            background: #8B1D1D;
-            color: #fff;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 10px;
-            font-weight: bold;
-            transition: background 0.2s;
-            margin-bottom: 5px;
-        }
+        /* --- BOTÕES --- */
+        .actions-bar { background: rgba(15, 23, 42, 0.6); padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .table-controls { padding: 15px; background: #0f172a; border: 1px solid #334155; border-top: none; border-radius: 0 0 8px 8px; display: flex; gap: 10px; flex-wrap: wrap; }
 
-        .btn:hover {
-            background: #a32424;
-        }
+        .btn { background: #8B1D1D; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn:hover { background: #a32424; transform: translateY(-1px); }
+        .btn-secondary { background: #1e293b; border: 1px solid #334155; }
+        .btn-secondary:hover { background: #2d3b52; }
+        .btn-danger { background: #450a0a; border: 1px solid #7f1d1d; color: #fca5a5; }
+        .btn-danger:hover { background: #7f1d1d; color: white; }
+        input[type="file"] { color: #cbd5e1; }
 
-        .btn-secondary {
-            background: #1e293b;
-            border: 1px solid #334155;
-        }
-        
-        .btn-secondary:hover {
-            background: #2d3b52;
-        }
-        
-        /* Botões de Remover (Vermelho Escuro) */
-        .btn-danger {
-            background: #450a0a;
-            border: 1px solid #7f1d1d;
-            color: #fca5a5;
-        }
-        .btn-danger:hover {
-            background: #7f1d1d;
-            color: white;
-        }
-
-        .actions-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.5);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        /* CONTROLES DE TABELA (LINHA DE BAIXO) */
-        .table-controls {
-            padding: 15px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        /* --- TABELA (AJUSTES PARA SCROLL) --- */
+        /* --- ESTRUTURA DA TABELA --- */
         .table-container {
             width: 100%;
-            overflow-x: auto; /* Permite scroll horizontal */
-            margin-top: 10px;
-            max-height: 500px;
-            overflow-y: auto;
+            /* CORREÇÃO VISUAL: Removemos o limite de altura. Agora a tabela cresce infinitamente */
+            /* Se preferir scroll interno, mude para max-height: 80vh; */
+            overflow-x: auto; 
             border: 1px solid #334155;
             border-radius: 8px 8px 0 0;
             background: #0f172a;
-            display: block; /* Garante bloco para scroll */
+            position: relative;
         }
 
         table {
-            min-width: 100%; /* Ocupa pelo menos a tela toda */
-            width: max-content; /* IMPORTANTE: Deixa a tabela crescer para o lado o quanto precisar */
             border-collapse: collapse;
+            min-width: 100%;
+            width: max-content; /* Força expansão lateral */
         }
 
         th, td {
             border: 1px solid #334155;
-            padding: 10px 15px;
+            padding: 12px 16px;
             text-align: center;
-            white-space: nowrap; /* IMPORTANTE: Não deixa o texto quebrar, forçando scroll lateral */
+            white-space: nowrap; 
             background: #0f172a;
+            color: #e5e7eb;
         }
 
-        /* Coluna 1: NICK (Fixa na esquerda) */
+        /* --- CABEÇALHOS E STICKY --- */
+        /* O cabeçalho só fica fixo se a tabela estiver dentro da tela. 
+           Como removemos o scroll interno, o sticky se baseia na janela */
+        th {
+            position: sticky;
+            top: 0; /* Cola no topo */
+            z-index: 100;
+            background: #1e293b;
+            color: #94a3b8;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* Nick Fixo na Esquerda */
         td:nth-child(1), th:nth-child(1) {
-            text-align: left;
-            min-width: 150px;
-            font-weight: bold;
-            color: #e5e7eb;
-            background: #131c2e;
-            
-            /* Sticky Positioning */
             position: sticky;
             left: 0;
-            z-index: 20;
+            z-index: 110;
+            background: #131c2e;
             border-right: 2px solid #334155;
-        }
-
-        /* Header (Fixo no topo) */
-        th {
-            background: #1e293b;
-            color: #94a3b8;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            font-weight: 600;
-        }
-        
-        /* Canto Superior Esquerdo (Nick Header) - Acima de tudo */
-        th:nth-child(1) {
-            z-index: 30;
-        }
-
-        /* Coluna 2: ESPAÇO VAZIO */
-        td:nth-child(2), th:nth-child(2) {
-            width: 50px;
-            background-color: #0d1321;
-        }
-
-        /* Última Coluna: TOTAL */
-        table tr td:last-child, table tr th:last-child {
+            text-align: left;
             font-weight: bold;
+        }
+
+        th:nth-child(1) { z-index: 120; background: #1e293b; }
+
+        /* Coluna Total */
+        td:last-child, th:last-child {
+            font-weight: bold;
+            background-color: #1e293b;
             color: #fbbf24;
-            background-color: #162032;
         }
 
-        td[contenteditable="true"]:focus {
-            background: #1e293b;
-            outline: 2px solid #8B1D1D;
-            outline-offset: -2px;
-        }
+        td[contenteditable="true"]:focus { background: #334155; outline: 2px solid #8B1D1D; outline-offset: -2px; }
 
-        /* AREA DO DISCORD */
-        .discord-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #334155;
-        }
-
-        .discord-inputs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .discord-inputs input {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            flex: 1;
-        }
-
-        textarea {
-            width: 100%;
-            height: 150px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: #e5e7eb;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-family: 'Consolas', monospace;
-            resize: vertical;
-            box-sizing: border-box;
-        }
-
-        h3 {
-            margin-top: 0;
-            color: #8B1D1D;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        /* --- RODAPÉ --- */
-        .footer-credits {
-            background: rgba(10, 15, 30, 0.95);
-            border-top: 1px solid #1e293b;
-            padding: 20px;
-            text-align: center;
-            width: 100%;
-            margin-top: auto;
-        }
-
-        .credits-content p {
-            color: #94a3b8;
-            font-size: 14px;
-            margin: 0;
-        }
+        /* --- DISCORD --- */
+        .discord-section { margin-top: 30px; padding-top: 20px; border-top: 1px solid #334155; }
+        .discord-inputs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .discord-inputs input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 6px; flex: 1; }
+        textarea { width: 100%; height: 150px; background: #0f172a; border: 1px solid #334155; color: #e5e7eb; padding: 15px; border-radius: 6px; resize: vertical; font-family: 'Consolas', monospace; box-sizing: border-box;}
+        
+        .footer-credits { margin-top: auto; padding: 20px; text-align: center; color: #64748b; font-size: 14px; border-top: 1px solid #1e293b; }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <div class="nav-brand">
-            <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
             <span>Central de Ferramentas</span>
         </div>
         <div class="nav-links">
@@ -329,20 +155,18 @@
     </nav>
 
     <div class="container">
-        
         <h1 class="page-title">📊 Leitor / Editor de Tabela</h1>
 
         <div class="actions-bar">
-            <input type="file" id="input-excel" accept=".xlsx,.xls, .csv">
+            <input type="file" id="input-excel" accept=".xlsx,.xls,.csv">
             <button class="btn btn-secondary" onclick="criarTabelaPadrao()">📝 Criar Tabela Padrão</button>
             <button class="btn" onclick="exportarExcel()">💾 Salvar Excel</button>
         </div>
 
         <div class="table-container">
-             <div id="output">
-                <div style="padding: 40px; text-align: center; color: #64748b;">
+            <div id="output">
+                <div style="padding: 50px; text-align: center; color: #64748b;">
                     <p>Nenhuma planilha carregada.</p>
-                    <p style="font-size: 14px;">Carregue um arquivo .xlsx/.csv acima ou clique em "Criar Tabela Padrão".</p>
                 </div>
             </div>
         </div>
@@ -358,187 +182,171 @@
         <div class="discord-section">
             <h3>Gerador de Embed Discord</h3>
             <div class="discord-inputs">
-                <input type="text" id="dc-title" value="Pontos Humble League" placeholder="Título do Evento">
-                <input type="text" id="dc-emoji" value="<:Rayquaza:1427676581727309865>" placeholder="Emoji Customizado">
-                <input type="text" id="dc-round" value="3/4" placeholder="Rodada (ex: 3/4)">
+                <input type="text" id="dc-title" value="Pontos Humble League">
+                <input type="text" id="dc-emoji" value="<:Rayquaza:1427676581727309865>">
+                <input type="text" id="dc-round" value="3/4">
             </div>
             <button class="btn" style="background-color: #5865F2;" onclick="gerarDiscord()">📑 Gerar Texto Discord</button>
-            
-            <textarea id="discord-output" placeholder="O código formatado aparecerá aqui..."></textarea>
+            <textarea id="discord-output" readonly></textarea>
         </div>
     </div>
 
     <footer class="footer-credits">
-        <div class="credits-content">
-            <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
-        </div>
+        <p>© 2025 Humble Pixelmon - Todos os direitos reservados.</p>
     </footer>
 
     <script>
         let workbook;
         let sheetName;
 
-        // --- 1. CARREGAR EXCEL ---
+        // --- 1. CARREGAR EXCEL (CORREÇÃO DE LINHAS SUMINDO) ---
         document.getElementById('input-excel').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
+            
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
                 workbook = XLSX.read(data, { type: 'array' });
                 sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 
-                // Gera o HTML
-                const html = XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
-                document.getElementById('output').innerHTML = html;
+                // MUDANÇA IMPORTANTE: blankrows: true
+                // Isso obriga o leitor a trazer TODAS as linhas, mesmo as vazias no meio
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { 
+                    header: 1, 
+                    defval: "", 
+                    blankrows: true 
+                });
                 
-                finalizarCargaTabela();
+                construirTabelaManualmente(jsonData);
             };
             reader.readAsArrayBuffer(file);
         });
 
-        // --- 2. CRIAR TABELA PADRÃO ---
-        function criarTabelaPadrao() {
-            const html = `
-                <table id="data-table">
-                    <thead>
-                        <tr>
-                            <th>Nick</th>
-                            <th></th> <th>1°</th>
-                            <th>2°</th>
-                            <th>3°</th>
-                            <th>4°</th>
-                            <th>TOTAL</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td contenteditable="true">Player1</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
-                        <tr><td contenteditable="true">Player2</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
-                        <tr><td contenteditable="true">Player3</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
-                        <tr><td contenteditable="true">Player4</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
-                        <tr><td contenteditable="true">Player5</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
-                    </tbody>
-                </table>
-            `;
+        // --- 2. CONSTRUTOR DE TABELA ---
+        function construirTabelaManualmente(dados) {
+            if (!dados || dados.length === 0) return;
+
+            let html = '<table id="data-table">';
+
+            // --- CABEÇALHO ---
+            html += '<thead><tr>';
+            const cabecalhos = dados[0]; 
+            
+            cabecalhos.forEach((col, index) => {
+                html += `<th contenteditable="true">${col || "Coluna " + (index+1)}</th>`;
+            });
+            html += '</tr></thead>';
+
+            // --- CORPO ---
+            html += '<tbody>';
+            // Loop começa em 1 pois 0 é cabeçalho
+            for (let i = 1; i < dados.length; i++) {
+                const linha = dados[i];
+                // Verifica se a linha não é totalmente vazia/nula antes de criar
+                if(linha) {
+                    html += '<tr>';
+                    // Garante consistência de colunas com o cabeçalho
+                    for (let j = 0; j < cabecalhos.length; j++) {
+                        let valor = linha[j];
+                        if (valor === undefined || valor === null) valor = "";
+
+                        const isTotal = j === cabecalhos.length - 1;
+                        if (isTotal) {
+                            html += `<td contenteditable="false">${valor}</td>`;
+                        } else {
+                            html += `<td contenteditable="true">${valor}</td>`;
+                        }
+                    }
+                    html += '</tr>';
+                }
+            }
+            html += '</tbody></table>';
+
             document.getElementById('output').innerHTML = html;
+            finalizarCarga();
+        }
+
+        // --- 3. PADRÃO ---
+        function criarTabelaPadrao() {
+            const dadosPadrao = [
+                ["Nick", "", "1°", "2°", "3°", "4°", "TOTAL"], 
+                ["Player1", "", 0, 0, 0, 0, 0],
+                ["Player2", "", 0, 0, 0, 0, 0],
+                ["Player3", "", 0, 0, 0, 0, 0],
+                ["Player4", "", 0, 0, 0, 0, 0]
+            ];
+            construirTabelaManualmente(dadosPadrao);
             sheetName = "Pontuacao";
-            finalizarCargaTabela();
         }
 
-        function finalizarCargaTabela() {
-            // Mostra os botões de controle
+        function finalizarCarga() {
             document.getElementById('controls-area').style.display = 'flex';
-            // Ativa os cálculos
             ativarCalculoAutomatico();
-            // Dispara um cálculo inicial
-            dispararCalculo();
+            dispararCalculo(); 
         }
 
-        // --- 3. FUNÇÕES DE EDIÇÃO (CORRIGIDAS E ROBUSTAS) ---
-
+        // --- 4. EDIÇÃO ---
         function adicionarLinha() {
             const table = document.getElementById("data-table");
             if (!table) return;
-
-            // Pega o número de colunas atual (baseado na primeira linha)
-            const firstRow = table.rows[0];
-            const colCount = firstRow.cells.length;
+            const tbody = table.querySelector("tbody");
+            const headRow = table.querySelector("thead tr");
+            const colCount = headRow ? headRow.cells.length : 7;
             
-            // Tenta achar tbody, se não achar usa a table direta
-            const target = table.querySelector("tbody") || table;
-            const newRow = target.insertRow(-1); // Insere no final
-
+            const newRow = tbody.insertRow();
             for (let i = 0; i < colCount; i++) {
-                const cell = newRow.insertCell(i);
+                const cell = newRow.insertCell();
                 cell.contentEditable = "true";
-                
-                // Lógica de preenchimento padrão
-                if (i === 0) {
-                    cell.innerText = "Novo"; // Nick
-                } else if (i === colCount - 1) {
-                    cell.innerText = "0"; 
-                    cell.contentEditable = "false"; // Total (Bloqueado)
-                } else if (i === 1) {
-                    cell.innerText = ""; // Vazio
-                } else {
-                    cell.innerText = "0"; // Pontos
-                }
+                if (i === 0) cell.innerText = "Novo";
+                else if (i === colCount - 1) { cell.innerText = "0"; cell.contentEditable = "false"; }
+                else if (i === 1) cell.innerText = "";
+                else cell.innerText = "0";
             }
         }
 
         function adicionarColuna() {
             const table = document.getElementById("data-table");
-            if (!table) return alert("Erro: Tabela não encontrada.");
+            if (!table) return;
+            const headRow = table.querySelector("thead tr");
+            const totalIndex = headRow.cells.length - 1;
+            
+            const newTh = document.createElement("th");
+            newTh.contentEditable = "true";
+            newTh.innerText = "Nova";
+            headRow.insertBefore(newTh, headRow.cells[totalIndex]);
 
-            // Pega TODAS as linhas (Header + Body)
-            const allRows = Array.from(table.rows);
-            if (allRows.length === 0) return;
-
-            // Descobre onde inserir (antes da última coluna = Total)
-            const lastColIndex = allRows[0].cells.length - 1;
-
-            allRows.forEach((row, index) => {
-                // Se for a primeira linha (índice 0), cria Header (th), senão cria Célula (td)
-                const isHeader = (index === 0);
-                const newCell = document.createElement(isHeader ? "th" : "td");
-                
-                newCell.contentEditable = "true";
-                newCell.innerText = isHeader ? "Nova" : "0";
-                
-                // Estilo para manter consistência com o tema
-                if (isHeader) {
-                    newCell.style.background = "#1e293b";
-                    newCell.style.fontWeight = "bold";
-                } else {
-                    newCell.style.background = "#0f172a";
-                }
-
-                // Insere ANTES do Total
-                // Verificação de segurança: se a linha for mais curta que o esperado, adiciona no final
-                if (row.cells.length > lastColIndex) {
-                    row.insertBefore(newCell, row.cells[lastColIndex]);
-                } else {
-                    row.appendChild(newCell);
-                }
+            const bodyRows = table.querySelectorAll("tbody tr");
+            bodyRows.forEach(row => {
+                const newTd = document.createElement("td");
+                newTd.contentEditable = "true";
+                newTd.innerText = "0";
+                row.insertBefore(newTd, row.cells[totalIndex]);
             });
-
-            // Força recálculo dos totais
             dispararCalculo();
         }
 
         function removerLinha() {
             const table = document.getElementById("data-table");
-            if (!table) return;
-            // Garante que não apague o cabeçalho
-            if (table.rows.length > 2) { 
-                table.deleteRow(table.rows.length - 1);
-            } else {
-                alert("Não é possível remover mais linhas.");
-            }
+            const tbody = table.querySelector("tbody");
+            if (tbody && tbody.rows.length > 0) tbody.deleteRow(tbody.rows.length - 1);
         }
 
         function removerColuna() {
             const table = document.getElementById("data-table");
-            if (!table) return;
-            const colCount = table.rows[0].cells.length;
+            const headRow = table.querySelector("thead tr");
+            if (headRow.cells.length <= 3) return alert("Mínimo atingido.");
             
-            // Segurança: Manter Nick, Vazio e Total (3 colunas)
-            if (colCount <= 3) return alert("Limite mínimo de colunas atingido.");
-
-            // Remove a penúltima coluna (a que está antes do Total)
-            const removeIndex = colCount - 2;
-
-            Array.from(table.rows).forEach(row => {
-                if (row.cells.length > removeIndex) {
-                    row.deleteCell(removeIndex);
-                }
-            });
+            const targetIndex = headRow.cells.length - 2;
+            headRow.deleteCell(targetIndex);
             
+            const bodyRows = table.querySelectorAll("tbody tr");
+            bodyRows.forEach(r => r.deleteCell(targetIndex));
             dispararCalculo();
         }
 
-        // --- 4. SOMA AUTOMÁTICA ---
+        // --- 5. CÁLCULO ---
         function ativarCalculoAutomatico() {
             const container = document.getElementById('output');
             container.removeEventListener('input', aoDigitar);
@@ -546,90 +354,71 @@
         }
 
         function aoDigitar(e) {
-            // Se mudou algo numa célula TD, recalcula a linha dela
-            if (e.target.tagName === 'TD') {
-                calcularRow(e.target.parentElement);
-            }
+            if (e.target.tagName === 'TD') calcularRow(e.target.parentElement);
         }
 
         function dispararCalculo() {
             const table = document.getElementById("data-table");
             if (!table) return;
-            // Calcula todas as linhas (pulando o cabeçalho)
-            for (let i = 1; i < table.rows.length; i++) {
-                calcularRow(table.rows[i]);
-            }
+            const rows = table.querySelectorAll("tbody tr");
+            rows.forEach(row => calcularRow(row));
         }
 
         function calcularRow(row) {
             const cells = row.cells;
             if (cells.length < 3) return;
-
             let total = 0;
-            // Soma da coluna 2 até a PENÚLTIMA (Index Length - 2)
-            // Ignora: 0 (Nick), 1 (Vazio) e Última (Total)
+            
             for (let i = 2; i < cells.length - 1; i++) {
-                const valor = parseInt(cells[i].innerText);
-                total += isNaN(valor) ? 0 : valor;
+                // Converte vírgula para ponto e remove espaços
+                let texto = cells[i].innerText.replace(',', '.').trim();
+                let val = parseFloat(texto);
+                total += isNaN(val) ? 0 : val;
             }
-
-            // Atualiza a última célula (Total)
+            
             cells[cells.length - 1].innerText = total;
+            
+            if(total > 0) cells[cells.length - 1].style.color = "#4ade80";
+            else cells[cells.length - 1].style.color = "#fbbf24";
         }
 
-        // --- 5. EXPORTAR EXCEL ---
+        // --- 6. EXPORTAR ---
         function exportarExcel() {
-            const table = document.querySelector("table");
-            if (!table) return alert("Nenhuma planilha carregada");
-            const newSheet = XLSX.utils.table_to_sheet(table);
-            const newWorkbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
-            XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
+            const table = document.getElementById("data-table");
+            if (!table) return alert("Nada para salvar.");
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.table_to_sheet(table);
+            XLSX.utils.book_append_sheet(wb, ws, sheetName || "Pontuacao");
+            XLSX.writeFile(wb, "HumbleLeague_Tabela.xlsx");
         }
 
-        // --- 6. GERAR DISCORD (DINÂMICO) ---
+        // --- 7. DISCORD ---
         function gerarDiscord() {
-            const table = document.querySelector("table");
-            if (!table) return alert("Crie ou carregue uma tabela primeiro!");
-
+            const table = document.getElementById("data-table");
+            if (!table) return;
             const title = document.getElementById('dc-title').value;
             const emoji = document.getElementById('dc-emoji').value;
             const round = document.getElementById('dc-round').value;
 
             let dados = [];
-            
-            // Pega linhas ignorando cabeçalho (row 0)
-            const rows = Array.from(table.rows).slice(1);
+            const rows = table.querySelectorAll("tbody tr");
 
             rows.forEach(row => {
                 const cells = row.cells;
-                
                 if (cells.length >= 3) {
                     const nick = cells[0].innerText.trim();
-                    // Pega o valor da ÚLTIMA coluna como total
-                    const totalVal = parseInt(cells[cells.length - 1].innerText) || 0;
-
-                    if (nick) { 
-                        dados.push({ nick: nick, pontos: totalVal });
-                    }
+                    const total = parseFloat(cells[cells.length - 1].innerText) || 0;
+                    if (nick) dados.push({ nick, pontos: total });
                 }
             });
 
-            // Ordena do Maior para o Menor
             dados.sort((a, b) => b.pontos - a.pontos);
 
-            let result = `# ${title} - ${emoji}   (${round})\n\n`;
-
-            dados.forEach((jogador, index) => {
-                const posicao = index + 1;
-                result += `> **${posicao}°: ${jogador.nick} -> ${jogador.pontos}**\n`;
-            });
-
-            const outputBox = document.getElementById('discord-output');
-            outputBox.value = result;
-            outputBox.select();
+            let txt = `# ${title} - ${emoji}   (${round})\n\n`;
+            dados.forEach((p, i) => txt += `> **${i+1}°: ${p.nick} -> ${p.pontos}**\n`);
+            
+            document.getElementById('discord-output').value = txt;
         }
     </script>
-
 </body>
 </html>
