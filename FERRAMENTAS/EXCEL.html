@@ -109,6 +109,7 @@
             margin-right: 10px;
             font-weight: bold;
             transition: background 0.2s;
+            margin-bottom: 5px;
         }
 
         .btn:hover {
@@ -124,6 +125,17 @@
             background: #2d3b52;
         }
 
+        .btn-danger {
+            background: #450a0a;
+            border: 1px solid #7f1d1d;
+            color: #fca5a5;
+        }
+        
+        .btn-danger:hover {
+            background: #7f1d1d;
+            color: white;
+        }
+
         .actions-bar {
             display: flex;
             flex-wrap: wrap;
@@ -135,6 +147,17 @@
             border-radius: 8px;
         }
 
+        .table-controls {
+            padding: 15px; 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+        }
+
         /* TABELA */
         .table-container {
             overflow-x: auto;
@@ -142,7 +165,7 @@
             max-height: 500px;
             overflow-y: auto;
             border: 1px solid #334155;
-            border-radius: 8px;
+            border-radius: 8px 8px 0 0;
         }
 
         table {
@@ -172,8 +195,8 @@
             background-color: #0d1321;
         }
 
-        /* Tenta estilizar a última coluna como Total se for a tabela padrão (7 colunas) */
-        table tr td:nth-child(7), table tr th:nth-child(7) {
+        /* Estiliza a última coluna dinamicamente como Total */
+        table tr td:last-child, table tr th:last-child {
             font-weight: bold;
             color: #fbbf24;
             background-color: #162032;
@@ -280,11 +303,21 @@
             <button class="btn" onclick="exportarExcel()">💾 Salvar Excel</button>
         </div>
 
-        <div class="table-container" id="output">
-            <div style="padding: 40px; text-align: center; color: #64748b;">
-                <p>Nenhuma planilha carregada.</p>
-                <p style="font-size: 14px;">Carregue um arquivo .xlsx/.csv acima ou clique em "Criar Tabela Padrão".</p>
+        <div class="table-container">
+            <div id="output">
+                <div style="padding: 40px; text-align: center; color: #64748b;">
+                    <p>Nenhuma planilha carregada.</p>
+                    <p style="font-size: 14px;">Carregue um arquivo .xlsx/.csv acima ou clique em "Criar Tabela Padrão".</p>
+                </div>
             </div>
+        </div>
+        
+        <div class="table-controls" id="controls-area" style="display:none;">
+            <button class="btn btn-secondary" onclick="adicionarLinha()">+ Linha</button>
+            <button class="btn btn-secondary" onclick="adicionarColuna()">+ Coluna</button>
+            <span style="border-left: 1px solid #334155; margin: 0 5px;"></span>
+            <button class="btn btn-danger" onclick="removerLinha()">- Remover Linha</button>
+            <button class="btn btn-danger" onclick="removerColuna()">- Remover Coluna</button>
         </div>
 
         <div class="discord-section">
@@ -322,15 +355,15 @@
                 const sheet = workbook.Sheets[sheetName];
                 
                 // Gera o HTML
-                document.getElementById('output').innerHTML =
-                    XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
+                const html = XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
+                document.getElementById('output').innerHTML = html;
                 
-                ativarCalculoAutomatico();
+                finalizarCargaTabela();
             };
             reader.readAsArrayBuffer(file);
         });
 
-        // --- 2. CRIAR TABELA PADRÃO (7 COLUNAS) ---
+        // --- 2. CRIAR TABELA PADRÃO ---
         function criarTabelaPadrao() {
             const html = `
                 <table id="data-table">
@@ -352,60 +385,142 @@
                         <tr><td contenteditable="true">Player5</td><td contenteditable="true"></td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="true">0</td><td contenteditable="false">0</td></tr>
                     </tbody>
                 </table>
-                <div style="padding: 10px;">
-                    <button class="btn btn-secondary" onclick="adicionarLinha()" style="font-size:13px;">+ Adicionar Linha</button>
-                </div>
             `;
             document.getElementById('output').innerHTML = html;
             sheetName = "Pontuacao";
+            finalizarCargaTabela();
+        }
+
+        function finalizarCargaTabela() {
+            document.getElementById('controls-area').style.display = 'flex';
             ativarCalculoAutomatico();
         }
 
+        // --- 3. EDIÇÃO DINÂMICA (ADD/REMOVE) ---
+        
         function adicionarLinha() {
-            const table = document.querySelector("#data-table tbody");
-            if(table) {
-                const row = table.insertRow();
-                row.innerHTML = `
-                    <td contenteditable="true"></td>
-                    <td contenteditable="true"></td>
-                    <td contenteditable="true">0</td>
-                    <td contenteditable="true">0</td>
-                    <td contenteditable="true">0</td>
-                    <td contenteditable="true">0</td>
-                    <td contenteditable="false">0</td>
-                `;
+            const table = document.getElementById("data-table");
+            if (!table) return;
+            const tbody = table.querySelector("tbody");
+            const headerCells = table.rows[0].cells.length; // Conta colunas atuais
+            
+            const newRow = tbody.insertRow();
+            
+            for (let i = 0; i < headerCells; i++) {
+                const cell = newRow.insertCell();
+                cell.contentEditable = "true";
+                
+                if (i >= 2 && i < headerCells - 1) {
+                    cell.innerText = "0"; // Colunas de pontos
+                } else if (i === headerCells - 1) {
+                    cell.innerText = "0"; 
+                    cell.contentEditable = "false"; // Total bloqueado
+                }
             }
         }
 
-        // --- 3. SOMA AUTOMÁTICA (VISUAL) ---
+        function adicionarColuna() {
+            const table = document.getElementById("data-table");
+            if (!table) return;
+
+            // Adiciona no Header (antes do Total)
+            const headRow = table.querySelector("thead tr");
+            const totalIndex = headRow.cells.length - 1;
+            const newTh = document.createElement("th");
+            newTh.innerText = "Extra";
+            newTh.contentEditable = "true";
+            headRow.insertBefore(newTh, headRow.cells[totalIndex]);
+
+            // Adiciona nas Linhas (antes do Total)
+            const bodyRows = table.querySelectorAll("tbody tr");
+            bodyRows.forEach(row => {
+                const newTd = document.createElement("td");
+                newTd.contentEditable = "true";
+                newTd.innerText = "0";
+                row.insertBefore(newTd, row.cells[totalIndex]);
+            });
+
+            // Recalcula
+            dispararCalculo();
+        }
+
+        function removerLinha() {
+            const table = document.getElementById("data-table");
+            if (!table) return;
+            const tbody = table.querySelector("tbody");
+            if (tbody.rows.length > 1) { // Mantém pelo menos 1 linha
+                tbody.deleteRow(-1);
+            } else {
+                alert("Não é possível remover a última linha!");
+            }
+        }
+
+        function removerColuna() {
+            const table = document.getElementById("data-table");
+            if (!table) return;
+            const headRow = table.querySelector("thead tr");
+            
+            // Segurança: Não remover se tiver 4 ou menos colunas (Nick, Vazio, 1 Ponto, Total)
+            if (headRow.cells.length <= 4) {
+                return alert("Não é possível remover mais colunas básicas.");
+            }
+
+            // Remove a PENÚLTIMA coluna (antes do Total)
+            const targetIndex = headRow.cells.length - 2; 
+
+            headRow.deleteCell(targetIndex);
+
+            const bodyRows = table.querySelectorAll("tbody tr");
+            bodyRows.forEach(row => {
+                row.deleteCell(targetIndex);
+            });
+            
+            dispararCalculo();
+        }
+
+        // --- 4. SOMA AUTOMÁTICA ROBUSTA ---
         function ativarCalculoAutomatico() {
             const container = document.getElementById('output');
             container.removeEventListener('input', calcularLinha);
             container.addEventListener('input', calcularLinha);
         }
 
-        function calcularLinha(e) {
-            const cell = e.target;
-            // Só executa se estiver dentro de uma TD
-            if (cell.tagName === 'TD') {
-                const row = cell.parentElement;
-                const cells = row.querySelectorAll('td');
-
-                // Mantivemos a lógica visual apenas para a tabela padrão (7 colunas)
-                // Para evitar bugar planilhas pequenas importadas
-                if (cells.length >= 7) {
-                    let total = 0;
-                    // Soma da coluna 2 até a penúltima
-                    for (let i = 2; i < cells.length - 1; i++) {
-                        total += parseInt(cells[i].innerText) || 0;
-                    }
-                    // Atualiza a última coluna (Total)
-                    cells[cells.length - 1].innerText = total;
-                }
+        function dispararCalculo() {
+            // Cria um evento fake para forçar recálculo visual
+            const table = document.getElementById("data-table");
+            if(table) {
+                const rows = table.querySelectorAll("tbody tr");
+                rows.forEach(row => {
+                    calcularRow(row);
+                });
             }
         }
 
-        // --- 4. EXPORTAR EXCEL ---
+        function calcularLinha(e) {
+            const cell = e.target;
+            if (cell.tagName === 'TD') {
+                const row = cell.parentElement;
+                calcularRow(row);
+            }
+        }
+
+        function calcularRow(row) {
+            const cells = row.querySelectorAll('td');
+            if (cells.length < 3) return;
+
+            let total = 0;
+            // Soma da coluna 2 até a PENÚLTIMA (Index Length - 2)
+            // Isso garante que se adicionarmos colunas, elas entram na soma
+            for (let i = 2; i < cells.length - 1; i++) {
+                const val = parseInt(cells[i].innerText);
+                total += isNaN(val) ? 0 : val;
+            }
+            
+            // Atualiza a última coluna (Total)
+            cells[cells.length - 1].innerText = total;
+        }
+
+        // --- 5. EXPORTAR EXCEL ---
         function exportarExcel() {
             const table = document.querySelector("table");
             if (!table) return alert("Nenhuma planilha carregada");
@@ -415,7 +530,7 @@
             XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
         }
 
-        // --- 5. GERAR DISCORD (AGORA DINÂMICO) ---
+        // --- 6. GERAR DISCORD (ADAPTÁVEL) ---
         function gerarDiscord() {
             const table = document.querySelector("table");
             if (!table) return alert("Crie ou carregue uma tabela primeiro!");
@@ -426,47 +541,28 @@
 
             let dados = [];
             
-            // Verifica se a tabela tem cabeçalho "TOTAL" na última coluna
-            // Isso serve para não somar a coluna de total se ela já existir
-            const headers = table.querySelectorAll('thead th');
-            let temColunaTotal = false;
-            if (headers.length > 0) {
-                const ultimoHeader = headers[headers.length - 1].innerText.toUpperCase();
-                if (ultimoHeader.includes("TOTAL")) {
-                    temColunaTotal = true;
-                }
-            }
-
             // Pega linhas ignorando cabeçalho
             let rows = table.querySelectorAll('tbody tr');
             if (rows.length === 0) { 
                 const allRows = table.querySelectorAll('tr');
                 rows = Array.from(allRows).slice(1); 
-            } else {
-                rows = Array.from(rows);
             }
 
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 
-                // Mínimo 3 colunas para processar (Nick, Vazio, Pontos)
                 if (cells.length >= 3) {
                     const nick = cells[0].innerText.trim();
-                    let totalReal = 0;
-
-                    // Define até onde vai o loop
-                    // Se tiver coluna "TOTAL" no final, paramos antes dela para não duplicar
-                    // Se não tiver (CSV importado), vamos até o fim
-                    const limiteLoop = temColunaTotal ? cells.length - 1 : cells.length;
-
-                    // Loop soma todas as colunas de pontos (pula 0 e 1)
-                    for (let i = 2; i < limiteLoop; i++) {
-                        const valor = parseInt(cells[i].innerText);
-                        totalReal += isNaN(valor) ? 0 : valor;
-                    }
+                    
+                    // Pega o valor da ÚLTIMA coluna como total
+                    // Isso evita ter que ressomar e garante consistência com o que está na tela
+                    const totalCell = cells[cells.length - 1];
+                    let totalVal = parseInt(totalCell.innerText);
+                    
+                    if (isNaN(totalVal)) totalVal = 0;
 
                     if (nick) { 
-                        dados.push({ nick: nick, pontos: totalReal });
+                        dados.push({ nick: nick, pontos: totalVal });
                     }
                 }
             });
