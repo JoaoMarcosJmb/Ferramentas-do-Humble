@@ -14,7 +14,7 @@
             color: #e5e7eb;
             background:
                 linear-gradient(rgba(22,26,35,0.9), rgba(22,26,35,0.9)),
-                url("../IMAGENS/Fundo.png"); /* Certifique-se que essa imagem existe ou remova esta linha */
+                url("../IMAGENS/Fundo.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -23,10 +23,10 @@
             flex-direction: column;
         }
 
-        /* --- SCROLLBAR CUSTOMIZADA (Estilo Visual) --- */
+        /* --- SCROLLBAR CUSTOMIZADA (ADICIONADO PARA CORRIGIR NAVEGAÇÃO) --- */
         ::-webkit-scrollbar {
             width: 12px;
-            height: 12px; /* Altura da barra horizontal */
+            height: 12px;
         }
         ::-webkit-scrollbar-track {
             background: #0f172a; 
@@ -52,7 +52,7 @@
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 2000; /* Aumentado para ficar acima da tabela */
         }
 
         .nav-brand {
@@ -89,7 +89,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* --- CONTAINER PRINCIPAL --- */
+        /* --- CONTEÚDO --- */
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -113,7 +113,7 @@
             color: #fff;
         }
 
-        /* --- BOTÕES --- */
+        /* BOTÕES E INPUTS */
         input[type="file"] {
             margin-bottom: 0;
             color: #ccc;
@@ -131,20 +131,30 @@
             transition: background 0.2s;
             margin-bottom: 5px;
         }
-        .btn:hover { background: #a32424; }
+
+        .btn:hover {
+            background: #a32424;
+        }
 
         .btn-secondary {
             background: #1e293b;
             border: 1px solid #334155;
         }
-        .btn-secondary:hover { background: #2d3b52; }
-
+        
+        .btn-secondary:hover {
+            background: #2d3b52;
+        }
+        
+        /* Botões de Remover (Vermelho Escuro) */
         .btn-danger {
             background: #450a0a;
             border: 1px solid #7f1d1d;
             color: #fca5a5;
         }
-        .btn-danger:hover { background: #7f1d1d; color: white; }
+        .btn-danger:hover {
+            background: #7f1d1d;
+            color: white;
+        }
 
         .actions-bar {
             display: flex;
@@ -157,37 +167,34 @@
             border-radius: 8px;
         }
 
+        /* CONTROLES DE TABELA (LINHA DE BAIXO) */
         .table-controls {
-            padding: 15px; 
-            display: flex; 
-            gap: 10px; 
-            flex-wrap: wrap;
+            padding: 15px;
             background: #0f172a;
             border: 1px solid #334155;
             border-top: none;
             border-radius: 0 0 8px 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        /* --- ESTRUTURA DA TABELA (SCROLL E STICKY) --- */
+        /* --- TABELA (AJUSTES PARA SCROLL) --- */
         .table-container {
             width: 100%;
             overflow-x: auto; /* Permite scroll horizontal */
             margin-top: 10px;
-            max-height: 500px; /* Altura máxima antes de rolar verticalmente */
+            max-height: 500px;
             overflow-y: auto;
             border: 1px solid #334155;
             border-radius: 8px 8px 0 0;
             background: #0f172a;
-            
-            /* Correções de layout */
-            display: block; 
-            white-space: nowrap; 
+            display: block; /* Garante bloco para scroll */
         }
 
         table {
-            /* O SEGREDO DO SCROLL: */
-            min-width: 100%; 
-            width: max-content; /* Força a tabela a ter o tamanho real do conteúdo */
+            min-width: 100%; /* Ocupa pelo menos a tela toda */
+            width: max-content; /* IMPORTANTE: Deixa a tabela crescer para o lado o quanto precisar */
             border-collapse: collapse;
         }
 
@@ -195,44 +202,26 @@
             border: 1px solid #334155;
             padding: 10px 15px;
             text-align: center;
-            white-space: nowrap; /* Impede quebra de linha nas células */
+            white-space: nowrap; /* IMPORTANTE: Não deixa o texto quebrar, forçando scroll lateral */
+            background: #0f172a;
         }
 
-        /* >> COLUNA 1: NICK (CONGELADA) << */
+        /* Coluna 1: NICK (Fixa na esquerda) */
         td:nth-child(1), th:nth-child(1) {
             text-align: left;
             min-width: 150px;
             font-weight: bold;
             color: #e5e7eb;
-            background: #131c2e; /* Cor de fundo opaca para não ver através */
+            background: #131c2e;
             
-            /* Sticky Logic */
+            /* Sticky Positioning */
             position: sticky;
             left: 0;
-            z-index: 20; /* Fica acima das células normais */
+            z-index: 20;
             border-right: 2px solid #334155;
         }
 
-        /* Cabeçalho do Nick precisa ficar acima de tudo */
-        th:nth-child(1) {
-            z-index: 30; 
-        }
-
-        /* >> COLUNA 2: ESPAÇO VAZIO << */
-        td:nth-child(2), th:nth-child(2) {
-            width: 50px;
-            background-color: #0d1321;
-        }
-
-        /* >> ÚLTIMA COLUNA: TOTAL << */
-        /* Usamos seletores específicos para pegar a última célula da linha */
-        table tr td:last-child, table tr th:last-child {
-            font-weight: bold;
-            color: #fbbf24;
-            background-color: #162032;
-        }
-
-        /* CABEÇALHO GERAL */
+        /* Header (Fixo no topo) */
         th {
             background: #1e293b;
             color: #94a3b8;
@@ -241,9 +230,23 @@
             z-index: 10;
             font-weight: 600;
         }
+        
+        /* Canto Superior Esquerdo (Nick Header) - Acima de tudo */
+        th:nth-child(1) {
+            z-index: 30;
+        }
 
-        td {
-            background: #0f172a;
+        /* Coluna 2: ESPAÇO VAZIO */
+        td:nth-child(2), th:nth-child(2) {
+            width: 50px;
+            background-color: #0d1321;
+        }
+
+        /* Última Coluna: TOTAL */
+        table tr td:last-child, table tr th:last-child {
+            font-weight: bold;
+            color: #fbbf24;
+            background-color: #162032;
         }
 
         td[contenteditable="true"]:focus {
@@ -252,7 +255,7 @@
             outline-offset: -2px;
         }
 
-        /* --- ÁREA DO DISCORD --- */
+        /* AREA DO DISCORD */
         .discord-section {
             margin-top: 30px;
             padding-top: 20px;
@@ -336,14 +339,14 @@
         </div>
 
         <div class="table-container">
-            <div id="output">
+             <div id="output">
                 <div style="padding: 40px; text-align: center; color: #64748b;">
                     <p>Nenhuma planilha carregada.</p>
                     <p style="font-size: 14px;">Carregue um arquivo .xlsx/.csv acima ou clique em "Criar Tabela Padrão".</p>
                 </div>
             </div>
         </div>
-        
+
         <div class="table-controls" id="controls-area" style="display:none;">
             <button class="btn btn-secondary" onclick="adicionarLinha()">+ Linha</button>
             <button class="btn btn-secondary" onclick="adicionarColuna()">+ Coluna</button>
@@ -386,7 +389,7 @@
                 sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 
-                // Converte a planilha para HTML
+                // Gera o HTML
                 const html = XLSX.utils.sheet_to_html(sheet, { editable: true, id: "data-table" });
                 document.getElementById('output').innerHTML = html;
                 
@@ -423,142 +426,154 @@
             finalizarCargaTabela();
         }
 
-        // Função auxiliar para ativar os controles após carregar a tabela
         function finalizarCargaTabela() {
+            // Mostra os botões de controle
             document.getElementById('controls-area').style.display = 'flex';
+            // Ativa os cálculos
             ativarCalculoAutomatico();
+            // Dispara um cálculo inicial
+            dispararCalculo();
         }
 
-        // --- 3. EDIÇÃO DINÂMICA (ADD/REMOVE) ---
-        
+        // --- 3. FUNÇÕES DE EDIÇÃO (CORRIGIDAS E ROBUSTAS) ---
+
         function adicionarLinha() {
             const table = document.getElementById("data-table");
             if (!table) return;
-            const tbody = table.querySelector("tbody");
-            // Conta quantas colunas tem no cabeçalho para criar a linha do tamanho certo
-            const headerCells = table.rows[0].cells.length; 
+
+            // Pega o número de colunas atual (baseado na primeira linha)
+            const firstRow = table.rows[0];
+            const colCount = firstRow.cells.length;
             
-            const newRow = tbody.insertRow();
-            
-            for (let i = 0; i < headerCells; i++) {
-                const cell = newRow.insertCell();
+            // Tenta achar tbody, se não achar usa a table direta
+            const target = table.querySelector("tbody") || table;
+            const newRow = target.insertRow(-1); // Insere no final
+
+            for (let i = 0; i < colCount; i++) {
+                const cell = newRow.insertCell(i);
                 cell.contentEditable = "true";
                 
-                // Preenche com 0, exceto Nick e Espaço Vazio
-                if (i >= 2 && i < headerCells - 1) {
+                // Lógica de preenchimento padrão
+                if (i === 0) {
+                    cell.innerText = "Novo"; // Nick
+                } else if (i === colCount - 1) {
                     cell.innerText = "0"; 
-                } else if (i === headerCells - 1) {
-                    cell.innerText = "0"; 
-                    cell.contentEditable = "false"; // Bloqueia edição manual do Total
+                    cell.contentEditable = "false"; // Total (Bloqueado)
+                } else if (i === 1) {
+                    cell.innerText = ""; // Vazio
+                } else {
+                    cell.innerText = "0"; // Pontos
                 }
             }
         }
 
         function adicionarColuna() {
             const table = document.getElementById("data-table");
-            if (!table) return;
+            if (!table) return alert("Erro: Tabela não encontrada.");
 
-            // Encontra a posição da última coluna (Total)
-            const headRow = table.querySelector("thead tr");
-            const totalIndex = headRow.cells.length - 1;
+            // Pega TODAS as linhas (Header + Body)
+            const allRows = Array.from(table.rows);
+            if (allRows.length === 0) return;
 
-            // 1. Adiciona no Header (antes do Total)
-            const newTh = document.createElement("th");
-            newTh.innerText = "Extra"; // Nome padrão
-            newTh.contentEditable = "true";
-            headRow.insertBefore(newTh, headRow.cells[totalIndex]);
+            // Descobre onde inserir (antes da última coluna = Total)
+            const lastColIndex = allRows[0].cells.length - 1;
 
-            // 2. Adiciona em todas as Linhas (antes do Total)
-            const bodyRows = table.querySelectorAll("tbody tr");
-            bodyRows.forEach(row => {
-                const newTd = document.createElement("td");
-                newTd.contentEditable = "true";
-                newTd.innerText = "0";
-                row.insertBefore(newTd, row.cells[totalIndex]);
+            allRows.forEach((row, index) => {
+                // Se for a primeira linha (índice 0), cria Header (th), senão cria Célula (td)
+                const isHeader = (index === 0);
+                const newCell = document.createElement(isHeader ? "th" : "td");
+                
+                newCell.contentEditable = "true";
+                newCell.innerText = isHeader ? "Nova" : "0";
+                
+                // Estilo para manter consistência com o tema
+                if (isHeader) {
+                    newCell.style.background = "#1e293b";
+                    newCell.style.fontWeight = "bold";
+                } else {
+                    newCell.style.background = "#0f172a";
+                }
+
+                // Insere ANTES do Total
+                // Verificação de segurança: se a linha for mais curta que o esperado, adiciona no final
+                if (row.cells.length > lastColIndex) {
+                    row.insertBefore(newCell, row.cells[lastColIndex]);
+                } else {
+                    row.appendChild(newCell);
+                }
             });
 
-            // Força recálculo
+            // Força recálculo dos totais
             dispararCalculo();
         }
 
         function removerLinha() {
             const table = document.getElementById("data-table");
             if (!table) return;
-            const tbody = table.querySelector("tbody");
-            if (tbody.rows.length > 1) { // Evita apagar a última linha restante
-                tbody.deleteRow(-1);
+            // Garante que não apague o cabeçalho
+            if (table.rows.length > 2) { 
+                table.deleteRow(table.rows.length - 1);
             } else {
-                alert("Não é possível remover a última linha!");
+                alert("Não é possível remover mais linhas.");
             }
         }
 
         function removerColuna() {
             const table = document.getElementById("data-table");
             if (!table) return;
-            const headRow = table.querySelector("thead tr");
+            const colCount = table.rows[0].cells.length;
             
-            // Segurança: Não remover colunas essenciais (Nick, Vazio, 1 Ponto, Total)
-            if (headRow.cells.length <= 4) {
-                return alert("Não é possível remover mais colunas básicas.");
-            }
+            // Segurança: Manter Nick, Vazio e Total (3 colunas)
+            if (colCount <= 3) return alert("Limite mínimo de colunas atingido.");
 
-            // Remove a PENÚLTIMA coluna (a que vem antes do Total)
-            const targetIndex = headRow.cells.length - 2; 
+            // Remove a penúltima coluna (a que está antes do Total)
+            const removeIndex = colCount - 2;
 
-            headRow.deleteCell(targetIndex); // Remove do Header
-
-            // Remove de cada linha do corpo
-            const bodyRows = table.querySelectorAll("tbody tr");
-            bodyRows.forEach(row => {
-                row.deleteCell(targetIndex);
+            Array.from(table.rows).forEach(row => {
+                if (row.cells.length > removeIndex) {
+                    row.deleteCell(removeIndex);
+                }
             });
             
             dispararCalculo();
         }
 
-        // --- 4. SOMA AUTOMÁTICA ROBUSTA ---
+        // --- 4. SOMA AUTOMÁTICA ---
         function ativarCalculoAutomatico() {
             const container = document.getElementById('output');
-            // Remove listener antigo para não duplicar
-            container.removeEventListener('input', calcularLinha);
-            // Adiciona novo listener
-            container.addEventListener('input', calcularLinha);
+            container.removeEventListener('input', aoDigitar);
+            container.addEventListener('input', aoDigitar);
         }
 
-        function dispararCalculo() {
-            // Percorre todas as linhas e força o cálculo (útil após adicionar coluna)
-            const table = document.getElementById("data-table");
-            if(table) {
-                const rows = table.querySelectorAll("tbody tr");
-                rows.forEach(row => {
-                    calcularRow(row);
-                });
+        function aoDigitar(e) {
+            // Se mudou algo numa célula TD, recalcula a linha dela
+            if (e.target.tagName === 'TD') {
+                calcularRow(e.target.parentElement);
             }
         }
 
-        function calcularLinha(e) {
-            const cell = e.target;
-            // Só calcula se o input veio de uma célula da tabela
-            if (cell.tagName === 'TD') {
-                const row = cell.parentElement;
-                calcularRow(row);
+        function dispararCalculo() {
+            const table = document.getElementById("data-table");
+            if (!table) return;
+            // Calcula todas as linhas (pulando o cabeçalho)
+            for (let i = 1; i < table.rows.length; i++) {
+                calcularRow(table.rows[i]);
             }
         }
 
         function calcularRow(row) {
-            const cells = row.querySelectorAll('td');
-            // Precisa de pelo menos Nick, Vazio e Total
+            const cells = row.cells;
             if (cells.length < 3) return;
 
             let total = 0;
-            // Soma da coluna 2 até a PENÚLTIMA
-            // Ignora Nick (0), Vazio (1) e Total (última)
+            // Soma da coluna 2 até a PENÚLTIMA (Index Length - 2)
+            // Ignora: 0 (Nick), 1 (Vazio) e Última (Total)
             for (let i = 2; i < cells.length - 1; i++) {
-                const val = parseInt(cells[i].innerText);
-                total += isNaN(val) ? 0 : val;
+                const valor = parseInt(cells[i].innerText);
+                total += isNaN(valor) ? 0 : valor;
             }
-            
-            // Atualiza a última coluna (Total)
+
+            // Atualiza a última célula (Total)
             cells[cells.length - 1].innerText = total;
         }
 
@@ -566,15 +581,13 @@
         function exportarExcel() {
             const table = document.querySelector("table");
             if (!table) return alert("Nenhuma planilha carregada");
-            
             const newSheet = XLSX.utils.table_to_sheet(table);
             const newWorkbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(newWorkbook, newSheet, sheetName || "Planilha");
-            
             XLSX.writeFile(newWorkbook, "pontuacao_league.xlsx");
         }
 
-        // --- 6. GERAR DISCORD (ADAPTÁVEL) ---
+        // --- 6. GERAR DISCORD (DINÂMICO) ---
         function gerarDiscord() {
             const table = document.querySelector("table");
             if (!table) return alert("Crie ou carregue uma tabela primeiro!");
@@ -585,24 +598,16 @@
 
             let dados = [];
             
-            // Pega as linhas (se tiver THEAD, pega TBODY, senão pega todas menos a 1ª)
-            let rows = table.querySelectorAll('tbody tr');
-            if (rows.length === 0) { 
-                const allRows = table.querySelectorAll('tr');
-                rows = Array.from(allRows).slice(1); 
-            }
+            // Pega linhas ignorando cabeçalho (row 0)
+            const rows = Array.from(table.rows).slice(1);
 
             rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
+                const cells = row.cells;
                 
                 if (cells.length >= 3) {
                     const nick = cells[0].innerText.trim();
-                    
                     // Pega o valor da ÚLTIMA coluna como total
-                    const totalCell = cells[cells.length - 1];
-                    let totalVal = parseInt(totalCell.innerText);
-                    
-                    if (isNaN(totalVal)) totalVal = 0;
+                    const totalVal = parseInt(cells[cells.length - 1].innerText) || 0;
 
                     if (nick) { 
                         dados.push({ nick: nick, pontos: totalVal });
@@ -613,7 +618,6 @@
             // Ordena do Maior para o Menor
             dados.sort((a, b) => b.pontos - a.pontos);
 
-            // Monta o Texto
             let result = `# ${title} - ${emoji}   (${round})\n\n`;
 
             dados.forEach((jogador, index) => {
