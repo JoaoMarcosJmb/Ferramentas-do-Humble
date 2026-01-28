@@ -38,8 +38,23 @@
             flex-shrink: 0;
         }
 
+        .nav-left { display: flex; align-items: center; gap: 25px; }
+
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 18px; }
         .nav-brand img { height: 30px; width: auto; border-radius: 50%; }
+
+        /* Botão Voltar */
+        .nav-back { 
+            color: #94a3b8; 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: 0.2s; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px;
+        }
+        .nav-back:hover { color: #fff; transform: translateX(-2px); }
 
         .nav-actions { display: flex; gap: 10px; }
 
@@ -196,10 +211,14 @@
     </div>
 
     <nav class="navbar">
-        <div class="nav-brand">
-            <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
-            <span>Fusion Dex Maker</span>
+        <div class="nav-left">
+            <div class="nav-brand">
+                <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
+                <span>Fusion Dex Maker</span>
+            </div>
+            <a href="../index.html" class="nav-back">⬅ Voltar</a>
         </div>
+
         <div class="nav-actions">
             <button class="action-btn import" onclick="openImportModal()">📥 Importar JSON</button>
             <button class="action-btn" onclick="clearAll()">🗑️ Limpar</button>
@@ -364,14 +383,13 @@ Total: 575</div>
 
             try {
                 let data = JSON.parse(raw);
-                if(data.embeds) data = data.embeds[0]; // Trata caso venha wrapper 'embeds'
+                if(data.embeds) data = data.embeds[0];
 
                 // 1. Identidade
                 setVal('inp-name', data.title || "");
                 setVal('inp-thumb', data.thumbnail?.url || "");
                 
                 // Parse Descrição para pegar Body/Base e Head
-                // Espera algo como: "**Body** (Base) + **Head**\nFlavor text..."
                 if(data.description) {
                     const lines = data.description.split('\n');
                     const firstLine = lines[0];
@@ -379,7 +397,6 @@ Total: 575</div>
                     
                     setVal('inp-desc', flavor);
 
-                    // Tenta extrair nomes entre ** **
                     const matches = firstLine.match(/\*\*(.*?)\*\*/g);
                     if(matches && matches.length >= 2) {
                         setVal('inp-body', matches[0].replace(/\*\*/g, ''));
@@ -396,7 +413,6 @@ Total: 575</div>
 
                 // 3. Fields Parsing
                 if(data.fields) {
-                    // Tipos
                     const typeField = data.fields.find(f => f.name === "Tipagem");
                     if(typeField) {
                         const types = typeField.value.split('/').map(t => t.replace(/\*/g, '').trim());
@@ -404,7 +420,6 @@ Total: 575</div>
                         setVal('inp-type2', types[1] || "");
                     }
 
-                    // Stats
                     const statsField = data.fields.find(f => f.name === "Base Stats");
                     if(statsField) {
                         const txt = statsField.value;
@@ -420,21 +435,17 @@ Total: 575</div>
                         setVal('s-spe', extract('Spe'));
                     }
 
-                    // Habilidades
                     const abilField = data.fields.find(f => f.name === "Habilidades");
                     if(abilField) {
                         const txt = abilField.value;
-                        // Extrai Comuns
                         const commMatch = txt.match(/Comuns:\*\*\s*(.*?)(?=\n|$|\*\*Hidden)/);
                         if(commMatch) setVal('inp-abil-common', commMatch[1]);
                         
-                        // Extrai Hidden
                         const hidMatch = txt.match(/Hidden:\*\*\s*(.*?)(?=\n|$)/);
                         if(hidMatch) setVal('inp-abil-hidden', hidMatch[1]);
                         else setVal('inp-abil-hidden', "");
                     }
 
-                    // Moves
                     const movesField = data.fields.find(f => f.name.includes("Moves Adicionados"));
                     if(movesField) {
                         setVal('inp-moves', movesField.value);
@@ -454,7 +465,6 @@ Total: 575</div>
 
         // --- GENERATE & UPDATE ---
         function generateData() {
-            // Identidade
             const name = getVal('inp-name') || "Nome da Fusão";
             const body = getVal('inp-body') || "Body";
             const head = getVal('inp-head') || "Head";
@@ -463,11 +473,9 @@ Total: 575</div>
             const extraDesc = getVal('inp-desc');
             if(extraDesc) desc += `\n${extraDesc}`;
 
-            // Cores
             const colorHex = getVal('inp-color') || "#9332a8";
             const colorInt = parseInt(colorHex.replace('#', ''), 16);
 
-            // Stats
             const hp = parseInt(getVal('s-hp')) || 0;
             const atk = parseInt(getVal('s-atk')) || 0;
             const def = parseInt(getVal('s-def')) || 0;
@@ -487,13 +495,11 @@ SpD:  ${pad(spd)}
 Spe:  ${pad(spe)}
 Total: ${total}`;
 
-            // Tipos
             const t1 = getVal('inp-type1');
             const t2 = getVal('inp-type2');
             let typeStr = t1 ? `**${t1}**` : "Unknown";
             if(t2) typeStr += ` / **${t2}**`;
 
-            // Habilidades
             const comm = getVal('inp-abil-common');
             const hidden = getVal('inp-abil-hidden');
             let abilStr = comm ? `**Comuns:** ${comm}` : "";
@@ -503,11 +509,9 @@ Total: ${total}`;
             }
             if(!abilStr) abilStr = "Nenhuma";
 
-            // Moves
             const moves = getVal('inp-moves');
             const moveTitle = head ? `Moves Adicionados (${head})` : "Moves Adicionados";
 
-            // Montagem do JSON
             const embed = {
                 title: name,
                 description: desc,
@@ -531,14 +535,12 @@ Total: ${total}`;
         function update() {
             const data = generateData();
 
-            // Preview HTML
             setTxt('out-title', data.title);
             let descHtml = data.description.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
             setHtml('out-desc', descHtml);
 
             document.getElementById('embed-preview').style.borderLeftColor = '#' + data.color.toString(16).padStart(6, '0');
 
-            // Thumb
             const thumbEl = document.getElementById('out-thumb');
             if(data.thumbnail.url) { 
                 thumbEl.src = data.thumbnail.url; 
@@ -547,12 +549,10 @@ Total: ${total}`;
                 thumbEl.style.display = 'none'; 
             }
 
-            // Fields
             setHtml('out-types', data.fields[0].value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'));
             setTxt('out-stats', data.fields[1].value.replace(/```/g, '').trim());
             setHtml('out-abilities', data.fields[2].value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>'));
 
-            // Moves
             const moveContainer = document.getElementById('container-moves');
             if(data.fields[3]) {
                 moveContainer.style.display = 'block';
