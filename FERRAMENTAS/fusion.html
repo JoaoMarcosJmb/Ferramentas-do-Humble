@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
-        /* --- ESTILOS VISUAIS IDÊNTICOS AO EMBED (2).HTML --- */
+        /* --- ESTILOS VISUAIS --- */
         body {
             margin: 0;
             font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             color: #dcddde;
-            /* Fundo Original Local */
             background:
                 linear-gradient(rgba(22,26,35,0.92), rgba(22,26,35,0.92)),
                 url("../IMAGENS/Fundo.png");
@@ -73,7 +72,7 @@
             height: auto;
         }
 
-        /* --- PAINEL ESQUERDO (EDITOR) --- */
+        /* --- EDITOR (ESQUERDA) --- */
         .editor-panel {
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid #1e293b;
@@ -87,7 +86,6 @@
 
         .editor-content { padding: 20px; overflow-y: auto; flex: 1; }
 
-        /* Estilização dos Inputs (Estilo Original) */
         details { background: #1e293b; margin-bottom: 10px; border-radius: 5px; overflow: hidden; border: 1px solid #334155; }
         summary { padding: 12px; cursor: pointer; font-weight: bold; background: #252f42; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         summary::after { content: "+"; font-size: 16px; }
@@ -104,11 +102,10 @@
         }
         input:focus, textarea:focus { border-color: #00b0f4; background: #111827; }
 
-        /* Stats Grid */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .total-display { text-align: right; color: #fbbf24; font-size: 12px; font-weight: bold; margin-top: 5px;}
 
-        /* --- PREVIEW --- */
+        /* --- PREVIEW (DIREITA) --- */
         .preview-panel {
             background: #313338;
             border-radius: 8px;
@@ -123,7 +120,6 @@
 
         .discord-msg { display: flex; gap: 12px; font-family: 'gg sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.375rem;}
         
-        /* BOT AVATAR ORIGINAL */
         .bot-avatar { 
             width: 40px; height: 40px; border-radius: 50%; 
             background-image: url('../IMAGENS/Mascote.png'); 
@@ -136,9 +132,15 @@
         .bot-tag { background: #5865F2; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 3px; line-height: 1.3; margin-top: 1px;}
         .timestamp { font-size: 12px; color: #949BA4; margin-left: 5px; font-weight: 400;}
 
+        /* CSS DO EMBED CORRIGIDO */
         .discord-embed {
-            margin-top: 8px; background: #2b2d31; border-left: 4px solid #9646250; border-radius: 4px; padding: 16px; 
-            max-width: 520px; display: grid; gap: 8px;
+            margin-top: 8px; 
+            background: #2b2d31; 
+            border-left: 4px solid #202225; /* Cor padrão válida para garantir que a borda exista */
+            border-radius: 4px; 
+            padding: 16px; 
+            max-width: 520px; 
+            display: grid; gap: 8px;
         }
         
         .embed-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
@@ -187,8 +189,7 @@
                         
                         <div style="display: flex; gap: 10px;">
                             <div style="flex: 1;">
-                                <label>Corpo (Base)</label>
-                                <input type="text" id="inp-body" placeholder="Ex: Conkeldurr" oninput="update()">
+                                <label>Corpo (Base)</label> <input type="text" id="inp-body" placeholder="Ex: Conkeldurr" oninput="update()">
                             </div>
                             <div style="flex: 1;">
                                 <label>Cabeça (Head)</label>
@@ -320,7 +321,10 @@ Total: 575</div>
             const name = getVal('inp-name') || "Nome da Fusão";
             const body = getVal('inp-body') || "Body";
             const head = getVal('inp-head') || "Head";
+            
+            // ATUALIZADO: Usando "Base" em vez de "Body" no texto
             let desc = `**${body}** (Base) + **${head}**`;
+            
             const extraDesc = getVal('inp-desc');
             if(extraDesc) desc += `\n${extraDesc}`;
 
@@ -392,11 +396,12 @@ Total: ${total}`;
         function update() {
             const data = generateData();
 
-            // Preview
+            // Preview HTML
             setTxt('out-title', data.title);
             let descHtml = data.description.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
             setHtml('out-desc', descHtml);
 
+            // ATUALIZAÇÃO DA COR DA BORDA
             document.getElementById('embed-preview').style.borderLeftColor = '#' + data.color.toString(16).padStart(6, '0');
 
             // Thumb
