@@ -41,6 +41,8 @@
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 18px; }
         .nav-brand img { height: 30px; width: auto; border-radius: 50%; }
 
+        .nav-actions { display: flex; gap: 10px; }
+
         .action-btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid #334155;
@@ -58,6 +60,8 @@
         .action-btn:hover { background: #334155; }
         .action-btn.copy { background: #00b0f4; border-color: #00b0f4; color: #fff; }
         .action-btn.copy:hover { background: #0088bd; }
+        .action-btn.import { background: #eab308; border-color: #eab308; color: #000; }
+        .action-btn.import:hover { background: #ca8a04; }
 
         /* --- GRID PRINCIPAL --- */
         .main-grid {
@@ -132,11 +136,10 @@
         .bot-tag { background: #5865F2; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 3px; line-height: 1.3; margin-top: 1px;}
         .timestamp { font-size: 12px; color: #949BA4; margin-left: 5px; font-weight: 400;}
 
-        /* CSS DO EMBED CORRIGIDO */
         .discord-embed {
             margin-top: 8px; 
             background: #2b2d31; 
-            border-left: 4px solid #202225; /* Cor padrão válida para garantir que a borda exista */
+            border-left: 4px solid #202225;
             border-radius: 4px; 
             padding: 16px; 
             max-width: 520px; 
@@ -157,6 +160,22 @@
 
         .embed-footer { font-size: 12px; color: #dcddde; margin-top: 8px; display: flex; align-items: center; gap: 5px;}
 
+        /* --- MODAL IMPORT --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+            width: 500px; padding: 20px; display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .modal-title { color: #fff; font-size: 16px; font-weight: bold; }
+        .modal-textarea { height: 200px; resize: none; font-family: monospace; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
         @media (max-width: 900px) {
             .main-grid { grid-template-columns: 1fr; height: auto; }
             .editor-panel, .preview-panel { height: auto; min-height: 500px; }
@@ -165,12 +184,24 @@
 </head>
 <body>
 
+    <div class="modal-overlay" id="import-modal">
+        <div class="modal-content">
+            <div class="modal-title">📥 Importar JSON</div>
+            <textarea class="modal-textarea" id="import-area" placeholder="Cole o JSON do seu embed aqui..."></textarea>
+            <div class="modal-actions">
+                <button class="action-btn" onclick="closeImportModal()">Cancelar</button>
+                <button class="action-btn import" onclick="processImport()">Importar</button>
+            </div>
+        </div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-brand">
             <img src="../IMAGENS/Mascote.png" alt="Logo Mascote">
             <span>Fusion Dex Maker</span>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div class="nav-actions">
+            <button class="action-btn import" onclick="openImportModal()">📥 Importar JSON</button>
             <button class="action-btn" onclick="clearAll()">🗑️ Limpar</button>
             <button class="action-btn copy" onclick="copyJSON()">📋 Copiar JSON</button>
         </div>
@@ -189,7 +220,8 @@
                         
                         <div style="display: flex; gap: 10px;">
                             <div style="flex: 1;">
-                                <label>Corpo (Base)</label> <input type="text" id="inp-body" placeholder="Ex: Conkeldurr" oninput="update()">
+                                <label>Corpo (Base)</label>
+                                <input type="text" id="inp-body" placeholder="Ex: Conkeldurr" oninput="update()">
                             </div>
                             <div style="flex: 1;">
                                 <label>Cabeça (Head)</label>
@@ -312,19 +344,122 @@ Total: 575</div>
 
     <script>
         function getVal(id) { return document.getElementById(id).value; }
+        function setVal(id, val) { document.getElementById(id).value = val; }
         function setTxt(id, txt) { document.getElementById(id).innerText = txt; }
         function setHtml(id, html) { document.getElementById(id).innerHTML = html; }
         function pad(num) { return num.toString().padStart(3, ' '); }
 
+        // --- IMPORT LOGIC ---
+        function openImportModal() {
+            document.getElementById('import-modal').style.display = 'flex';
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').style.display = 'none';
+        }
+
+        function processImport() {
+            const raw = document.getElementById('import-area').value;
+            if(!raw.trim()) return closeImportModal();
+
+            try {
+                let data = JSON.parse(raw);
+                if(data.embeds) data = data.embeds[0]; // Trata caso venha wrapper 'embeds'
+
+                // 1. Identidade
+                setVal('inp-name', data.title || "");
+                setVal('inp-thumb', data.thumbnail?.url || "");
+                
+                // Parse Descrição para pegar Body/Base e Head
+                // Espera algo como: "**Body** (Base) + **Head**\nFlavor text..."
+                if(data.description) {
+                    const lines = data.description.split('\n');
+                    const firstLine = lines[0];
+                    const flavor = lines.slice(1).join('\n');
+                    
+                    setVal('inp-desc', flavor);
+
+                    // Tenta extrair nomes entre ** **
+                    const matches = firstLine.match(/\*\*(.*?)\*\*/g);
+                    if(matches && matches.length >= 2) {
+                        setVal('inp-body', matches[0].replace(/\*\*/g, ''));
+                        setVal('inp-head', matches[1].replace(/\*\*/g, ''));
+                    }
+                }
+
+                // 2. Cor
+                if(data.color) {
+                    const hex = '#' + data.color.toString(16).padStart(6, '0');
+                    setVal('inp-color-picker', hex);
+                    setVal('inp-color', hex);
+                }
+
+                // 3. Fields Parsing
+                if(data.fields) {
+                    // Tipos
+                    const typeField = data.fields.find(f => f.name === "Tipagem");
+                    if(typeField) {
+                        const types = typeField.value.split('/').map(t => t.replace(/\*/g, '').trim());
+                        setVal('inp-type1', types[0] || "");
+                        setVal('inp-type2', types[1] || "");
+                    }
+
+                    // Stats
+                    const statsField = data.fields.find(f => f.name === "Base Stats");
+                    if(statsField) {
+                        const txt = statsField.value;
+                        const extract = (key) => {
+                            const match = txt.match(new RegExp(`${key}:\\s*(\\d+)`));
+                            return match ? match[1] : "0";
+                        };
+                        setVal('s-hp', extract('HP'));
+                        setVal('s-atk', extract('Atk'));
+                        setVal('s-def', extract('Def'));
+                        setVal('s-spa', extract('SpA'));
+                        setVal('s-spd', extract('SpD'));
+                        setVal('s-spe', extract('Spe'));
+                    }
+
+                    // Habilidades
+                    const abilField = data.fields.find(f => f.name === "Habilidades");
+                    if(abilField) {
+                        const txt = abilField.value;
+                        // Extrai Comuns
+                        const commMatch = txt.match(/Comuns:\*\*\s*(.*?)(?=\n|$|\*\*Hidden)/);
+                        if(commMatch) setVal('inp-abil-common', commMatch[1]);
+                        
+                        // Extrai Hidden
+                        const hidMatch = txt.match(/Hidden:\*\*\s*(.*?)(?=\n|$)/);
+                        if(hidMatch) setVal('inp-abil-hidden', hidMatch[1]);
+                        else setVal('inp-abil-hidden', "");
+                    }
+
+                    // Moves
+                    const movesField = data.fields.find(f => f.name.includes("Moves Adicionados"));
+                    if(movesField) {
+                        setVal('inp-moves', movesField.value);
+                    } else {
+                        setVal('inp-moves', "");
+                    }
+                }
+
+                update();
+                closeImportModal();
+                alert("✅ Importado com sucesso!");
+
+            } catch(e) {
+                alert("❌ Erro ao ler JSON: " + e.message);
+            }
+        }
+
+        // --- GENERATE & UPDATE ---
         function generateData() {
             // Identidade
             const name = getVal('inp-name') || "Nome da Fusão";
             const body = getVal('inp-body') || "Body";
             const head = getVal('inp-head') || "Head";
             
-            // ATUALIZADO: Usando "Base" em vez de "Body" no texto
             let desc = `**${body}** (Base) + **${head}**`;
-            
             const extraDesc = getVal('inp-desc');
             if(extraDesc) desc += `\n${extraDesc}`;
 
@@ -401,7 +536,6 @@ Total: ${total}`;
             let descHtml = data.description.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
             setHtml('out-desc', descHtml);
 
-            // ATUALIZAÇÃO DA COR DA BORDA
             document.getElementById('embed-preview').style.borderLeftColor = '#' + data.color.toString(16).padStart(6, '0');
 
             // Thumb
