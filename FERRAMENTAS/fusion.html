@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Fusion Dex Maker - Humble</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /* --- GERAL (Mantido do Original) --- */
+        body {
+            margin: 0; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #dcddde;
+            background: linear-gradient(rgba(22,26,35,0.95), rgba(22,26,35,0.95)), url("[https://i.imgur.com/8Qj8x9v.png](https://i.imgur.com/8Qj8x9v.png)");
+            background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
+            background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid #1e293b; height: 60px; flex-shrink: 0;
+        }
+        .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 18px; color: #fff; }
+        .nav-brand span { color: #00b0f4; }
+
+        /* --- GRID --- */
+        .main-grid {
+            display: grid; grid-template-columns: 450px 1fr; gap: 20px; padding: 20px;
+            max-width: 1600px; margin: 0 auto; flex: 1; width: 100%; box-sizing: border-box; overflow: hidden;
+        }
+
+        /* --- EDITOR --- */
+        .editor-panel {
+            background: #111827; border: 1px solid #1f2937; border-radius: 8px; display: flex; flex-direction: column;
+            overflow: hidden; height: calc(100vh - 100px);
+        }
+
+        .editor-content { padding: 20px; overflow-y: auto; flex: 1; }
+
+        /* Grupos de Inputs */
+        .input-group { margin-bottom: 20px; background: #1f2937; padding: 15px; border-radius: 6px; border: 1px solid #374151; }
+        .group-title { color: #00b0f4; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; display: block; letter-spacing: 1px;}
+
+        label { font-size: 11px; color: #9ca3af; font-weight: 600; margin-bottom: 4px; display: block; }
+        
+        input[type="text"], input[type="number"], textarea, select {
+            background: #0b1120; border: 1px solid #374151; color: #fff; padding: 8px 10px;
+            border-radius: 4px; width: 100%; font-size: 13px; box-sizing: border-box; margin-bottom: 8px;
+            font-family: Consolas, monospace;
+        }
+        input:focus, textarea:focus { border-color: #00b0f4; outline: none; }
+
+        /* Grid de Stats */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { display: flex; flex-direction: column; }
+        .total-display { text-align: right; color: #fbbf24; font-weight: bold; font-size: 14px; margin-top: 5px; }
+
+        /* Botões */
+        .action-btn {
+            background: #2563eb; color: white; border: none; padding: 10px; border-radius: 4px; 
+            cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.2s;
+        }
+        .action-btn:hover { background: #1d4ed8; }
+        .action-btn.copy { background: #059669; }
+        .action-btn.copy:hover { background: #047857; }
+
+        /* --- PREVIEW (Discord Style) --- */
+        .preview-panel {
+            background: #313338; border-radius: 8px; padding: 20px; overflow-y: auto;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .discord-msg { width: 100%; max-width: 600px; display: flex; gap: 12px; }
+        .bot-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: #5865F2; flex-shrink: 0; }
+        .msg-content { width: 100%; }
+        .bot-name { color: #f2f3f5; font-weight: 500; display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+        .bot-tag { background: #5865F2; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 3px; }
+
+        /* O Embed em si */
+        .discord-embed {
+            background: #2b2d31; border-left: 4px solid #9646250; /* Default Poison Purple */
+            border-radius: 4px; padding: 16px; display: grid; gap: 8px; max-width: 500px;
+        }
+
+        .embed-title { font-weight: 600; font-size: 16px; color: #fff; margin-bottom: 4px; }
+        .embed-desc { font-size: 14px; color: #dcddde; line-height: 1.4; white-space: pre-wrap; }
+        
+        .embed-thumb { float: right; max-width: 80px; max-height: 80px; border-radius: 4px; object-fit: cover; margin-left: 10px;}
+        
+        .field-container { margin-top: 8px; }
+        .field-name { font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 2px; }
+        .field-value { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.3; }
+        
+        .code-block {
+            background: #1e1f22; padding: 8px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 13px; color: #dcddde; white-space: pre; border: 1px solid #111214;
+        }
+
+        .embed-footer { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+
+        /* JSON Output Oculto */
+        #json-output { display: none; }
+
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .editor-panel { height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span>⚡</span> Fusion Dex Maker
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="action-btn copy" onclick="copyJSON()" style="margin:0; width: auto; padding: 5px 15px;">📋 Copiar JSON</button>
+        </div>
+    </nav>
+
+    <div class="main-grid">
+        
+        <div class="editor-panel">
+            <div class="editor-content">
+                
+                <div class="input-group">
+                    <span class="group-title">Identidade</span>
+                    <label>Nome da Fusão</label>
+                    <input type="text" id="inp-name" placeholder="Ex: Conkelbodor" oninput="update()">
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label>Corpo (Base)</label>
+                            <input type="text" id="inp-body" placeholder="Ex: Conkeldurr" oninput="update()">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Cabeça (Head)</label>
+                            <input type="text" id="inp-head" placeholder="Ex: Garbodor" oninput="update()">
+                        </div>
+                    </div>
+
+                    <label>Descrição (Flavor Text)</label>
+                    <textarea id="inp-desc" rows="2" placeholder="Uma fusão de força bruta e toxicidade..." oninput="update()"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <span class="group-title">Dados Técnicos</span>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1;">
+                            <label>Tipo 1</label>
+                            <input type="text" id="inp-type1" placeholder="Fighting" oninput="update()">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Tipo 2 (Opcional)</label>
+                            <input type="text" id="inp-type2" placeholder="Poison" oninput="update()">
+                        </div>
+                    </div>
+                    <label>Cor do Embed (Hex)</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="color" id="inp-color-picker" value="#9332a8" style="width: 40px; padding: 0; height: 35px;" oninput="document.getElementById('inp-color').value = this.value; update()">
+                        <input type="text" id="inp-color" value="#9332a8" oninput="update()">
+                    </div>
+                    <label>Thumbnail (URL da Imagem)</label>
+                    <input type="text" id="inp-thumb" placeholder="https://..." oninput="update()">
+                </div>
+
+                <div class="input-group">
+                    <span class="group-title">Base Stats</span>
+                    <div class="stats-grid">
+                        <div class="stat-box"><label>HP</label><input type="number" class="stat-inp" id="s-hp" value="110" oninput="update()"></div>
+                        <div class="stat-box"><label>Attack</label><input type="number" class="stat-inp" id="s-atk" value="140" oninput="update()"></div>
+                        <div class="stat-box"><label>Defense</label><input type="number" class="stat-inp" id="s-def" value="100" oninput="update()"></div>
+                        <div class="stat-box"><label>Sp. Atk</label><input type="number" class="stat-inp" id="s-spa" value="100" oninput="update()"></div>
+                        <div class="stat-box"><label>Sp. Def</label><input type="number" class="stat-inp" id="s-spd" value="80" oninput="update()"></div>
+                        <div class="stat-box"><label>Speed</label><input type="number" class="stat-inp" id="s-spe" value="45" oninput="update()"></div>
+                    </div>
+                    <div class="total-display">Total: <span id="stat-total">0</span></div>
+                </div>
+
+                <div class="input-group">
+                    <span class="group-title">Habilidades</span>
+                    <label>Comuns</label>
+                    <input type="text" id="inp-abil-common" placeholder="Ex: Guts, Sheer Force..." oninput="update()">
+                    <label>Hidden (Opcional)</label>
+                    <input type="text" id="inp-abil-hidden" placeholder="Ex: Iron Fist" oninput="update()">
+                </div>
+
+                <div class="input-group">
+                    <span class="group-title">Moves Adicionados</span>
+                    <label>Lista de golpes (separados por vírgula)</label>
+                    <textarea id="inp-moves" rows="3" placeholder="Gunk Shot, Toxic, Protect..." oninput="update()"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div class="discord-msg">
+                <div class="bot-avatar"></div>
+                <div class="msg-content">
+                    <div class="bot-name">
+                        Humble Bot <span class="bot-tag">BOT</span>
+                    </div>
+
+                    <div class="discord-embed" id="embed-preview">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <div class="embed-title" id="out-title">Nome da Fusão</div>
+                                <div class="embed-desc" id="out-desc">Descrição...</div>
+                            </div>
+                            <img src="" id="out-thumb" class="embed-thumb" style="display: none;">
+                        </div>
+
+                        <div class="field-container">
+                            <div class="field-name">Tipagem</div>
+                            <div class="field-value" id="out-types">Type 1 / Type 2</div>
+                        </div>
+
+                        <div class="field-container">
+                            <div class="field-name">Base Stats</div>
+                            <div class="field-value code-block" id="out-stats">...</div>
+                        </div>
+
+                        <div class="field-container">
+                            <div class="field-name">Habilidades</div>
+                            <div class="field-value" id="out-abilities">...</div>
+                        </div>
+
+                        <div class="field-container">
+                            <div class="field-name" id="out-moves-title">Moves Adicionados</div>
+                            <div class="field-value" id="out-moves">...</div>
+                        </div>
+
+                        <div class="embed-footer">Humble Pixelmon • Custom Dex</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getVal(id) { return document.getElementById(id).value; }
+        function setTxt(id, txt) { document.getElementById(id).innerText = txt; }
+        
+        // Formata números para o Code Block ficarem alinhados
+        function pad(num) { return num.toString().padStart(3, ' '); }
+
+        function generateData() {
+            // 1. Identidade
+            const name = getVal('inp-name') || "Nome da Fusão";
+            const body = getVal('inp-body') || "Body";
+            const head = getVal('inp-head') || "Head";
+            const desc = `**${body}** (Body) + **${head}**\n` + (getVal('inp-desc') || "");
+            
+            // 2. Cor
+            let colorHex = getVal('inp-color') || "#9646250";
+            let colorInt = parseInt(colorHex.replace('#', ''), 16);
+
+            // 3. Stats
+            const hp = parseInt(getVal('s-hp')) || 0;
+            const atk = parseInt(getVal('s-atk')) || 0;
+            const def = parseInt(getVal('s-def')) || 0;
+            const spa = parseInt(getVal('s-spa')) || 0;
+            const spd = parseInt(getVal('s-spd')) || 0;
+            const spe = parseInt(getVal('s-spe')) || 0;
+            const total = hp + atk + def + spa + spd + spe;
+
+            document.getElementById('stat-total').innerText = total;
+
+            const statsBlock = 
+`HP:   ${pad(hp)}
+Atk:  ${pad(atk)}
+Def:  ${pad(def)}
+SpA:  ${pad(spa)}
+SpD:  ${pad(spd)}
+Spe:  ${pad(spe)}
+Total: ${total}`;
+
+            // 4. Tipagem
+            const t1 = getVal('inp-type1');
+            const t2 = getVal('inp-type2');
+            let typeStr = `**${t1}**`;
+            if(t2) typeStr += ` / **${t2}**`;
+
+            // 5. Abilities
+            const comm = getVal('inp-abil-common');
+            const hidden = getVal('inp-abil-hidden');
+            let abilStr = `**Comuns:** ${comm}`;
+            if(hidden) abilStr += `\n**Hidden:** ${hidden}`;
+
+            // 6. Moves (Pega o título do Head para usar no campo)
+            const moves = getVal('inp-moves');
+            const moveTitle = `Moves Adicionados (${head})`;
+
+            // Montar Objeto JSON
+            const embedData = {
+                title: name,
+                description: desc,
+                color: colorInt,
+                thumbnail: { url: getVal('inp-thumb') },
+                fields: [
+                    { name: "Tipagem", value: typeStr, inline: true },
+                    { name: "Base Stats", value: "```\n" + statsBlock + "\n```", inline: false },
+                    { name: "Habilidades", value: abilStr, inline: false },
+                    { name: moveTitle, value: moves, inline: false }
+                ],
+                footer: { text: "Humble Pixelmon • Custom Dex" }
+            };
+
+            // Remove moves se estiver vazio
+            if(!moves) embedData.fields.pop();
+
+            return embedData;
+        }
+
+        function update() {
+            const data = generateData();
+            
+            // Render Visual
+            setTxt('out-title', data.title);
+            setTxt('out-desc', data.description);
+            document.getElementById('embed-preview').style.borderLeftColor = '#' + data.color.toString(16).padStart(6, '0');
+            
+            // Thumb
+            const thumbEl = document.getElementById('out-thumb');
+            if(data.thumbnail.url) { thumbEl.src = data.thumbnail.url; thumbEl.style.display = 'block'; }
+            else { thumbEl.style.display = 'none'; }
+
+            // Fields
+            setTxt('out-types', data.fields[0].value.replace(/\*\*/g, '')); // Remove negrito pro preview simples (opcional)
+            document.getElementById('out-types').innerHTML = data.fields[0].value; // Renderiza HTML (negrito)
+
+            // Stats (Code block)
+            document.getElementById('out-stats').innerText = data.fields[1].value.replace(/```/g, '').trim();
+            
+            // Abilities
+            document.getElementById('out-abilities').innerHTML = data.fields[2].value.replace(/\n/g, '<br>');
+
+            // Moves
+            if(data.fields[3]) {
+                setTxt('out-moves-title', data.fields[3].name);
+                setTxt('out-moves', data.fields[3].value);
+                document.getElementById('out-moves-title').parentElement.style.display = 'block';
+            } else {
+                document.getElementById('out-moves-title').parentElement.style.display = 'none';
+            }
+        }
+
+        function copyJSON() {
+            const data = generateData();
+            const jsonStr = JSON.stringify(data, null, 2);
+            navigator.clipboard.writeText(jsonStr).then(() => {
+                const btn = document.querySelector('.action-btn.copy');
+                btn.innerText = "✅ Copiado!";
+                setTimeout(() => btn.innerText = "📋 Copiar JSON", 1500);
+            });
+        }
+
+        // Inicializar
+        update();
+    </script>
+</body>
+</html>
