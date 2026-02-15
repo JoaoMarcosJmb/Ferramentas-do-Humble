@@ -212,9 +212,19 @@
         .modal-body { padding: 0; overflow-y: auto; flex: 1; }
         .saved-item { padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
         .saved-item:hover { background: rgba(255,255,255,0.02); }
+        .saved-info h4 { margin: 0 0 5px 0; font-size: 14px; color: #fff; }
+        .saved-info span { font-size: 11px; color: #94a3b8; }
         .saved-actions { display: flex; gap: 8px; }
-        .btn-mini { padding: 6px; border-radius: 4px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; font-size: 14px; }
+        
+        .btn-mini {
+            padding: 6px; border-radius: 4px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; font-size: 14px;
+        }
         .btn-mini:hover { background: #334155; color: #fff; }
+        .btn-mini.load { color: #2d7d46; border-color: #2d7d46; }
+        .btn-mini.load:hover { background: #2d7d46; color: white; }
+        .btn-mini.share { color: #00b0f4; border-color: #00b0f4; }
+        .btn-mini.share:hover { background: #00b0f4; color: white; }
+        .btn-mini.del:hover { border-color: #ef4444; color: #ef4444; }
 
         /* --- EDITOR E JSON --- */
         .editor-content, .json-content {
@@ -779,6 +789,84 @@
             }
         }
 
+        // --- MANIPULAÇÃO DO MODAL DE SALVOS (ATUALIZADA) ---
+        function openSavedModal() {
+            const list = document.getElementById('saved-list');
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            document.getElementById('modal-saved').classList.add('active');
+
+            if(savedItems.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8;">Nenhum embed salvo.</div>';
+                return;
+            }
+
+            list.innerHTML = '';
+            [...savedItems].reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'saved-item';
+                // REINTRODUZIDO: Botões de Renomear (✏️) e Compartilhar (🔗)
+                div.innerHTML = `
+                    <div class="saved-info">
+                        <h4>${item.name}</h4>
+                        <span>${item.date}</span>
+                    </div>
+                    <div class="saved-actions">
+                        <button class="btn-mini load" title="Carregar" onclick="loadSavedItem(${item.id})">📂</button>
+                        <button class="btn-mini" title="Renomear" onclick="renameSavedItem(${item.id})">✏️</button>
+                        <button class="btn-mini share" title="Copiar Link" onclick="shareSavedItem(${item.id})">🔗</button>
+                        <button class="btn-mini del" title="Excluir" onclick="deleteSavedItem(${item.id})">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function closeSavedModal() { document.getElementById('modal-saved').classList.remove('active'); }
+        
+        function deleteSavedItem(id) {
+            if(!confirm("Excluir?")) return;
+            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            savedItems = savedItems.filter(x => x.id !== id);
+            localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+            
+            if (currentEditingFileId === id) exitEditMode();
+            
+            openSavedModal();
+        }
+
+        // --- FUNÇÕES REINTRODUZIDAS (RENOMEAR E COMPARTILHAR) ---
+        
+        function renameSavedItem(id) {
+            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            const index = savedItems.findIndex(x => x.id === id);
+
+            if (index !== -1) {
+                const newName = prompt("Novo nome:", savedItems[index].name);
+                if (newName && newName.trim() !== "") {
+                    savedItems[index].name = newName;
+                    localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
+                    openSavedModal(); // Atualiza a lista visual
+                    
+                    // Se estivermos editando este arquivo agora, atualiza o nome na barra superior também
+                    if (currentEditingFileId === id) {
+                        updateEditStatusUI(newName);
+                    }
+                }
+            }
+        }
+
+        function shareSavedItem(id) {
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            const item = savedItems.find(x => x.id === id);
+            if(item) {
+                // Serializa o objeto completo de dados (que já contem {embeds: [...]})
+                const jsonString = JSON.stringify(item.data);
+                const compressed = btoa(encodeURIComponent(jsonString));
+                const url = window.location.origin + window.location.pathname + '?data=' + compressed;
+                navigator.clipboard.writeText(url).then(() => alert("🔗 Link copiado!"));
+            }
+        }
+
         // --- OUTROS UTILITÁRIOS ---
         function updateEditStatusUI(name) {
             const statusBar = document.getElementById('edit-status-ui');
@@ -890,43 +978,6 @@
         }
 
         function updateColorPreview(color) { colorBtnVisual.style.backgroundColor = color; }
-
-        // --- MANIPULAÇÃO DO MODAL DE SALVOS ---
-        function openSavedModal() {
-            const list = document.getElementById('saved-list');
-            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
-            document.getElementById('modal-saved').classList.add('active');
-
-            if(savedItems.length === 0) {
-                list.innerHTML = '<div style="padding: 20px; text-align: center; color: #94a3b8;">Nenhum embed salvo.</div>';
-                return;
-            }
-
-            list.innerHTML = '';
-            [...savedItems].reverse().forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'saved-item';
-                div.innerHTML = `
-                    <div class="saved-info">
-                        <h4>${item.name}</h4>
-                        <span>${item.date}</span>
-                    </div>
-                    <div class="saved-actions">
-                        <button class="btn-mini load" onclick="loadSavedItem(${item.id})">📂</button>
-                        <button class="btn-mini del" onclick="deleteSavedItem(${item.id})">🗑️</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-        function closeSavedModal() { document.getElementById('modal-saved').classList.remove('active'); }
-        function deleteSavedItem(id) {
-            if(!confirm("Excluir?")) return;
-            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
-            savedItems = savedItems.filter(x => x.id !== id);
-            localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-            openSavedModal();
-        }
 
     </script>
 </body>
