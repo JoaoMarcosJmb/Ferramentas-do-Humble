@@ -77,7 +77,7 @@
         /* --- CABEÇALHO DO EDITOR --- */
         .editor-header {
             display: flex;
-            flex-direction: column; /* Alterado para comportar a barra de status */
+            flex-direction: column; 
             background: rgba(15, 23, 42, 0.5);
             border-bottom: 1px solid #334155;
         }
@@ -90,12 +90,12 @@
             flex-wrap: wrap; gap: 10px;
         }
 
-        /* BARRA DE STATUS DE EDIÇÃO (NOVO) */
+        /* BARRA DE STATUS DE EDIÇÃO */
         .edit-status-bar {
-            background: rgba(234, 179, 8, 0.15); /* Amarelo sutil */
+            background: rgba(234, 179, 8, 0.15); 
             border-bottom: 1px solid rgba(234, 179, 8, 0.3);
             padding: 8px 20px;
-            display: none; /* Escondido por padrão */
+            display: none; 
             justify-content: space-between;
             align-items: center;
             color: #fef08a;
@@ -149,7 +149,49 @@
         .action-btn.share:hover { background: #0088bd; }
         .action-btn.danger:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ef4444; }
 
-        /* --- MODAL (ARQUIVADOS) --- */
+        /* --- EMBED MULTI-TABS (NOVO) --- */
+        .embed-tabs-container {
+            padding: 10px 20px;
+            background: #111827;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            align-items: center;
+        }
+        .embed-pill {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .embed-pill:hover { background: #334155; color: #fff; }
+        .embed-pill.active { background: #00b0f4; border-color: #00b0f4; color: #fff; font-weight: bold; }
+        
+        .btn-del-embed {
+            font-size: 10px; width: 16px; height: 16px; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: rgba(0,0,0,0.2);
+            opacity: 0.6; transition: 0.2s;
+        }
+        .btn-del-embed:hover { opacity: 1; background: rgba(0,0,0,0.4); color: #ffcccc; }
+
+        .btn-add-embed {
+            background: #2d7d46; border: none; color: white; width: 28px; height: 28px;
+            border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .btn-add-embed:hover { background: #1e5c32; }
+
+
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.7);
@@ -159,48 +201,20 @@
             backdrop-filter: blur(5px);
         }
         .modal-overlay.active { display: flex; }
-
         .modal-content {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            width: 500px;
-            max-width: 90%;
-            max-height: 80vh;
-            display: flex; flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+            width: 500px; max-width: 90%; max-height: 80vh;
+            display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-        .modal-header {
-            padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;
-        }
+        .modal-header { padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h3 { margin: 0; color: #fff; font-size: 16px; }
         .close-modal { background: none; border: none; color: #94a3b8; font-size: 24px; cursor: pointer; }
-        .close-modal:hover { color: #fff; }
-        
         .modal-body { padding: 0; overflow-y: auto; flex: 1; }
-
-        .saved-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #334155;
-            display: flex; justify-content: space-between; align-items: center;
-            transition: 0.2s;
-        }
+        .saved-item { padding: 15px 20px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
         .saved-item:hover { background: rgba(255,255,255,0.02); }
-        .saved-item:last-child { border-bottom: none; }
-
-        .saved-info h4 { margin: 0 0 5px 0; font-size: 14px; color: #fff; }
-        .saved-info span { font-size: 11px; color: #94a3b8; }
-
         .saved-actions { display: flex; gap: 8px; }
-        .btn-mini {
-            padding: 6px; border-radius: 4px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; font-size: 14px;
-        }
+        .btn-mini { padding: 6px; border-radius: 4px; border: 1px solid #334155; background: transparent; color: #94a3b8; cursor: pointer; font-size: 14px; }
         .btn-mini:hover { background: #334155; color: #fff; }
-        .btn-mini.load { color: #2d7d46; border-color: #2d7d46; }
-        .btn-mini.load:hover { background: #2d7d46; color: white; }
-        .btn-mini.share { color: #00b0f4; border-color: #00b0f4; }
-        .btn-mini.share:hover { background: #00b0f4; color: white; }
-        .btn-mini.del:hover { border-color: #ef4444; color: #ef4444; }
 
         /* --- EDITOR E JSON --- */
         .editor-content, .json-content {
@@ -241,7 +255,6 @@
         details[open] summary::after { content: "-"; }
         
         .control-group { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        
         label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; margin-top: 10px; display: block; }
         .control-group > label:first-child { margin-top: 0; }
 
@@ -251,37 +264,18 @@
             font-family: inherit; font-size: 13px; line-height: 1.5; outline: none;
             transition: border-color 0.2s, background 0.2s; display: block;
         }
-
         input:not([type="checkbox"]):focus, textarea:focus, select:focus {
             border-color: #00b0f4; background: #111827; box-shadow: 0 0 0 1px rgba(0, 176, 244, 0.2);
         }
-
         textarea { resize: vertical; min-height: 80px; }
-
         .field-item { 
             background: #1e293b; border: 1px solid #334155; padding: 15px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
         }
-        
-        .field-header { 
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155;
-        }
-        
+        .field-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #334155; }
         .field-title { font-weight: bold; font-size: 12px; color: #fbbf24; }
-        
-        .btn-remove-field { 
-            background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; transition: 0.2s;
-        }
-        .btn-remove-field:hover { background: #dc2626; }
-
-        .btn-add-field { 
-            background: #2d3b52; color: #fff; border: 1px dashed #64748b; width: 100%; padding: 12px; cursor: pointer; border-radius: 5px; font-size: 13px; transition: 0.2s;
-        }
-        .btn-add-field:hover { background: #374151; border-color: #94a3b8; }
-
-        .inline-checkbox { 
-            display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: #cbd5e1; cursor: pointer;
-        }
-        .inline-checkbox input { width: auto; margin: 0; cursor: pointer; }
+        .btn-remove-field { background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+        .btn-add-field { background: #2d3b52; color: #fff; border: 1px dashed #64748b; width: 100%; padding: 12px; cursor: pointer; border-radius: 5px; font-size: 13px; }
+        .inline-checkbox { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: #cbd5e1; cursor: pointer; }
 
         /* --- PREVIEW --- */
         .preview-panel {
@@ -294,8 +288,11 @@
         .bot-tag { background: #5865F2; color: #fff; font-size: 10px; padding: 1px 4px; border-radius: 3px; line-height: 1.3; margin-top: 1px;}
         .timestamp { font-size: 12px; color: #949BA4; margin-left: 5px; font-weight: 400;}
 
+        /* Container de múltiplos embeds */
+        .embeds-stack { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
         .discord-embed {
-            margin-top: 8px; background: #2b2d31; border-left: 4px solid #00b0f4; border-radius: 4px; padding: 16px; max-width: 520px; display: grid; grid-template-columns: auto; gap: 8px;
+            background: #2b2d31; border-left: 4px solid #00b0f4; border-radius: 4px; padding: 16px; max-width: 520px; display: grid; grid-template-columns: auto; gap: 8px;
         }
         .embed-author { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; }
         .embed-author img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover;}
@@ -350,14 +347,17 @@
                     </div>
                     <div class="actions-area">
                         <button class="action-btn share" onclick="copyShareLink()">🔗 Copiar Link</button>
-                        <button class="action-btn primary" id="btn-save-main" onclick="saveCurrentEmbed()">💾 Salvar</button>
-                        <button class="action-btn" onclick="saveAsNewEmbed()">📑 Salvar Como Novo</button>
+                        <button class="action-btn primary" id="btn-save-main" onclick="saveCurrentEmbedFile()">💾 Salvar</button>
+                        <button class="action-btn" onclick="saveAsNewEmbedFile()">📑 Salvar Como Novo</button>
                         
                         <button class="action-btn" onclick="openSavedModal()">📂 Meus Embeds</button>
                         <button class="action-btn" onclick="copyJSON()">📋 JSON</button>
                         <button class="action-btn danger" onclick="clearAll()">🗑️</button>
                     </div>
                 </div>
+
+                <div class="embed-tabs-container" id="embed-tabs-bar">
+                    </div>
             </div>
 
             <div class="editor-content active" id="content-visual">
@@ -365,10 +365,10 @@
                     <summary>Informações Básicas</summary>
                     <div class="control-group">
                         <label>Título</label>
-                        <input type="text" id="input-title" oninput="updatePreview()" placeholder="Título do Embed">
+                        <input type="text" id="input-title" oninput="updateCurrentEmbedState()" placeholder="Título do Embed">
                         
                         <label>Descrição</label>
-                        <textarea id="input-desc" oninput="updatePreview()" placeholder="Texto da mensagem..."></textarea>
+                        <textarea id="input-desc" oninput="updateCurrentEmbedState()" placeholder="Texto da mensagem..."></textarea>
                     </div>
                 </details>
 
@@ -384,9 +384,9 @@
                     <summary>Autor</summary>
                     <div class="control-group">
                         <label>Nome do Autor</label>
-                        <input type="text" id="input-author-name" oninput="updatePreview()">
+                        <input type="text" id="input-author-name" oninput="updateCurrentEmbedState()">
                         <label>Ícone do Autor (URL)</label>
-                        <input type="text" id="input-author-icon" oninput="updatePreview()">
+                        <input type="text" id="input-author-icon" oninput="updateCurrentEmbedState()">
                     </div>
                 </details>
 
@@ -394,9 +394,9 @@
                     <summary>Imagens</summary>
                     <div class="control-group">
                         <label>Imagem Grande (URL)</label>
-                        <input type="text" id="input-image" oninput="updatePreview()">
+                        <input type="text" id="input-image" oninput="updateCurrentEmbedState()">
                         <label>Thumbnail (Miniatura Direita)</label>
-                        <input type="text" id="input-thumb" oninput="updatePreview()">
+                        <input type="text" id="input-thumb" oninput="updateCurrentEmbedState()">
                     </div>
                 </details>
 
@@ -404,9 +404,9 @@
                     <summary>Rodapé (Footer)</summary>
                     <div class="control-group">
                         <label>Texto do Rodapé</label>
-                        <input type="text" id="input-footer-text" oninput="updatePreview()">
+                        <input type="text" id="input-footer-text" oninput="updateCurrentEmbedState()">
                         <label>Ícone do Rodapé (URL)</label>
-                        <input type="text" id="input-footer-icon" oninput="updatePreview()">
+                        <input type="text" id="input-footer-icon" oninput="updateCurrentEmbedState()">
                     </div>
                 </details>
 
@@ -420,7 +420,7 @@
             <div class="floating-color-widget">
                 <div class="color-circle-btn" id="color-btn-visual">
                     <span class="brush-icon">🖌️</span>
-                    <input type="color" id="input-color" value="#00b0f4" oninput="updateColorPreview(this.value); updatePreview();">
+                    <input type="color" id="input-color" value="#00b0f4" oninput="updateColorPreview(this.value); updateCurrentEmbedState();">
                 </div>
             </div>
         </div>
@@ -433,27 +433,8 @@
                         Humble Bot <span class="bot-tag">BOT</span> <span class="timestamp">Hoje às 14:30</span>
                     </div>
 
-                    <div class="discord-embed" id="embed-preview">
-                        <div style="grid-column: 1; min-width: 0;">
-                            <div class="embed-author" id="preview-author" style="display:none;">
-                                <img id="preview-author-icon" src="" style="display:none;">
-                                <span id="preview-author-name"></span>
-                            </div>
-                            <div style="display: flex;">
-                                <div style="flex: 1; min-width: 0;">
-                                    <div class="embed-title" id="preview-title" style="display:none;"></div>
-                                    <div class="embed-desc" id="preview-desc" style="display:none;"></div>
-                                    <div class="embed-fields" id="preview-fields"></div>
-                                </div>
-                                <img class="embed-thumb" id="preview-thumb" src="">
-                            </div>
-                            <img class="embed-image" id="preview-image" src="">
-                            <div class="embed-footer" id="preview-footer" style="display:none;">
-                                <img id="preview-footer-icon" src="" style="display:none;">
-                                <span id="preview-footer-text"></span>
-                            </div>
+                    <div class="embeds-stack" id="embed-stack-preview">
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -478,14 +459,19 @@
     </footer>
 
     <script>
+        // --- ESTADO GLOBAL DOS EMBEDS ---
+        // Agora trabalhamos com uma LISTA de objetos, não apenas um.
+        let allEmbeds = [ createEmptyEmbedObject() ]; 
+        let currentEmbedIndex = 0;
+        let currentEditingFileId = null;
+
+        // --- REFERÊNCIAS ---
         const colorInput = document.getElementById('input-color');
         const colorBtnVisual = document.getElementById('color-btn-visual');
         const fieldsContainer = document.getElementById('fields-container');
-        const previewFieldsContainer = document.getElementById('preview-fields');
         const jsonTextarea = document.getElementById('json-io');
-        
-        // --- ESTADO DA EDIÇÃO ---
-        let currentEditingId = null;
+        const stackPreview = document.getElementById('embed-stack-preview');
+        const tabsBar = document.getElementById('embed-tabs-bar');
 
         // --- INICIALIZAÇÃO ---
         window.addEventListener('load', () => {
@@ -495,77 +481,266 @@
             if(state) {
                 try {
                     const jsonString = decodeURIComponent(atob(state));
-                    applyJSONToInputs(jsonString);
+                    const parsed = JSON.parse(jsonString);
+                    // Suporta tanto o formato novo {embeds:[]} quanto o antigo single object
+                    if(parsed.embeds && Array.isArray(parsed.embeds)) {
+                        allEmbeds = parsed.embeds;
+                    } else {
+                        allEmbeds = [parsed]; // Converte legado para array
+                    }
                     console.log("Embed carregado via Link!");
                 } catch(e) { console.error(e); }
-            } else {
-                updatePreview();
-                updateColorPreview(colorInput.value);
             }
+            
+            // Renderiza inicial
+            loadEmbedToInputs(0);
+            renderEmbedTabs();
+            renderStackPreview();
         });
 
-        // --- UI DE EDIÇÃO ---
-        function updateEditStatusUI(name) {
-            const statusBar = document.getElementById('edit-status-ui');
-            const nameDisplay = document.getElementById('editing-name-display');
-            const btnSave = document.getElementById('btn-save-main');
+        // --- GERENCIAMENTO DE OBJETOS DE EMBED ---
+        function createEmptyEmbedObject() {
+            return {
+                title: "", description: "", color: 45224, // #00b0f4 em decimal
+                fields: [], author: {}, footer: {}, image: {}, thumbnail: {}
+            };
+        }
+
+        // --- TAB SYSTEM PARA EMBEDS ---
+        function renderEmbedTabs() {
+            tabsBar.innerHTML = '';
             
-            if (currentEditingId) {
-                statusBar.classList.add('active');
-                nameDisplay.innerText = name || "Sem Nome";
-                btnSave.innerText = "💾 Atualizar";
-                btnSave.title = "Salvar alterações neste arquivo";
-            } else {
-                statusBar.classList.remove('active');
-                btnSave.innerText = "💾 Salvar";
-                btnSave.title = "Salvar como novo arquivo";
+            allEmbeds.forEach((emb, index) => {
+                const pill = document.createElement('div');
+                pill.className = `embed-pill ${index === currentEmbedIndex ? 'active' : ''}`;
+                
+                // Texto do botão (Titulo ou "Embed X")
+                const name = emb.title ? (emb.title.length > 10 ? emb.title.substring(0,10)+'...' : emb.title) : `Embed ${index + 1}`;
+                
+                pill.innerHTML = `<span onclick="switchEmbedIndex(${index})">${name}</span>`;
+                
+                // Botão de deletar (só aparece se tiver mais de 1)
+                if(allEmbeds.length > 1) {
+                    const delBtn = document.createElement('span');
+                    delBtn.className = 'btn-del-embed';
+                    delBtn.innerText = '×';
+                    delBtn.onclick = (e) => { e.stopPropagation(); deleteEmbed(index); };
+                    pill.appendChild(delBtn);
+                }
+
+                tabsBar.appendChild(pill);
+            });
+
+            // Botão Adicionar (+)
+            if(allEmbeds.length < 10) {
+                const addBtn = document.createElement('button');
+                addBtn.className = 'btn-add-embed';
+                addBtn.innerText = '+';
+                addBtn.onclick = addNewEmbed;
+                tabsBar.appendChild(addBtn);
             }
         }
 
-        function exitEditMode() {
-            currentEditingId = null;
-            updateEditStatusUI();
-            
-            // Opcional: Limpar campos ao sair? 
-            // Para ser menos destrutivo, mantemos os dados na tela, mas agora o "Salvar" cria um novo.
+        function switchEmbedIndex(index) {
+            // 1. Salvar estado atual (já é feito no oninput, mas garante)
+            updateCurrentEmbedState(); 
+            // 2. Mudar index
+            currentEmbedIndex = index;
+            // 3. Carregar novos dados nos inputs
+            loadEmbedToInputs(index);
+            // 4. Atualizar UI
+            renderEmbedTabs();
+            renderStackPreview();
         }
 
-        // --- SISTEMA DE SALVAMENTO INTUITIVO ---
+        function addNewEmbed() {
+            updateCurrentEmbedState();
+            allEmbeds.push(createEmptyEmbedObject());
+            currentEmbedIndex = allEmbeds.length - 1;
+            loadEmbedToInputs(currentEmbedIndex);
+            renderEmbedTabs();
+            renderStackPreview();
+        }
+
+        function deleteEmbed(index) {
+            if(!confirm("Remover este embed?")) return;
+            
+            allEmbeds.splice(index, 1);
+            
+            // Ajustar index se necessário
+            if(currentEmbedIndex >= allEmbeds.length) {
+                currentEmbedIndex = allEmbeds.length - 1;
+            }
+            if(currentEmbedIndex < 0) currentEmbedIndex = 0;
+
+            loadEmbedToInputs(currentEmbedIndex);
+            renderEmbedTabs();
+            renderStackPreview();
+        }
+
+        // --- LÓGICA DE DADOS <-> INPUTS ---
         
-        // 1. Botão Principal (Atualiza se existe, Cria se não existe)
-        function saveCurrentEmbed() {
-            const data = getDataFromInputs();
+        // Pega os dados do array e joga nos inputs da tela
+        function loadEmbedToInputs(index) {
+            const data = allEmbeds[index];
+            if(!data) return;
+
+            document.getElementById('input-title').value = data.title || "";
+            document.getElementById('input-desc').value = data.description || "";
+            
+            // Cor
+            const hex = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
+            colorInput.value = hex;
+            updateColorPreview(hex);
+
+            document.getElementById('input-author-name').value = data.author?.name || "";
+            document.getElementById('input-author-icon').value = data.author?.icon_url || "";
+            document.getElementById('input-footer-text').value = data.footer?.text || "";
+            document.getElementById('input-footer-icon').value = data.footer?.icon_url || "";
+            document.getElementById('input-image').value = data.image?.url || "";
+            document.getElementById('input-thumb').value = data.thumbnail?.url || "";
+
+            // Fields
+            fieldsContainer.innerHTML = '';
+            if (data.fields) data.fields.forEach(f => createFieldElement(f.name, f.value, f.inline));
+        }
+
+        // Pega os dados dos inputs e salva no array (memória)
+        function updateCurrentEmbedState() {
+            // Recupera campos
+            const fieldsData = [];
+            document.querySelectorAll('.field-item').forEach(item => {
+                const name = item.querySelector('.field-name-input').value;
+                const value = item.querySelector('.field-value-input').value;
+                const inline = item.querySelector('.field-inline-input').checked;
+                if(name || value) fieldsData.push({ name, value, inline });
+            });
+
+            const current = {
+                title: document.getElementById('input-title').value,
+                description: document.getElementById('input-desc').value,
+                color: parseInt(colorInput.value.replace('#', ''), 16),
+                fields: fieldsData,
+                footer: {
+                    text: document.getElementById('input-footer-text').value,
+                    icon_url: document.getElementById('input-footer-icon').value
+                },
+                author: {
+                    name: document.getElementById('input-author-name').value,
+                    icon_url: document.getElementById('input-author-icon').value
+                },
+                image: { url: document.getElementById('input-image').value },
+                thumbnail: { url: document.getElementById('input-thumb').value }
+            };
+
+            // Limpeza de objetos vazios
+            if(!current.title) delete current.title;
+            if(!current.description) delete current.description;
+            if(current.fields.length === 0) delete current.fields;
+            if(!current.footer.text) delete current.footer;
+            if(!current.author.name) delete current.author;
+            if(!current.image.url) delete current.image;
+            if(!current.thumbnail.url) delete current.thumbnail;
+
+            // Salva no array global
+            allEmbeds[currentEmbedIndex] = current;
+            
+            // Atualiza visualizações
+            renderEmbedTabs(); // Para atualizar o nome na aba se mudar titulo
+            renderStackPreview();
+        }
+
+        // --- RENDERIZAÇÃO DO PREVIEW (STACK) ---
+        function renderStackPreview() {
+            stackPreview.innerHTML = '';
+
+            allEmbeds.forEach(data => {
+                // Cria o HTML de um embed
+                const hexColor = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
+                
+                const embedDiv = document.createElement('div');
+                embedDiv.className = 'discord-embed';
+                embedDiv.style.borderLeftColor = hexColor;
+
+                // Montagem do HTML interno
+                let fieldsHtml = '';
+                if(data.fields) {
+                    data.fields.forEach(f => {
+                        fieldsHtml += `<div class="embed-field ${f.inline ? 'inline' : ''}">
+                            <div class="field-name">${f.name || ''}</div>
+                            <div class="field-value">${f.value || ''}</div>
+                        </div>`;
+                    });
+                }
+
+                // Lógica de Display (block/none)
+                const showAuthor = data.author?.name ? 'flex' : 'none';
+                const showFooter = data.footer?.text ? 'flex' : 'none';
+                const showTitle = data.title ? 'block' : 'none';
+                const showDesc = data.description ? 'block' : 'none';
+                const showImg = data.image?.url ? 'block' : 'none';
+                const showThumb = data.thumbnail?.url ? 'block' : 'none';
+
+                embedDiv.innerHTML = `
+                    <div style="grid-column: 1; min-width: 0;">
+                        <div class="embed-author" style="display:${showAuthor};">
+                            ${data.author?.icon_url ? `<img src="${data.author.icon_url}">` : ''}
+                            <span>${data.author?.name || ''}</span>
+                        </div>
+                        <div style="display: flex;">
+                            <div style="flex: 1; min-width: 0;">
+                                <div class="embed-title" style="display:${showTitle};">${data.title || ''}</div>
+                                <div class="embed-desc" style="display:${showDesc};">${data.description || ''}</div>
+                                <div class="embed-fields">${fieldsHtml}</div>
+                            </div>
+                            ${data.thumbnail?.url ? `<img class="embed-thumb" src="${data.thumbnail.url}" style="display:${showThumb};">` : ''}
+                        </div>
+                        ${data.image?.url ? `<img class="embed-image" src="${data.image.url}" style="display:${showImg};">` : ''}
+                        <div class="embed-footer" style="display:${showFooter};">
+                            ${data.footer?.icon_url ? `<img src="${data.footer.icon_url}">` : ''}
+                            <span>${data.footer?.text || ''}</span>
+                        </div>
+                    </div>
+                `;
+                
+                stackPreview.appendChild(embedDiv);
+            });
+        }
+
+        // --- SISTEMA DE ARQUIVOS / SAVE ---
+        function saveCurrentEmbedFile() {
+            // Atualiza memória antes
+            updateCurrentEmbedState();
+            
+            const fullData = { embeds: allEmbeds };
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
 
-            if (currentEditingId) {
-                // MODO ATUALIZAR
-                const index = savedItems.findIndex(x => x.id === currentEditingId);
+            if (currentEditingFileId) {
+                // UPDATE
+                const index = savedItems.findIndex(x => x.id === currentEditingFileId);
                 if (index !== -1) {
-                    savedItems[index].data = data;
+                    savedItems[index].data = fullData; // Salva estrutura nova
                     savedItems[index].date = new Date().toLocaleDateString();
                     localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
                     
-                    // Feedback visual rápido
                     const btn = document.getElementById('btn-save-main');
                     const originalText = btn.innerText;
                     btn.innerText = "✅ Salvo!";
                     setTimeout(() => btn.innerText = originalText, 1500);
                 } else {
-                    // ID não encontrado (talvez deletado em outra aba), salva como novo
-                    saveAsNewEmbed();
+                    saveAsNewEmbedFile();
                 }
             } else {
-                // MODO CRIAR NOVO
-                saveAsNewEmbed();
+                saveAsNewEmbedFile();
             }
         }
 
-        // 2. Botão "Salvar Como Novo" (Sempre cria cópia)
-        function saveAsNewEmbed() {
-            const name = prompt("Nome para salvar este embed:");
+        function saveAsNewEmbedFile() {
+            updateCurrentEmbedState();
+            const name = prompt("Nome para salvar este grupo de embeds:");
             if (!name) return;
 
-            const data = getDataFromInputs();
+            const fullData = { embeds: allEmbeds };
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             
             const newId = Date.now();
@@ -573,22 +748,153 @@
                 id: newId,
                 name: name,
                 date: new Date().toLocaleDateString(),
-                data: data
+                data: fullData
             });
 
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-            
-            // Entra automaticamente no modo de edição do novo item
-            currentEditingId = newId;
+            currentEditingFileId = newId;
             updateEditStatusUI(name);
-            alert("Embed salvo com sucesso!");
+            alert("Salvo com sucesso!");
         }
 
-        // --- MODAL DE SALVOS ---
+        function loadSavedItem(id) {
+            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
+            const item = savedItems.find(x => x.id === id);
+            if(item) {
+                currentEditingFileId = item.id;
+                updateEditStatusUI(item.name);
+                
+                // Compatibilidade: se for formato antigo (objeto único), encapsula em array
+                if(item.data.embeds) {
+                    allEmbeds = item.data.embeds;
+                } else {
+                    allEmbeds = [item.data];
+                }
+                
+                currentEmbedIndex = 0;
+                loadEmbedToInputs(0);
+                renderEmbedTabs();
+                renderStackPreview();
+                closeSavedModal();
+            }
+        }
+
+        // --- OUTROS UTILITÁRIOS ---
+        function updateEditStatusUI(name) {
+            const statusBar = document.getElementById('edit-status-ui');
+            const nameDisplay = document.getElementById('editing-name-display');
+            const btnSave = document.getElementById('btn-save-main');
+            
+            if (currentEditingFileId) {
+                statusBar.classList.add('active');
+                nameDisplay.innerText = name || "Sem Nome";
+                btnSave.innerText = "💾 Atualizar";
+            } else {
+                statusBar.classList.remove('active');
+                btnSave.innerText = "💾 Salvar";
+            }
+        }
+
+        function exitEditMode() {
+            currentEditingFileId = null;
+            updateEditStatusUI();
+        }
+
+        function createFieldElement(name = "", value = "", inline = false) {
+            const id = Date.now() + Math.random();
+            const div = document.createElement('div');
+            div.className = 'field-item';
+            div.dataset.id = id;
+            div.innerHTML = `
+                <div class="field-header">
+                    <span class="field-title">Campo</span>
+                    <button class="btn-remove-field" onclick="removeField('${id}')">Remover</button>
+                </div>
+                <label>Título do Campo</label>
+                <input type="text" class="field-name-input" value="${name}" oninput="updateCurrentEmbedState()">
+                <label style="margin-top: 10px; display:block; margin-bottom: 2px;">Conteúdo</label>
+                <textarea class="field-value-input" oninput="updateCurrentEmbedState()">${value}</textarea>
+                <label class="inline-checkbox">
+                    <input type="checkbox" class="field-inline-input" ${inline ? 'checked' : ''} onchange="updateCurrentEmbedState()">
+                    Inline (Mesma linha)
+                </label>
+            `;
+            fieldsContainer.appendChild(div);
+        }
+
+        function addField() { createFieldElement(); updateCurrentEmbedState(); }
+        function removeField(id) {
+            const item = document.querySelector(`.field-item[data-id="${id}"]`);
+            if(item) item.remove();
+            updateCurrentEmbedState();
+        }
+
+        function switchTab(mode) {
+            document.getElementById('btn-visual').classList.toggle('active', mode === 'visual');
+            document.getElementById('btn-json').classList.toggle('active', mode === 'json');
+            document.getElementById('content-visual').classList.toggle('active', mode === 'visual');
+            document.getElementById('content-json').classList.toggle('active', mode === 'json');
+            
+            if (mode === 'json') {
+                updateCurrentEmbedState(); // Garante que a memória tá fresca
+                jsonTextarea.value = JSON.stringify({ embeds: allEmbeds }, null, 4);
+            } else {
+                updateFromJSONInput();
+            }
+        }
+
+        function updateFromJSONInput() {
+            try {
+                const raw = jsonTextarea.value;
+                if (!raw.trim()) return;
+                const parsed = JSON.parse(raw);
+                
+                if(parsed.embeds && Array.isArray(parsed.embeds)) {
+                    allEmbeds = parsed.embeds;
+                } else if (Array.isArray(parsed)) {
+                    allEmbeds = parsed;
+                } else {
+                    allEmbeds = [parsed];
+                }
+                
+                currentEmbedIndex = 0;
+                loadEmbedToInputs(0);
+                renderEmbedTabs();
+                renderStackPreview();
+            } catch (e) {}
+        }
+
+        function copyJSON() {
+            updateCurrentEmbedState();
+            const jsonStr = JSON.stringify({ embeds: allEmbeds }, null, 4);
+            navigator.clipboard.writeText(jsonStr).then(() => alert("JSON copiado!"));
+        }
+
+        function copyShareLink() {
+            updateCurrentEmbedState();
+            const jsonStr = JSON.stringify({ embeds: allEmbeds });
+            const compressed = btoa(encodeURIComponent(jsonStr));
+            const url = window.location.origin + window.location.pathname + '?data=' + compressed;
+            navigator.clipboard.writeText(url).then(() => alert("🔗 Link copiado!"));
+        }
+
+        function clearAll() {
+            if(!confirm("Limpar tudo?")) return;
+            allEmbeds = [createEmptyEmbedObject()];
+            currentEmbedIndex = 0;
+            loadEmbedToInputs(0);
+            renderEmbedTabs();
+            renderStackPreview();
+            exitEditMode();
+            window.history.pushState({}, document.title, window.location.pathname);
+        }
+
+        function updateColorPreview(color) { colorBtnVisual.style.backgroundColor = color; }
+
+        // --- MANIPULAÇÃO DO MODAL DE SALVOS ---
         function openSavedModal() {
             const list = document.getElementById('saved-list');
             const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
-            
             document.getElementById('modal-saved').classList.add('active');
 
             if(savedItems.length === 0) {
@@ -606,244 +912,22 @@
                         <span>${item.date}</span>
                     </div>
                     <div class="saved-actions">
-                        <button class="btn-mini load" title="Carregar e Editar" onclick="loadSavedItem(${item.id})">📂</button>
-                        <button class="btn-mini" title="Renomear" onclick="renameSavedItem(${item.id})">✏️</button>
-                        <button class="btn-mini share" title="Copiar Link" onclick="shareSavedItem(${item.id})">🔗</button>
-                        <button class="btn-mini del" title="Excluir" onclick="deleteSavedItem(${item.id})">🗑️</button>
+                        <button class="btn-mini load" onclick="loadSavedItem(${item.id})">📂</button>
+                        <button class="btn-mini del" onclick="deleteSavedItem(${item.id})">🗑️</button>
                     </div>
                 `;
                 list.appendChild(div);
             });
         }
-
-        function closeSavedModal() {
-            document.getElementById('modal-saved').classList.remove('active');
-        }
-
-        function loadSavedItem(id) {
-            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
-            const item = savedItems.find(x => x.id === id);
-            if(item) {
-                currentEditingId = item.id; // Define ID ativo
-                updateEditStatusUI(item.name); // Atualiza UI
-                
-                const jsonWrapper = JSON.stringify({ embeds: [item.data] });
-                applyJSONToInputs(jsonWrapper);
-                closeSavedModal();
-            }
-        }
-
-        function renameSavedItem(id) {
-            let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
-            const index = savedItems.findIndex(x => x.id === id);
-            
-            if (index !== -1) {
-                const newName = prompt("Novo nome:", savedItems[index].name);
-                if (newName && newName.trim() !== "") {
-                    savedItems[index].name = newName;
-                    localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-                    openSavedModal();
-                    
-                    // Se estiver editando este item agora, atualiza o nome na barra
-                    if(currentEditingId === id) updateEditStatusUI(newName);
-                }
-            }
-        }
-
+        function closeSavedModal() { document.getElementById('modal-saved').classList.remove('active'); }
         function deleteSavedItem(id) {
-            if(!confirm("Tem certeza que deseja excluir?")) return;
+            if(!confirm("Excluir?")) return;
             let savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
             savedItems = savedItems.filter(x => x.id !== id);
             localStorage.setItem('humble_embeds', JSON.stringify(savedItems));
-            
-            if (currentEditingId === id) exitEditMode();
-            
             openSavedModal();
         }
 
-        // --- OUTRAS FUNÇÕES (Mantidas iguais, mas necessárias) ---
-        function clearAll() {
-            if(!confirm("Deseja limpar todos os campos?")) return;
-            document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
-            colorInput.value = '#00b0f4';
-            updateColorPreview('#00b0f4');
-            fieldsContainer.innerHTML = '';
-            jsonTextarea.value = '';
-            exitEditMode(); // Reseta modo de edição
-            window.history.pushState({}, document.title, window.location.pathname);
-            updatePreview();
-        }
-
-        function copyShareLink() {
-            const data = getDataFromInputs();
-            const jsonString = JSON.stringify({ embeds: [data] });
-            const compressed = btoa(encodeURIComponent(jsonString));
-            const url = window.location.origin + window.location.pathname + '?data=' + compressed;
-            navigator.clipboard.writeText(url).then(() => alert("🔗 Link copiado!"));
-        }
-        
-        function shareSavedItem(id) {
-            const savedItems = JSON.parse(localStorage.getItem('humble_embeds') || "[]");
-            const item = savedItems.find(x => x.id === id);
-            if(item) {
-                const jsonString = JSON.stringify({ embeds: [item.data] });
-                const compressed = btoa(encodeURIComponent(jsonString));
-                const url = window.location.origin + window.location.pathname + '?data=' + compressed;
-                navigator.clipboard.writeText(url).then(() => alert("🔗 Link copiado!"));
-            }
-        }
-
-        // --- FUNÇÕES VISUAIS & LOGICA DO EDITOR ---
-        function updateColorPreview(color) { colorBtnVisual.style.backgroundColor = color; }
-
-        function switchTab(mode) {
-            document.getElementById('btn-visual').classList.toggle('active', mode === 'visual');
-            document.getElementById('btn-json').classList.toggle('active', mode === 'json');
-            document.getElementById('content-visual').classList.toggle('active', mode === 'visual');
-            document.getElementById('content-json').classList.toggle('active', mode === 'json');
-            if (mode === 'json') jsonTextarea.value = generateJSONString();
-            else applyJSONToInputs(jsonTextarea.value);
-        }
-
-        function updateFromJSONInput() {
-            try {
-                const raw = jsonTextarea.value;
-                if (!raw.trim()) return;
-                let data = JSON.parse(raw);
-                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) data = data.embeds[0];
-                renderPreviewFromData(data);
-            } catch (e) {}
-        }
-
-        function addField(name = "", value = "", inline = false) {
-            const id = Date.now() + Math.random();
-            const div = document.createElement('div');
-            div.className = 'field-item';
-            div.dataset.id = id;
-            div.innerHTML = `
-                <div class="field-header">
-                    <span class="field-title">Campo</span>
-                    <button class="btn-remove-field" onclick="removeField('${id}')">Remover</button>
-                </div>
-                <label>Título do Campo</label>
-                <input type="text" class="field-name-input" value="${name}" oninput="updatePreview()">
-                <label style="margin-top: 10px; display:block; margin-bottom: 2px;">Conteúdo</label>
-                <textarea class="field-value-input" oninput="updatePreview()">${value}</textarea>
-                <label class="inline-checkbox">
-                    <input type="checkbox" class="field-inline-input" ${inline ? 'checked' : ''} onchange="updatePreview()">
-                    Inline (Mesma linha)
-                </label>
-            `;
-            fieldsContainer.appendChild(div);
-            updatePreview();
-        }
-
-        function removeField(id) {
-            const item = document.querySelector(`.field-item[data-id="${id}"]`);
-            if(item) item.remove();
-            updatePreview();
-        }
-
-        function getDataFromInputs() {
-            const fieldsData = [];
-            document.querySelectorAll('.field-item').forEach(item => {
-                const name = item.querySelector('.field-name-input').value;
-                const value = item.querySelector('.field-value-input').value;
-                const inline = item.querySelector('.field-inline-input').checked;
-                if(name || value) fieldsData.push({ name, value, inline });
-            });
-
-            const data = {
-                title: document.getElementById('input-title').value,
-                description: document.getElementById('input-desc').value,
-                color: parseInt(colorInput.value.replace('#', ''), 16),
-                fields: fieldsData,
-                footer: {
-                    text: document.getElementById('input-footer-text').value,
-                    icon_url: document.getElementById('input-footer-icon').value
-                },
-                author: {
-                    name: document.getElementById('input-author-name').value,
-                    icon_url: document.getElementById('input-author-icon').value
-                },
-                image: { url: document.getElementById('input-image').value },
-                thumbnail: { url: document.getElementById('input-thumb').value }
-            };
-            
-            if(!data.title) delete data.title;
-            if(!data.description) delete data.description;
-            if(data.fields.length === 0) delete data.fields;
-            if(!data.footer.text) delete data.footer;
-            if(!data.author.name) delete data.author;
-            if(!data.image.url) delete data.image;
-            if(!data.thumbnail.url) delete data.thumbnail;
-
-            return data;
-        }
-
-        function generateJSONString() { return JSON.stringify({ embeds: [getDataFromInputs()] }, null, 4); }
-
-        function copyJSON() {
-            const textToCopy = document.getElementById('content-json').classList.contains('active') ? jsonTextarea.value : generateJSONString();
-            navigator.clipboard.writeText(textToCopy).then(() => alert("JSON copiado!"));
-        }
-
-        function applyJSONToInputs(jsonString) {
-            try {
-                if(!jsonString.trim()) return;
-                let data = JSON.parse(jsonString);
-                if (data.embeds && Array.isArray(data.embeds) && data.embeds.length > 0) data = data.embeds[0];
-
-                document.getElementById('input-title').value = data.title || "";
-                document.getElementById('input-desc').value = data.description || "";
-                if (data.color) {
-                    const hex = '#' + data.color.toString(16).padStart(6, '0');
-                    colorInput.value = hex;
-                    updateColorPreview(hex);
-                }
-                document.getElementById('input-author-name').value = data.author?.name || "";
-                document.getElementById('input-author-icon').value = data.author?.icon_url || "";
-                document.getElementById('input-footer-text').value = data.footer?.text || "";
-                document.getElementById('input-footer-icon').value = data.footer?.icon_url || "";
-                document.getElementById('input-image').value = data.image?.url || "";
-                document.getElementById('input-thumb').value = data.thumbnail?.url || "";
-
-                fieldsContainer.innerHTML = '';
-                if (data.fields) data.fields.forEach(f => addField(f.name, f.value, f.inline));
-
-                updatePreview();
-            } catch(e) { console.error("Erro JSON", e); }
-        }
-
-        function renderPreviewFromData(data) {
-            const hexColor = data.color ? '#' + data.color.toString(16).padStart(6, '0') : '#00b0f4';
-            document.getElementById('embed-preview').style.borderLeftColor = hexColor;
-            updateColorPreview(hexColor);
-            const setText = (id, val) => { const el = document.getElementById(id); el.innerText = val || ""; el.style.display = val ? 'block' : 'none'; };
-            const setImg = (id, val) => { const el = document.getElementById(id); if(val) { el.src = val; el.style.display = 'block'; } else { el.style.display = 'none'; } };
-
-            setText('preview-title', data.title);
-            setText('preview-desc', data.description);
-            setText('preview-author-name', data.author?.name);
-            setText('preview-footer-text', data.footer?.text);
-            setImg('preview-author-icon', data.author?.icon_url);
-            setImg('preview-image', data.image?.url);
-            setImg('preview-thumb', data.thumbnail?.url);
-            setImg('preview-footer-icon', data.footer?.icon_url);
-            document.getElementById('preview-author').style.display = data.author?.name ? 'flex' : 'none';
-            document.getElementById('preview-footer').style.display = data.footer?.text ? 'flex' : 'none';
-
-            previewFieldsContainer.innerHTML = '';
-            if (data.fields) {
-                data.fields.forEach(f => {
-                    const div = document.createElement('div');
-                    div.className = `embed-field ${f.inline ? 'inline' : ''}`;
-                    div.innerHTML = `<div class="field-name">${f.name || ''}</div><div class="field-value">${f.value || ''}</div>`;
-                    previewFieldsContainer.appendChild(div);
-                });
-            }
-        }
-        function updatePreview() { renderPreviewFromData(getDataFromInputs()); }
     </script>
 </body>
 </html>
