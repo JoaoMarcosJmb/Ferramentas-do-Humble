@@ -239,12 +239,12 @@
                         
                         <div style="display: flex; gap: 10px;">
                             <div style="flex: 1;">
-                                <label>Corpo (Base)</label>
-                                <input type="text" id="inp-body" placeholder="Ex: Conkeldurr" oninput="update()">
+                                <label>Pokémon 1</label>
+                                <input type="text" id="inp-poke1" placeholder="Ex: Conkeldurr" oninput="update()">
                             </div>
                             <div style="flex: 1;">
-                                <label>Cabeça (Head)</label>
-                                <input type="text" id="inp-head" placeholder="Ex: Garbodor" oninput="update()">
+                                <label>Pokémon 2</label>
+                                <input type="text" id="inp-poke2" placeholder="Ex: Garbodor" oninput="update()">
                             </div>
                         </div>
 
@@ -322,7 +322,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                             <div style="flex: 1;">
                                 <div class="embed-title" id="out-title">Conkelbodor</div>
-                                <div class="embed-desc" id="out-desc">**Conkeldurr** (Base) + **Garbodor**</div>
+                                <div class="embed-desc" id="out-desc">**Conkeldurr** + **Garbodor**</div>
                             </div>
                             <img src="" id="out-thumb" class="embed-thumb">
                         </div>
@@ -389,7 +389,7 @@ Total: 575</div>
                 setVal('inp-name', data.title || "");
                 setVal('inp-thumb', data.thumbnail?.url || "");
                 
-                // Parse Descrição para pegar Body/Base e Head
+                // Parse Descrição para pegar Poke 1 e Poke 2
                 if(data.description) {
                     const lines = data.description.split('\n');
                     const firstLine = lines[0];
@@ -399,8 +399,8 @@ Total: 575</div>
 
                     const matches = firstLine.match(/\*\*(.*?)\*\*/g);
                     if(matches && matches.length >= 2) {
-                        setVal('inp-body', matches[0].replace(/\*\*/g, ''));
-                        setVal('inp-head', matches[1].replace(/\*\*/g, ''));
+                        setVal('inp-poke1', matches[0].replace(/\*\*/g, ''));
+                        setVal('inp-poke2', matches[1].replace(/\*\*/g, ''));
                     }
                 }
 
@@ -466,10 +466,10 @@ Total: 575</div>
         // --- GENERATE & UPDATE ---
         function generateData() {
             const name = getVal('inp-name') || "Nome da Fusão";
-            const body = getVal('inp-body') || "Body";
-            const head = getVal('inp-head') || "Head";
+            const poke1 = getVal('inp-poke1') || "Pokémon 1";
+            const poke2 = getVal('inp-poke2') || "Pokémon 2";
             
-            let desc = `**${body}** (Base) + **${head}**`;
+            let desc = `**${poke1}** + **${poke2}**`;
             const extraDesc = getVal('inp-desc');
             if(extraDesc) desc += `\n${extraDesc}`;
 
@@ -510,7 +510,7 @@ Total: ${total}`;
             if(!abilStr) abilStr = "Nenhuma";
 
             const moves = getVal('inp-moves');
-            const moveTitle = head ? `Moves Adicionados (${head})` : "Moves Adicionados";
+            const moveTitle = "Moves Adicionados";
 
             const embed = {
                 title: name,
