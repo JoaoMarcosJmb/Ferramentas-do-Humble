@@ -39,20 +39,12 @@
         }
 
         .nav-left { display: flex; align-items: center; gap: 25px; }
-
         .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: bold; font-size: 18px; }
         .nav-brand img { height: 30px; width: auto; border-radius: 50%; }
 
-        /* Botão Voltar */
         .nav-back { 
-            color: #94a3b8; 
-            text-decoration: none; 
-            font-size: 14px; 
-            font-weight: 600; 
-            transition: 0.2s; 
-            display: flex; 
-            align-items: center; 
-            gap: 5px;
+            color: #94a3b8; text-decoration: none; font-size: 14px; 
+            font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 5px;
         }
         .nav-back:hover { color: #fff; transform: translateX(-2px); }
 
@@ -66,11 +58,8 @@
             padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: 600;
-            transition: 0.2s;
+            display: flex; align-items: center; gap: 5px;
+            font-weight: 600; transition: 0.2s;
         }
         .action-btn:hover { background: #334155; }
         .action-btn.copy { background: #00b0f4; border-color: #00b0f4; color: #fff; }
@@ -96,8 +85,7 @@
             background: rgba(15, 23, 42, 0.9);
             border: 1px solid #1e293b;
             border-radius: 8px;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             height: calc(100vh - 120px);
             overflow: hidden;
             backdrop-filter: blur(5px);
@@ -119,19 +107,19 @@
             color: #e2e8f0; padding: 10px 12px; border-radius: 4px; width: 100%; 
             font-family: 'Consolas', monospace; font-size: 13px; outline: none; transition: 0.2s;
         }
-        input:focus, textarea:focus { border-color: #00b0f4; background: #111827; }
+        input:focus, textarea:focus, select:focus { border-color: #00b0f4; background: #111827; }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .total-display { text-align: right; color: #fbbf24; font-size: 12px; font-weight: bold; margin-top: 5px;}
+        .set-group { border-top: 1px solid #334155; padding-top: 10px; margin-top: 5px; display: flex; flex-direction: column; gap: 8px; }
+        .set-group:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
         /* --- PREVIEW (DIREITA) --- */
         .preview-panel {
             background: #313338;
             border-radius: 8px;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            display: flex; flex-direction: column; gap: 20px;
             overflow-y: auto;
             height: calc(100vh - 120px);
             border: 1px solid #1e293b;
@@ -158,22 +146,29 @@
             border-radius: 4px; 
             padding: 16px; 
             max-width: 520px; 
-            display: grid; gap: 8px;
+            display: flex; flex-direction: column; gap: 8px;
         }
         
         .embed-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
         .embed-desc { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.4; }
-        .embed-thumb { float: right; max-width: 80px; max-height: 80px; border-radius: 4px; object-fit: cover; margin-left: 10px; display: none;}
         
-        .field-item { margin-top: 4px; }
+        .embed-fields { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+        .field-item { flex: 1 1 100%; }
+        .field-item.inline { flex: 1 1 45%; min-width: 180px; }
+        
         .field-name { font-weight: 600; font-size: 14px; color: #fff; margin-bottom: 2px; }
         .field-value { font-size: 14px; color: #dcddde; white-space: pre-wrap; line-height: 1.375rem; }
         
-        .code-block {
-            background: #1e1f22; padding: 8px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 13px; color: #dcddde; border: 1px solid #111214; display: block;
-        }
-
+        .embed-image { width: 100%; max-width: 400px; border-radius: 4px; object-fit: cover; margin-top: 12px; display: none; }
         .embed-footer { font-size: 12px; color: #dcddde; margin-top: 8px; display: flex; align-items: center; gap: 5px;}
+
+        /* Blockquote styling for description */
+        .discord-blockquote {
+            border-left: 4px solid #4f545c;
+            padding-left: 12px;
+            margin: 8px 0 0 0;
+            color: #b9bbbe;
+        }
 
         /* --- MODAL IMPORT --- */
         .modal-overlay {
@@ -232,78 +227,105 @@
             <div class="editor-content">
                 
                 <details open>
-                    <summary>Identidade da Fusão</summary>
+                    <summary>Identidade da Dex</summary>
                     <div class="control-group">
-                        <label>Nome Final</label>
-                        <input type="text" id="inp-name" placeholder="Ex: Conkelbodor" oninput="update()">
+                        <label>Nome do Pokémon / Fusão</label>
+                        <input type="text" id="inp-name" placeholder="Ex: Skarquaza" oninput="update()">
                         
-                        <div style="display: flex; gap: 10px;">
-                            <div style="flex: 1;">
-                                <label>Pokémon 1</label>
-                                <input type="text" id="inp-poke1" placeholder="Ex: Conkeldurr" oninput="update()">
-                            </div>
-                            <div style="flex: 1;">
-                                <label>Pokémon 2</label>
-                                <input type="text" id="inp-poke2" placeholder="Ex: Garbodor" oninput="update()">
-                            </div>
-                        </div>
-
                         <label>Descrição (Flavor Text)</label>
-                        <textarea id="inp-desc" rows="3" placeholder="Uma fusão de força bruta e toxicidade..." oninput="update()"></textarea>
+                        <textarea id="inp-desc" rows="3" placeholder="Um titã dos céus revestido com uma armadura..." oninput="update()"></textarea>
+
+                        <label>Pokémon Base (Para o Aviso de Moveset)</label>
+                        <input type="text" id="inp-base" placeholder="Ex: Rayquaza" oninput="update()">
                     </div>
                 </details>
 
                 <details open>
-                    <summary>Dados Técnicos</summary>
+                    <summary>Visuais do Embed</summary>
                     <div class="control-group">
-                        <div style="display: flex; gap: 10px;">
-                            <div style="flex: 1;">
-                                <label>Tipo 1</label>
-                                <input type="text" id="inp-type1" placeholder="Fighting" oninput="update()">
-                            </div>
-                            <div style="flex: 1;">
-                                <label>Tipo 2</label>
-                                <input type="text" id="inp-type2" placeholder="Poison" oninput="update()">
-                            </div>
-                        </div>
                         
-                        <label>Cor do Embed (Hex)</label>
+                        <label>Preset de Cor (Por Tipagem)</label>
+                        <select id="inp-type-color" onchange="applyTypeColor()">
+                            <option value="#0a1a34">Customizado (Padrão Escuro)</option>
+                            <option value="#A8A77A">Normal</option>
+                            <option value="#EE8130">Fogo (Fire)</option>
+                            <option value="#6390F0">Água (Water)</option>
+                            <option value="#F7D02C">Elétrico (Electric)</option>
+                            <option value="#7AC74C">Planta (Grass)</option>
+                            <option value="#96D9D6">Gelo (Ice)</option>
+                            <option value="#C22E28">Lutador (Fighting)</option>
+                            <option value="#A33EA1">Venenoso (Poison)</option>
+                            <option value="#E2BF65">Terra (Ground)</option>
+                            <option value="#A98FF3">Voador (Flying)</option>
+                            <option value="#F95587">Psíquico (Psychic)</option>
+                            <option value="#A6B91A">Inseto (Bug)</option>
+                            <option value="#B6A136">Pedra (Rock)</option>
+                            <option value="#735797">Fantasma (Ghost)</option>
+                            <option value="#6F35FC">Dragão (Dragon)</option>
+                            <option value="#705746">Sombrio (Dark)</option>
+                            <option value="#B7B7CE">Metálico (Steel)</option>
+                            <option value="#D685AD">Fada (Fairy)</option>
+                        </select>
+
+                        <label>Ajuste Fino de Cor (Hex)</label>
                         <div style="display: flex; gap: 8px;">
-                            <input type="color" id="inp-color-picker" value="#9332a8" style="height: 38px; width: 50px; padding: 0; cursor: pointer;" oninput="document.getElementById('inp-color').value = this.value; update()">
-                            <input type="text" id="inp-color" value="#9332a8" oninput="update()">
+                            <input type="color" id="inp-color-picker" value="#0a1a34" style="height: 38px; width: 50px; padding: 0; cursor: pointer;" oninput="syncColorInput(this.value); update()">
+                            <input type="text" id="inp-color" value="#0a1a34" oninput="syncColorPicker(this.value); update()">
                         </div>
 
-                        <label>Thumbnail (URL da Imagem)</label>
-                        <input type="text" id="inp-thumb" placeholder="https://..." oninput="update()">
+                        <label>Imagem Principal (URL Grande)</label>
+                        <input type="text" id="inp-image" placeholder="https://i.imgur.com/..." oninput="update()">
                     </div>
                 </details>
 
                 <details open>
-                    <summary>Base Stats</summary>
+                    <summary>Moves Adicionados</summary>
                     <div class="control-group">
-                        <div class="stats-grid">
-                            <div><label>HP</label><input type="number" id="s-hp" value="110" oninput="update()"></div>
-                            <div><label>Attack</label><input type="number" id="s-atk" value="140" oninput="update()"></div>
-                            <div><label>Defense</label><input type="number" id="s-def" value="100" oninput="update()"></div>
-                            <div><label>Sp. Atk</label><input type="number" id="s-spa" value="100" oninput="update()"></div>
-                            <div><label>Sp. Def</label><input type="number" id="s-spd" value="80" oninput="update()"></div>
-                            <div><label>Speed</label><input type="number" id="s-spe" value="45" oninput="update()"></div>
-                        </div>
-                        <div class="total-display">TOTAL: <span id="stat-total">575</span></div>
+                        <label>Lista de Moves (Separar por vírgula)</label>
+                        <textarea id="inp-moves" rows="2" placeholder="Flash Cannon, Body Press, Iron Defense..." oninput="update()"></textarea>
                     </div>
                 </details>
 
                 <details>
-                    <summary>Habilidades e Moves</summary>
+                    <summary>Builds / Sets Competitivos</summary>
                     <div class="control-group">
-                        <label>Habilidades Comuns</label>
-                        <input type="text" id="inp-abil-common" placeholder="Guts, Sheer Force..." oninput="update()">
                         
-                        <label>Habilidade Oculta (Hidden)</label>
-                        <input type="text" id="inp-abil-hidden" placeholder="Iron Fist" oninput="update()">
-                        
-                        <label>Moves Adicionados (Separar por vírgula)</label>
-                        <textarea id="inp-moves" rows="3" placeholder="Gunk Shot, Toxic, Protect..." oninput="update()"></textarea>
+                        <!-- SET 1 -->
+                        <div class="set-group">
+                            <label style="color: #38bdf8;">Set 1</label>
+                            <input type="text" id="set1-name" placeholder="Nome (Ex: 🛡️ Set: Skarmoryquaza)" oninput="update()">
+                            <div class="stats-grid">
+                                <input type="text" id="set1-nature" placeholder="Nature (Ex: Impish)" oninput="update()">
+                                <input type="text" id="set1-item" placeholder="Item (Ex: Rocky Helmet)" oninput="update()">
+                            </div>
+                            <input type="text" id="set1-evs" placeholder="EVs (Ex: 252 HP / 252 Def / 4 Atk)" oninput="update()">
+                            <textarea id="set1-moves" rows="4" placeholder="Moves (Um por linha)&#10;Iron Defense&#10;Body Press..." oninput="update()"></textarea>
+                        </div>
+
+                        <!-- SET 2 -->
+                        <div class="set-group">
+                            <label style="color: #38bdf8;">Set 2</label>
+                            <input type="text" id="set2-name" placeholder="Nome (Ex: ⚔️ Set: Sweeper)" oninput="update()">
+                            <div class="stats-grid">
+                                <input type="text" id="set2-nature" placeholder="Nature" oninput="update()">
+                                <input type="text" id="set2-item" placeholder="Item" oninput="update()">
+                            </div>
+                            <input type="text" id="set2-evs" placeholder="EVs" oninput="update()">
+                            <textarea id="set2-moves" rows="4" placeholder="Moves (Um por linha)" oninput="update()"></textarea>
+                        </div>
+
+                        <!-- SET 3 -->
+                        <div class="set-group">
+                            <label style="color: #38bdf8;">Set 3</label>
+                            <input type="text" id="set3-name" placeholder="Nome (Ex: ☄️ Set: DracoBurst)" oninput="update()">
+                            <div class="stats-grid">
+                                <input type="text" id="set3-nature" placeholder="Nature" oninput="update()">
+                                <input type="text" id="set3-item" placeholder="Item" oninput="update()">
+                            </div>
+                            <input type="text" id="set3-evs" placeholder="EVs" oninput="update()">
+                            <textarea id="set3-moves" rows="4" placeholder="Moves (Um por linha)" oninput="update()"></textarea>
+                        </div>
+
                     </div>
                 </details>
 
@@ -319,41 +341,15 @@
                     </div>
 
                     <div class="discord-embed" id="embed-preview">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <div style="flex: 1;">
-                                <div class="embed-title" id="out-title">Conkelbodor</div>
-                                <div class="embed-desc" id="out-desc">**Conkeldurr** + **Garbodor**</div>
-                            </div>
-                            <img src="" id="out-thumb" class="embed-thumb">
+                        <div class="embed-title" id="out-title">Nome do Pokémon</div>
+                        <div class="embed-desc" id="out-desc">Descrição aparecerá aqui...</div>
+                        
+                        <div class="embed-fields" id="out-fields">
+                            <!-- Os campos serão gerados aqui dinamicamente -->
                         </div>
-
-                        <div class="field-item">
-                            <div class="field-name">Tipagem</div>
-                            <div class="field-value" id="out-types">**Fighting** / **Poison**</div>
-                        </div>
-
-                        <div class="field-item">
-                            <div class="field-name">Base Stats</div>
-                            <div class="field-value code-block" id="out-stats">
-HP:   110
-Atk:  140
-Def:  100
-SpA:  100
-SpD:   80
-Spe:   45
-Total: 575</div>
-                        </div>
-
-                        <div class="field-item">
-                            <div class="field-name">Habilidades</div>
-                            <div class="field-value" id="out-abilities">**Comuns:** Guts...</div>
-                        </div>
-
-                        <div class="field-item" id="container-moves" style="display: none;">
-                            <div class="field-name" id="out-moves-title">Moves Adicionados</div>
-                            <div class="field-value" id="out-moves">...</div>
-                        </div>
-
+                        
+                        <img src="" id="out-image" class="embed-image">
+                        
                         <div class="embed-footer">Humble Pixelmon • Custom Dex</div>
                     </div>
                 </div>
@@ -364,9 +360,26 @@ Total: 575</div>
     <script>
         function getVal(id) { return document.getElementById(id).value; }
         function setVal(id, val) { document.getElementById(id).value = val; }
-        function setTxt(id, txt) { document.getElementById(id).innerText = txt; }
-        function setHtml(id, html) { document.getElementById(id).innerHTML = html; }
-        function pad(num) { return num.toString().padStart(3, ' '); }
+
+        // --- COLOR LOGIC ---
+        function applyTypeColor() {
+            const hex = getVal('inp-type-color');
+            setVal('inp-color', hex);
+            setVal('inp-color-picker', hex);
+            update();
+        }
+
+        function syncColorInput(val) {
+            setVal('inp-color', val);
+            setVal('inp-type-color', '#0a1a34'); // Reseta select para custom
+        }
+
+        function syncColorPicker(val) {
+            if(val.startsWith('#') && (val.length === 4 || val.length === 7)) {
+                setVal('inp-color-picker', val);
+            }
+            setVal('inp-type-color', '#0a1a34'); // Reseta select para custom
+        }
 
         // --- IMPORT LOGIC ---
         function openImportModal() {
@@ -385,73 +398,56 @@ Total: 575</div>
                 let data = JSON.parse(raw);
                 if(data.embeds) data = data.embeds[0];
 
-                // 1. Identidade
+                // Limpa tudo antes de importar
+                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+
                 setVal('inp-name', data.title || "");
-                setVal('inp-thumb', data.thumbnail?.url || "");
                 
-                // Parse Descrição para pegar Poke 1 e Poke 2
-                if(data.description) {
-                    const lines = data.description.split('\n');
-                    const firstLine = lines[0];
-                    const flavor = lines.slice(1).join('\n');
-                    
-                    setVal('inp-desc', flavor);
-
-                    const matches = firstLine.match(/\*\*(.*?)\*\*/g);
-                    if(matches && matches.length >= 2) {
-                        setVal('inp-poke1', matches[0].replace(/\*\*/g, ''));
-                        setVal('inp-poke2', matches[1].replace(/\*\*/g, ''));
-                    }
+                // Pega image ou o antigo thumbnail fallback
+                setVal('inp-image', data.image?.url || data.thumbnail?.url || "");
+                
+                let rawDesc = data.description || "";
+                
+                // Extrai o moveset base do blockquote
+                const baseMatch = rawDesc.match(/> \*Moveset base: \*\*(.*?)\*\*\*\./);
+                if(baseMatch) {
+                    setVal('inp-base', baseMatch[1]);
+                    rawDesc = rawDesc.replace(/> \*Moveset base: \*\*(.*?)\*\*\*\./, '').trim();
                 }
+                setVal('inp-desc', rawDesc);
 
-                // 2. Cor
                 if(data.color) {
                     const hex = '#' + data.color.toString(16).padStart(6, '0');
                     setVal('inp-color-picker', hex);
                     setVal('inp-color', hex);
+                    setVal('inp-type-color', '#0a1a34'); // Deixa customizado após import
                 }
 
-                // 3. Fields Parsing
                 if(data.fields) {
-                    const typeField = data.fields.find(f => f.name === "Tipagem");
-                    if(typeField) {
-                        const types = typeField.value.split('/').map(t => t.replace(/\*/g, '').trim());
-                        setVal('inp-type1', types[0] || "");
-                        setVal('inp-type2', types[1] || "");
-                    }
+                    const movesField = data.fields.find(f => f.name === "Moves Adicionados");
+                    if(movesField) setVal('inp-moves', movesField.value);
 
-                    const statsField = data.fields.find(f => f.name === "Base Stats");
-                    if(statsField) {
-                        const txt = statsField.value;
-                        const extract = (key) => {
-                            const match = txt.match(new RegExp(`${key}:\\s*(\\d+)`));
-                            return match ? match[1] : "0";
-                        };
-                        setVal('s-hp', extract('HP'));
-                        setVal('s-atk', extract('Atk'));
-                        setVal('s-def', extract('Def'));
-                        setVal('s-spa', extract('SpA'));
-                        setVal('s-spd', extract('SpD'));
-                        setVal('s-spe', extract('Spe'));
-                    }
-
-                    const abilField = data.fields.find(f => f.name === "Habilidades");
-                    if(abilField) {
-                        const txt = abilField.value;
-                        const commMatch = txt.match(/Comuns:\*\*\s*(.*?)(?=\n|$|\*\*Hidden)/);
-                        if(commMatch) setVal('inp-abil-common', commMatch[1]);
-                        
-                        const hidMatch = txt.match(/Hidden:\*\*\s*(.*?)(?=\n|$)/);
-                        if(hidMatch) setVal('inp-abil-hidden', hidMatch[1]);
-                        else setVal('inp-abil-hidden', "");
-                    }
-
-                    const movesField = data.fields.find(f => f.name.includes("Moves Adicionados"));
-                    if(movesField) {
-                        setVal('inp-moves', movesField.value);
-                    } else {
-                        setVal('inp-moves', "");
-                    }
+                    let setIndex = 1;
+                    data.fields.forEach(f => {
+                        if(f.name !== "Moves Adicionados" && f.name !== "Tipagem" && f.name !== "Base Stats" && setIndex <= 3) {
+                            setVal(`set${setIndex}-name`, f.name);
+                            
+                            const natMatch = f.value.match(/\*\*Nature:\*\* (.*?)\n/);
+                            const itemMatch = f.value.match(/\*\*Item:\*\* (.*?)\n/);
+                            const evMatch = f.value.match(/\*\*EVs:\*\* (.*?)\n/);
+                            const movesMatch = f.value.split(/\*\*Moves:\*\*\n/);
+                            
+                            if(natMatch) setVal(`set${setIndex}-nature`, natMatch[1]);
+                            if(itemMatch) setVal(`set${setIndex}-item`, itemMatch[1]);
+                            if(evMatch) setVal(`set${setIndex}-evs`, evMatch[1]);
+                            
+                            if(movesMatch.length > 1) {
+                                const movesClean = movesMatch[1].replace(/• /g, '').trim();
+                                setVal(`set${setIndex}-moves`, movesClean);
+                            }
+                            setIndex++;
+                        }
+                    });
                 }
 
                 update();
@@ -465,68 +461,59 @@ Total: 575</div>
 
         // --- GENERATE & UPDATE ---
         function generateData() {
-            const name = getVal('inp-name') || "Nome da Fusão";
-            const poke1 = getVal('inp-poke1') || "Pokémon 1";
-            const poke2 = getVal('inp-poke2') || "Pokémon 2";
-            
-            let desc = `**${poke1}** + **${poke2}**`;
-            const extraDesc = getVal('inp-desc');
-            if(extraDesc) desc += `\n${extraDesc}`;
+            const name = getVal('inp-name') || "Nome do Pokémon";
+            let desc = getVal('inp-desc');
+            const baseMoveset = getVal('inp-base');
 
-            const colorHex = getVal('inp-color') || "#9332a8";
-            const colorInt = parseInt(colorHex.replace('#', ''), 16);
-
-            const hp = parseInt(getVal('s-hp')) || 0;
-            const atk = parseInt(getVal('s-atk')) || 0;
-            const def = parseInt(getVal('s-def')) || 0;
-            const spa = parseInt(getVal('s-spa')) || 0;
-            const spd = parseInt(getVal('s-spd')) || 0;
-            const spe = parseInt(getVal('s-spe')) || 0;
-            const total = hp + atk + def + spa + spd + spe;
-
-            document.getElementById('stat-total').innerText = total;
-
-            const statsText = 
-`HP:   ${pad(hp)}
-Atk:  ${pad(atk)}
-Def:  ${pad(def)}
-SpA:  ${pad(spa)}
-SpD:  ${pad(spd)}
-Spe:  ${pad(spe)}
-Total: ${total}`;
-
-            const t1 = getVal('inp-type1');
-            const t2 = getVal('inp-type2');
-            let typeStr = t1 ? `**${t1}**` : "Unknown";
-            if(t2) typeStr += ` / **${t2}**`;
-
-            const comm = getVal('inp-abil-common');
-            const hidden = getVal('inp-abil-hidden');
-            let abilStr = comm ? `**Comuns:** ${comm}` : "";
-            if(hidden) {
-                if(abilStr) abilStr += "\n";
-                abilStr += `**Hidden:** ${hidden}`;
+            if(baseMoveset) {
+                if(desc) desc += "\n\n";
+                desc += `> *Moveset base: **${baseMoveset}***.`;
             }
-            if(!abilStr) abilStr = "Nenhuma";
 
-            const moves = getVal('inp-moves');
-            const moveTitle = "Moves Adicionados";
+            const colorHex = getVal('inp-color') || "#0a1a34";
+            const colorInt = parseInt(colorHex.replace('#', ''), 16) || 661812;
 
             const embed = {
                 title: name,
                 description: desc,
                 color: colorInt,
-                thumbnail: { url: getVal('inp-thumb') },
-                fields: [
-                    { name: "Tipagem", value: typeStr, inline: true },
-                    { name: "Base Stats", value: "```\n" + statsText + "\n```", inline: false },
-                    { name: "Habilidades", value: abilStr, inline: false }
-                ],
-                footer: { text: "Humble Pixelmon • Custom Dex" }
+                type: "rich",
+                footer: { text: "Humble Pixelmon • Custom Dex" },
+                fields: []
             };
 
-            if(moves) {
-                embed.fields.push({ name: moveTitle, value: moves, inline: false });
+            const imageVal = getVal('inp-image');
+            if(imageVal) {
+                embed.image = { url: imageVal };
+            }
+
+            const movesAdd = getVal('inp-moves');
+            if(movesAdd) {
+                embed.fields.push({
+                    name: "Moves Adicionados",
+                    value: movesAdd,
+                    inline: false
+                });
+            }
+
+            for(let i=1; i<=3; i++) {
+                const sName = getVal(`set${i}-name`);
+                if(sName) {
+                    const sNature = getVal(`set${i}-nature`) || "-";
+                    const sItem = getVal(`set${i}-item`) || "-";
+                    const sEvs = getVal(`set${i}-evs`) || "-";
+                    
+                    const sMovesRaw = getVal(`set${i}-moves`).split('\n').filter(m => m.trim());
+                    const sMovesStr = sMovesRaw.length > 0 ? sMovesRaw.map(m => `• ${m.trim()}`).join('\n') : "-";
+                    
+                    const val = `**Nature:** ${sNature}\n**Item:** ${sItem}\n**EVs:** ${sEvs}\n\n**Moves:**\n${sMovesStr}`;
+                    
+                    embed.fields.push({
+                        name: sName,
+                        value: val,
+                        inline: true
+                    });
+                }
             }
 
             return embed;
@@ -535,37 +522,53 @@ Total: ${total}`;
         function update() {
             const data = generateData();
 
-            setTxt('out-title', data.title);
-            let descHtml = data.description.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-            setHtml('out-desc', descHtml);
+            // Atualiza Titulo
+            document.getElementById('out-title').innerText = data.title;
+            
+            // Atualiza Descrição com marcação markdown visual
+            let descHtml = data.description || "";
+            descHtml = descHtml.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+            descHtml = descHtml.replace(/&gt; (.*)/g, '<div class="discord-blockquote">$1</div>');
+            descHtml = descHtml.replace(/> (.*)/g, '<div class="discord-blockquote">$1</div>');
+            document.getElementById('out-desc').innerHTML = descHtml;
 
+            // Atualiza Cor Lateral
             document.getElementById('embed-preview').style.borderLeftColor = '#' + data.color.toString(16).padStart(6, '0');
 
-            const thumbEl = document.getElementById('out-thumb');
-            if(data.thumbnail.url) { 
-                thumbEl.src = data.thumbnail.url; 
-                thumbEl.style.display = 'block'; 
+            // Atualiza Imagem Grande
+            const imgEl = document.getElementById('out-image');
+            if(data.image && data.image.url) { 
+                imgEl.src = data.image.url; 
+                imgEl.style.display = 'block'; 
             } else { 
-                thumbEl.style.display = 'none'; 
+                imgEl.style.display = 'none'; 
             }
 
-            setHtml('out-types', data.fields[0].value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'));
-            setTxt('out-stats', data.fields[1].value.replace(/```/g, '').trim());
-            setHtml('out-abilities', data.fields[2].value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>'));
-
-            const moveContainer = document.getElementById('container-moves');
-            if(data.fields[3]) {
-                moveContainer.style.display = 'block';
-                setTxt('out-moves-title', data.fields[3].name);
-                setTxt('out-moves', data.fields[3].value);
-            } else {
-                moveContainer.style.display = 'none';
-            }
+            // Constrói os Fields
+            const fieldsContainer = document.getElementById('out-fields');
+            fieldsContainer.innerHTML = "";
+            
+            data.fields.forEach(f => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = `field-item ${f.inline ? 'inline' : ''}`;
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'field-name';
+                nameDiv.innerText = f.name;
+                
+                const valueDiv = document.createElement('div');
+                valueDiv.className = 'field-value';
+                valueDiv.innerHTML = f.value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+                
+                fieldDiv.appendChild(nameDiv);
+                fieldDiv.appendChild(valueDiv);
+                fieldsContainer.appendChild(fieldDiv);
+            });
         }
 
         function copyJSON() {
             const data = generateData();
-            const jsonStr = JSON.stringify(data, null, 2);
+            const jsonStr = JSON.stringify(data, null, 4);
             navigator.clipboard.writeText(jsonStr).then(() => {
                 const btn = document.querySelector('.action-btn.copy');
                 const originalText = btn.innerHTML;
@@ -577,6 +580,9 @@ Total: ${total}`;
         function clearAll() {
             if(confirm("Limpar todos os campos?")) {
                 document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                document.getElementById('inp-color').value = '#0a1a34';
+                document.getElementById('inp-color-picker').value = '#0a1a34';
+                document.getElementById('inp-type-color').value = '#0a1a34';
                 update();
             }
         }
