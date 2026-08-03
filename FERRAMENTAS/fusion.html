@@ -294,6 +294,7 @@
                         <div class="set-group">
                             <label style="color: #38bdf8;">Set 1</label>
                             <input type="text" id="set1-name" placeholder="Nome (Ex: 🛡️ Set: Skarmoryquaza)" oninput="update()">
+                            <input type="text" id="set1-ability" placeholder="Ability (Ex: Levitate)" oninput="update()">
                             <div class="stats-grid">
                                 <input type="text" id="set1-nature" placeholder="Nature (Ex: Impish)" oninput="update()">
                                 <input type="text" id="set1-item" placeholder="Item (Ex: Rocky Helmet)" oninput="update()">
@@ -306,6 +307,7 @@
                         <div class="set-group">
                             <label style="color: #38bdf8;">Set 2</label>
                             <input type="text" id="set2-name" placeholder="Nome (Ex: ⚔️ Set: Sweeper)" oninput="update()">
+                            <input type="text" id="set2-ability" placeholder="Ability" oninput="update()">
                             <div class="stats-grid">
                                 <input type="text" id="set2-nature" placeholder="Nature" oninput="update()">
                                 <input type="text" id="set2-item" placeholder="Item" oninput="update()">
@@ -318,12 +320,26 @@
                         <div class="set-group">
                             <label style="color: #38bdf8;">Set 3</label>
                             <input type="text" id="set3-name" placeholder="Nome (Ex: ☄️ Set: DracoBurst)" oninput="update()">
+                            <input type="text" id="set3-ability" placeholder="Ability" oninput="update()">
                             <div class="stats-grid">
                                 <input type="text" id="set3-nature" placeholder="Nature" oninput="update()">
                                 <input type="text" id="set3-item" placeholder="Item" oninput="update()">
                             </div>
                             <input type="text" id="set3-evs" placeholder="EVs" oninput="update()">
                             <textarea id="set3-moves" rows="4" placeholder="Moves (Um por linha)" oninput="update()"></textarea>
+                        </div>
+
+                        <!-- SET 4 -->
+                        <div class="set-group">
+                            <label style="color: #38bdf8;">Set 4</label>
+                            <input type="text" id="set4-name" placeholder="Nome (Ex: 🌟 Set: ExtremeSpeedSpam)" oninput="update()">
+                            <input type="text" id="set4-ability" placeholder="Ability" oninput="update()">
+                            <div class="stats-grid">
+                                <input type="text" id="set4-nature" placeholder="Nature" oninput="update()">
+                                <input type="text" id="set4-item" placeholder="Item" oninput="update()">
+                            </div>
+                            <input type="text" id="set4-evs" placeholder="EVs" oninput="update()">
+                            <textarea id="set4-moves" rows="4" placeholder="Moves (Um por linha)" oninput="update()"></textarea>
                         </div>
 
                     </div>
@@ -429,23 +445,28 @@
 
                     let setIndex = 1;
                     data.fields.forEach(f => {
-                        if(f.name !== "Moves Adicionados" && f.name !== "Tipagem" && f.name !== "Base Stats" && setIndex <= 3) {
-                            setVal(`set${setIndex}-name`, f.name);
-                            
-                            const natMatch = f.value.match(/\*\*Nature:\*\* (.*?)\n/);
-                            const itemMatch = f.value.match(/\*\*Item:\*\* (.*?)\n/);
-                            const evMatch = f.value.match(/\*\*EVs:\*\* (.*?)\n/);
-                            const movesMatch = f.value.split(/\*\*Moves:\*\*\n/);
-                            
-                            if(natMatch) setVal(`set${setIndex}-nature`, natMatch[1]);
-                            if(itemMatch) setVal(`set${setIndex}-item`, itemMatch[1]);
-                            if(evMatch) setVal(`set${setIndex}-evs`, evMatch[1]);
-                            
-                            if(movesMatch.length > 1) {
-                                const movesClean = movesMatch[1].replace(/• /g, '').trim();
-                                setVal(`set${setIndex}-moves`, movesClean);
+                        // Ignorar os fields de sistema e a quebra de linha invisível (\u200b)
+                        if(f.name !== "Moves Adicionados" && f.name !== "Tipagem" && f.name !== "Base Stats" && f.name !== "\u200b") {
+                            if (setIndex <= 4) {
+                                setVal(`set${setIndex}-name`, f.name);
+                                
+                                const abilMatch = f.value.match(/\*\*Ability:\*\* (.*?)\n/);
+                                const natMatch = f.value.match(/\*\*Nature:\*\* (.*?)\n/);
+                                const itemMatch = f.value.match(/\*\*Item:\*\* (.*?)\n/);
+                                const evMatch = f.value.match(/\*\*EVs:\*\* (.*?)\n/);
+                                const movesMatch = f.value.split(/\*\*Moves:\*\*\n/);
+                                
+                                if(abilMatch) setVal(`set${setIndex}-ability`, abilMatch[1]);
+                                if(natMatch) setVal(`set${setIndex}-nature`, natMatch[1]);
+                                if(itemMatch) setVal(`set${setIndex}-item`, itemMatch[1]);
+                                if(evMatch) setVal(`set${setIndex}-evs`, evMatch[1]);
+                                
+                                if(movesMatch.length > 1) {
+                                    const movesClean = movesMatch[1].replace(/• /g, '').trim();
+                                    setVal(`set${setIndex}-moves`, movesClean);
+                                }
+                                setIndex++;
                             }
-                            setIndex++;
                         }
                     });
                 }
@@ -496,9 +517,12 @@
                 });
             }
 
-            for(let i=1; i<=3; i++) {
+            // Lê e armazena os sets preenchidos
+            const setsData = [];
+            for(let i=1; i<=4; i++) {
                 const sName = getVal(`set${i}-name`);
                 if(sName) {
+                    const sAbility = getVal(`set${i}-ability`) || "-";
                     const sNature = getVal(`set${i}-nature`) || "-";
                     const sItem = getVal(`set${i}-item`) || "-";
                     const sEvs = getVal(`set${i}-evs`) || "-";
@@ -506,15 +530,28 @@
                     const sMovesRaw = getVal(`set${i}-moves`).split('\n').filter(m => m.trim());
                     const sMovesStr = sMovesRaw.length > 0 ? sMovesRaw.map(m => `• ${m.trim()}`).join('\n') : "-";
                     
-                    const val = `**Nature:** ${sNature}\n**Item:** ${sItem}\n**EVs:** ${sEvs}\n\n**Moves:**\n${sMovesStr}`;
+                    const val = `**Ability:** ${sAbility}\n**Nature:** ${sNature}\n**Item:** ${sItem}\n**EVs:** ${sEvs}\n\n**Moves:**\n${sMovesStr}`;
                     
-                    embed.fields.push({
+                    setsData.push({
                         name: sName,
                         value: val,
                         inline: true
                     });
                 }
             }
+
+            // Insere os sets no embed e aplica a quebra de linha após o 2º set
+            setsData.forEach((set, index) => {
+                embed.fields.push(set);
+                // index 1 representa o 2º item do array. Se houver mais de 2 itens, insere a quebra.
+                if (index === 1 && setsData.length > 2) {
+                    embed.fields.push({
+                        name: "\u200b",
+                        value: "\u200b",
+                        inline: false
+                    });
+                }
+            });
 
             return embed;
         }
@@ -552,16 +589,22 @@
                 const fieldDiv = document.createElement('div');
                 fieldDiv.className = `field-item ${f.inline ? 'inline' : ''}`;
                 
-                const nameDiv = document.createElement('div');
-                nameDiv.className = 'field-name';
-                nameDiv.innerText = f.name;
+                // Se for a quebra de linha invisível, apenas cria o espaço vertical
+                if (f.name === "\u200b") {
+                    fieldDiv.style.height = '5px';
+                } else {
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'field-name';
+                    nameDiv.innerText = f.name;
+                    
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'field-value';
+                    valueDiv.innerHTML = f.value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+                    
+                    fieldDiv.appendChild(nameDiv);
+                    fieldDiv.appendChild(valueDiv);
+                }
                 
-                const valueDiv = document.createElement('div');
-                valueDiv.className = 'field-value';
-                valueDiv.innerHTML = f.value.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-                
-                fieldDiv.appendChild(nameDiv);
-                fieldDiv.appendChild(valueDiv);
                 fieldsContainer.appendChild(fieldDiv);
             });
         }
